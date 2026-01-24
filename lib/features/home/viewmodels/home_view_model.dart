@@ -31,8 +31,9 @@ class HomeViewModel extends ChangeNotifier {
   String _errorMessage = '';
 
   // بيانات المستخدم والموقع
-  String _userName = 'زائر';
-  String _currentAddress = 'الرياض، السعودية';
+  String _userName = 'زائjvykر';
+  String _role = 'زائر';
+  String _currentAddress = 'اليمن التعيس';
   bool _isLocationLoading = false;
 
   // Getters للوصول للمتغيرات من الواجهة
@@ -41,6 +42,7 @@ class HomeViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
   String get userName => _userName;
+  String get role => _role;
   String get currentAddress => _currentAddress;
   bool get isLocationLoading => _isLocationLoading;
 
@@ -70,8 +72,9 @@ class HomeViewModel extends ChangeNotifier {
     try {
       // 1. جلب بيانات المستخدم المحفوظة محلياً
       final userData = await _tokenStorage.getUserData();
-      if (userData['name'] != null) {
+      if (userData['name'] != null && userData['role'] != null) {
         _userName = userData['name']!;
+        _role = userData['role']!;
       }
 
       // 2. جلب التصنيفات والخدمات من السيرفر بالتوازي لتقليل وقت الانتظار

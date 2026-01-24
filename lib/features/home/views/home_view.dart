@@ -153,7 +153,7 @@ class _HomeViewState extends State<HomeView> {
   }
 
   // ---------------------------------------------------------------------------
-  // 📄 صفحة مؤقتة (Placeholder Page)
+  // 📄 صفحة مؤقتة (Placeholder Page) لمرعفة العمل  انه شغال او لا
   // ---------------------------------------------------------------------------
   Widget _buildPlaceholderPage(BuildContext context, String title) {
     return Scaffold(
@@ -170,7 +170,7 @@ class _HomeViewState extends State<HomeView> {
       ),
       body: Center(
         child: Text(
-          '$title - قريباً',
+          '$title - قريباً هلا عبدالله',
           style: TextStyle(fontSize: 18, color: context.qsColors.textSub),
         ),
       ),
@@ -210,7 +210,7 @@ class _HomeViewState extends State<HomeView> {
                 ),
               ],
             ),
-            child: Icon(Icons.menu, color: context.qsColors.textSub),
+            child: Icon(Icons.menu, color: context.qsColors.text),
           ),
         ),
 

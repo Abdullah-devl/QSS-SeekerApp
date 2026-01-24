@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/routes/app_routes.dart';
-// import 'package:seeker/core/storage/token_storage.dart'; // Unused
 import 'package:seeker/core/theme/qs_color_extension.dart';
+import 'package:seeker/core/theme/qs_colors.dart';
 import 'package:seeker/features/auth/repositories/auth_repository.dart';
 import 'package:seeker/features/provider/theme_provider.dart';
-import 'package:seeker/features/settings/viewmodels/settings_view_model.dart'; // Added
+import 'package:seeker/features/settings/viewmodels/settings_view_model.dart';
+import 'package:seeker/features/home/viewmodels/home_view_model.dart'; // ✅ نحتاج HomeViewModel لمعرفة الدور
+
+/// 📂 اسم الملف: settings_view.dart
+/// 📝 الوصف: شاشة الإعدادات.
+/// تتيح للمستخدم التحكم في حسابه وتفضيلات التطبيق.
 
 class SettingsView extends StatefulWidget {
   final VoidCallback? onMenuTap;
@@ -49,10 +54,13 @@ class _SettingsViewState extends State<SettingsView> {
     }
   }
 
-  /// 🏗️ دالة بناء الواجهة
   @override
   Widget build(BuildContext context) {
     final colors = context.qsColors;
+
+    // ✅ نستخدم Selector لمعرفة دور المستخدم (زائر أم لا)
+    final userRole = context.select<HomeViewModel, String>((vm) => vm.role);
+
     // مراقبة حالة الوضع الداكن فقط
     final isDark = context.select<ThemeProvider, bool>((p) => p.isDark);
 
@@ -81,136 +89,146 @@ class _SettingsViewState extends State<SettingsView> {
         child: Column(
           children: [
             // =================================================================
-            // 1. بطاقة المستخدم (User Profile Card)
+            // 1. بطاقة المستخدم (تظهر للمسجلين فقط)
             // =================================================================
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: colors.text.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Selector<SettingsViewModel, ({String name, String email})>(
-                selector: (context, vm) =>
-                    (name: vm.userName, email: vm.userEmail),
-                builder: (context, data, child) {
-                  return Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+            if (userRole != 'زائر')
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: colors.text.withValues(alpha: 0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child:
+                    Selector<SettingsViewModel, ({String name, String email})>(
+                      selector: (context, vm) =>
+                          (name: vm.userName, email: vm.userEmail),
+                      builder: (context, data, child) {
+                        return Row(
                           children: [
-                            Text(
-                              data.name,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: colors.text,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    data.name,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: colors.text,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    data.email,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: colors.textSub,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFE0F2F1),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: const Text(
+                                      'عميل موثوق',
+                                      style: TextStyle(
+                                        color: Color(0xFF00796B),
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              data.email,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: colors.textSub,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFE0F2F1), // Light Green
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Text(
-                                'عميل موثوق',
-                                style: TextStyle(
-                                  color: Color(0xFF00796B), // Dark Green
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
+                            Stack(
+                              alignment: Alignment.bottomRight,
+                              children: [
+                                CircleAvatar(
+                                  radius: 35,
+                                  backgroundColor: colors.primary.withValues(
+                                    alpha: 0.1,
+                                  ),
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 40,
+                                    color: colors.primary,
+                                  ),
                                 ),
-                              ),
+                                Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: colors.primary,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: const Icon(
+                                    Icons.edit,
+                                    size: 14,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
-                        ),
-                      ),
-                      Stack(
-                        alignment: Alignment.bottomRight,
-                        children: [
-                          CircleAvatar(
-                            radius: 35,
-                            backgroundColor: colors.primary.withValues(
-                              alpha: 0.1,
-                            ),
-                            child: Icon(
-                              Icons.person,
-                              size: 40,
-                              color: colors.primary,
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: colors.primary,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2),
-                            ),
-                            child: const Icon(
-                              Icons.edit,
-                              size: 14,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
+                        );
+                      },
+                    ),
+              )
+            else
+              // 🔵 بطاقة دعوة للتسجيل تظهر للزائر فقط
+              _buildGuestCard(colors),
+
             const SizedBox(height: 24),
 
             // =================================================================
-            // 2. إعدادات الحساب (Account Settings)
+            // 2. إعدادات الحساب (تختفي للزائر)
             // =================================================================
-            _buildSectionTitle('الحساب', colors.textSub),
-            _buildSettingsContainer(context, [
-              _buildSettingsTile(
-                icon: Icons.person_outline,
-                title: 'تعديل الملف الشخصي',
-                onTap: () {},
-              ),
-              _buildDivider(colors.textSub),
-              _buildSettingsTile(
-                icon: Icons.lock_outline,
-                title: 'تغيير كلمة المرور',
-                onTap: () {},
-              ),
-              _buildDivider(colors.textSub),
-              _buildSettingsTile(
-                icon: Icons.account_balance_wallet_outlined,
-                title: 'طرق الدفع',
-                onTap: () {},
-              ),
-            ]),
-            const SizedBox(height: 24),
+            if (userRole != 'زائر') ...[
+              _buildSectionTitle('الحساب', colors.textSub),
+              _buildSettingsContainer(context, [
+                _buildSettingsTile(
+                  icon: Icons.person_outline,
+                  title: 'تعديل الملف الشخصي',
+                  onTap: () {},
+                ),
+                _buildDivider(colors.textSub),
+                _buildSettingsTile(
+                  icon: Icons.lock_outline,
+                  title: 'تغيير كلمة المرور',
+                  onTap: () {},
+                ),
+                _buildDivider(colors.textSub),
+                _buildSettingsTile(
+                  icon: Icons.account_balance_wallet_outlined,
+                  title: 'طرق الدفع',
+                  onTap: () {},
+                ),
+              ]),
+              const SizedBox(height: 24),
+            ],
 
             // =================================================================
-            // 3. إعدادات التطبيق (App Settings)
+            // 3. إعدادات التطبيق (متاحة للجميع)
             // =================================================================
             _buildSectionTitle('التطبيق', colors.textSub),
             _buildSettingsContainer(context, [
-              // مفتاح الإشعارات مربوط بالـ ViewModel
               Selector<SettingsViewModel, bool>(
                 selector: (context, vm) => vm.notificationsEnabled,
                 builder: (context, notificationsEnabled, child) {
@@ -218,11 +236,9 @@ class _SettingsViewState extends State<SettingsView> {
                     icon: Icons.notifications_none,
                     title: 'الإشعارات',
                     value: notificationsEnabled,
-                    onChanged: (val) {
-                      context.read<SettingsViewModel>().toggleNotifications(
-                        val,
-                      );
-                    },
+                    onChanged: (val) => context
+                        .read<SettingsViewModel>()
+                        .toggleNotifications(val),
                   );
                 },
               ),
@@ -244,7 +260,7 @@ class _SettingsViewState extends State<SettingsView> {
             const SizedBox(height: 24),
 
             // =================================================================
-            // 4. الدعم والمساعدة (Support Settings)
+            // 4. الدعم والمساعدة
             // =================================================================
             _buildSectionTitle('الدعم والمساعدة', colors.textSub),
             _buildSettingsContainer(context, [
@@ -263,32 +279,44 @@ class _SettingsViewState extends State<SettingsView> {
             const SizedBox(height: 30),
 
             // =================================================================
-            // 5. زر تسجيل الخروج (Logout Button)
+            // 5. زر تسجيل الخروج أو تسجيل الدخول (تبديل شرطي)
             // =================================================================
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: _logout,
+                // ✅ إذا كان زائر، يذهب لصفحة الدخول، وإذا كان مسجلاً، يقوم بتسجيل الخروج
+                onPressed: userRole == 'زائر'
+                    ? () => Navigator.pushNamed(context, AppRoutes.login)
+                    : _logout,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).cardColor,
-                  foregroundColor: Colors.red,
+                  // ✅ تغيير اللون: أزرق للدخول، أحمر للخروج
+                  foregroundColor: userRole == 'زائر'
+                      ? colors.text
+                      : Colors.red,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
-                    side: BorderSide(color: Colors.red.withValues(alpha: 0.1)),
+                    side: BorderSide(
+                      color: (userRole == 'زائر' ? colors.primary : Colors.red)
+                          .withValues(alpha: 0.1),
+                    ),
                   ),
                 ),
-                child: const Text(
-                  'تسجيل الخروج',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                child: Text(
+                  userRole == 'زائر' ? 'تسجيل الدخول' : 'تسجيل الخروج',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
             const SizedBox(height: 20),
             Center(
               child: Text(
-                'QuickServe v2.4.0',
+                'اعتنم الفرصة وكن من مستخمي التطبيق لاتترد اطلب خدمتك الان مابتحصل كمانا دقه واتقان وامن وامان',
                 style: TextStyle(color: colors.textSub, fontSize: 12),
               ),
             ),
@@ -298,6 +326,36 @@ class _SettingsViewState extends State<SettingsView> {
     );
   }
 
+  /// 🛠️ ودجت تظهر للزائر بدلاً من بيانات الملف الشخصي
+  Widget _buildGuestCard(QSColors colors) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: colors.primary.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: colors.primary.withValues(alpha: 0.1)),
+      ),
+      child: Column(
+        children: [
+          Icon(Icons.account_circle, size: 50, color: colors.primary),
+          const SizedBox(height: 10),
+          const Text(
+            'أهلاً بك عزيزي الزائر',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            'سجل دخولك للاستمتاع بكل مايوفره التطبيق',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: colors.textSub, fontSize: 14),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ... (بقية الدوال المساعدة كما هي في كودك الأصلي)
   Widget _buildSectionTitle(String title, Color color) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10, right: 4),
@@ -318,11 +376,11 @@ class _SettingsViewState extends State<SettingsView> {
   Widget _buildSettingsContainer(BuildContext context, List<Widget> children) {
     return Container(
       decoration: BoxDecoration(
-        color: context.qsColors.background,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: context.qsColors.text.withValues(alpha: 0.1),
+            color: context.qsColors.text.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -334,8 +392,8 @@ class _SettingsViewState extends State<SettingsView> {
 
   Widget _buildDivider(Color color) {
     return Divider(
-      height: 1,
-      thickness: 0.5,
+      height: 1.0,
+      thickness: 1,
       color: color.withValues(alpha: 0.1),
       indent: 16,
       endIndent: 16,

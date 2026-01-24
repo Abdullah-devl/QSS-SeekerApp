@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:seeker/core/routes/app_routes.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
 
 class CustomNavBar extends StatelessWidget {
@@ -14,7 +15,7 @@ class CustomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.qsColors;
-// دالة بناء شريط التنقل
+    // دالة بناء شريط التنقل
     return Container(
       margin: const EdgeInsets.only(left: 10, right: 10, bottom: 20, top: 10),
       height: 70,
@@ -32,16 +33,32 @@ class CustomNavBar extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildNavItem(context, 0, Icons.home_filled, 'الرئيسية'),
-          _buildNavItem(context, 1, Icons.assignment_outlined, 'طلباتي'),
-          _buildSearchItem(context), // زر البحث في المنتصف
-          _buildNavItem(context, 3, Icons.favorite_border, 'المفضلة'),
-          _buildNavItem(context, 4, Icons.settings_outlined, 'الإعدادات'),
+          _buildNavItem(
+            context,
+            0,
+            Icons.home_filled,
+            AppRoutes.home,
+          ), // زر الصفحة الرئيسية
+          _buildNavItem(
+            context,
+            1,
+            Icons.assignment_outlined,
+            AppRoutes.orders,
+          ),
+          _buildSearchItem(context, 2), // زر البحث في المنتصف
+          _buildNavItem(context, 3, Icons.favorite_border, AppRoutes.favorites),
+          _buildNavItem(
+            context,
+            4,
+            Icons.settings_outlined,
+            AppRoutes.settings,
+          ),
         ],
       ),
     );
   }
-// دالة بناء عنصر التنقل
+
+  // دالة بناء عنصر التنقل
   Widget _buildNavItem(
     BuildContext context,
     int index,
@@ -62,14 +79,14 @@ class CustomNavBar extends StatelessWidget {
             Icon(
               icon,
               color: isSelected ? colors.text : colors.textSub,
-              size: 24,
+              size: 24, // حجم الأيقونة24
             ),
             const SizedBox(height: 4),
             Text(
               label,
               style: TextStyle(
                 color: isSelected ? colors.text : colors.textSub,
-                fontSize: 12,
+                fontSize: 12, //` حجم الخط 12
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
             ),
@@ -78,12 +95,13 @@ class CustomNavBar extends StatelessWidget {
       ),
     );
   }
-// دالة زر البحث
-  Widget _buildSearchItem(BuildContext context) {
-    final colors = context.qsColors;
 
+  // دالة زر البحث
+  Widget _buildSearchItem(BuildContext context, int index) {
+    final colors = context.qsColors;
+    bool isSelected = currentIndex == index;
     return GestureDetector(
-      onTap: () => onTap(2),
+      onTap: () => onTap(index),
       child: Container(
         width: 50,
         height: 50,
@@ -98,7 +116,11 @@ class CustomNavBar extends StatelessWidget {
             ),
           ],
         ),
-        child: Icon(Icons.search, color: Colors.white, size: 28),
+        child: Icon(
+          Icons.search,
+          color: isSelected ? colors.text : colors.textSub,
+          size: 28,
+        ),
       ),
     );
   }

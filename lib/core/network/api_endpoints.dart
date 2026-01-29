@@ -8,7 +8,9 @@ import 'package:flutter/foundation.dart';
 class ApiEndpoints {
   /// 🌐 النطاق الأساسي (Domain) للسيرفر.
   /// يتم استخدامه كأساس لجميع الروابط الأخرى.
+  // static String get domain => "http://10.0.2.2:8000";
   static String get domain => "http://127.0.0.1:8000";
+  // static String get domain => "http://localhost:8000/api";
 
   /// 🗄️ رابط التخزين (Storage).
   /// يستخدم للوصول إلى الملفات والصور المخزنة على السيرفر.
@@ -47,4 +49,10 @@ class ApiEndpoints {
 
   /// ⭐ رابط جلب الخدمات الشائعة (Popular Services).
   static String get popularServices => "$baseUrl/popular-services";
+
+  /// 📂 رابط جلب تفاصيل التصنيف (خدمات، تصنيفات فرعية، موصى بهم).
+  /// [id] هو معرف التصنيف.
+  static String categoryDetails(int id) => "$baseUrl/categories/$id";
+
+  static String get beProvider => "$baseUrl/provider-requests";
 }

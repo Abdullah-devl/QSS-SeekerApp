@@ -42,6 +42,8 @@ class AuthRepository {
             role:
                 user.role ??
                 'client', // القيمة الافتراضية 'client' في حال عدم توفر الدور
+            phone: user.phone,
+            address: user.address,
           );
         }
 

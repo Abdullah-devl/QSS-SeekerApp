@@ -5,6 +5,8 @@ import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/core/widgets/custom_text_field.dart';
 import 'package:seeker/features/auth/viewmodel/register_view_model.dart';
 import 'package:seeker/features/provider/theme_provider.dart';
+// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 
 /// 📂 اسم الملف: register_view.dart
 /// 📝 الوصف: واجهة المستخدم لإنشاء حساب جديد.
@@ -84,7 +86,7 @@ class RegisterView extends StatelessWidget {
 
                   // 3️⃣ العنوان والوصف (Title & Subtitle)
                   Text(
-                    'إنشاء حساب جديد',
+                    AppLocalizations.of(context)!.createNewAccount,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 24,
@@ -94,7 +96,7 @@ class RegisterView extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'سجل الان في QuickServe وابدأ في استخدام خدماتنا المميزة',
+                    AppLocalizations.of(context)!.registerSubtitle,
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 14, color: colors.textSub),
                   ),
@@ -104,10 +106,10 @@ class RegisterView extends StatelessWidget {
                   // 4️⃣ حقول الإدخال (Form Fields)
 
                   // -- الاسم الكامل --
-                  _buildLabel(context, 'الاسم الكامل'),
+                  _buildLabel(context, AppLocalizations.of(context)!.name),
                   CustomTextField(
                     labelText: '',
-                    hintText: 'أدخل اسمك الكامل',
+                    hintText: AppLocalizations.of(context)!.enterFullName,
                     controller: viewModel.nameController,
                     icon: Icons.person,
                     fillColor: isDark ? Colors.grey[900] : Colors.white,
@@ -115,7 +117,7 @@ class RegisterView extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   // -- البريد الإلكتروني --
-                  _buildLabel(context, 'البريد الإلكتروني'),
+                  _buildLabel(context, AppLocalizations.of(context)!.email),
                   CustomTextField(
                     labelText: '',
                     hintText: 'example@email.com',
@@ -126,7 +128,7 @@ class RegisterView extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   // -- كلمة المرور --
-                  _buildLabel(context, 'كلمة المرور'),
+                  _buildLabel(context, AppLocalizations.of(context)!.password),
                   CustomTextField(
                     labelText: '',
                     hintText: '........',
@@ -138,7 +140,10 @@ class RegisterView extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   // -- تأكيد كلمة المرور --
-                  _buildLabel(context, 'تأكيد كلمة المرور'),
+                  _buildLabel(
+                    context,
+                    AppLocalizations.of(context)!.confirmPassword,
+                  ),
                   CustomTextField(
                     labelText: '',
                     hintText: '........',
@@ -168,9 +173,13 @@ class RegisterView extends StatelessWidget {
                                 color: colors.text,
                               ),
                               children: [
-                                const TextSpan(text: 'أوافق على '),
                                 TextSpan(
-                                  text: 'الشروط والأحكام و سياسة الخصوصية',
+                                  text: AppLocalizations.of(context)!.agreeTo,
+                                ),
+                                TextSpan(
+                                  text: AppLocalizations.of(
+                                    context,
+                                  )!.termsAndPrivacy,
                                   style: const TextStyle(
                                     color: Color(
                                       0xFF2B7CD6,
@@ -236,7 +245,8 @@ class RegisterView extends StatelessWidget {
                               Icon(Icons.arrow_back, size: 20), // سهم لليسار
                               SizedBox(width: 8),
                               Text(
-                                'إنشاء حساب',
+                                // AppLocalizations.of(context)!.signUp,
+                                "Sign Up",
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -257,7 +267,7 @@ class RegisterView extends StatelessWidget {
                         color: colors.background,
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
-                          'أو سجل باستخدام',
+                          AppLocalizations.of(context)!.orRegisterWith,
                           style: TextStyle(fontSize: 12, color: colors.textSub),
                         ),
                       ),
@@ -298,17 +308,17 @@ class RegisterView extends StatelessWidget {
                     children: [
                       GestureDetector(
                         onTap: () => Navigator.pop(context), // العودة
-                        child: const Text(
-                          'تسجيل الدخول',
+                        child: Text(
+                          AppLocalizations.of(context)!.login,
                           style: TextStyle(
                             color: Color(0xFF3B82F6),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                      Text('؟', style: TextStyle(color: colors.textSub)),
+
                       Text(
-                        ' لديك حساب بالفعل',
+                        AppLocalizations.of(context)!.haveAccount,
                         style: TextStyle(color: colors.textSub),
                       ),
                     ],

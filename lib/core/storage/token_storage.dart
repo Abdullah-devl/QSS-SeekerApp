@@ -11,6 +11,25 @@ class TokenStorage {
   static const String _userNameKey = 'user_name';
   static const String _userEmailKey = 'user_email';
   static const String _userRoleKey = 'user_role';
+  static const String _userPhoneKey = 'user_phone';
+  static const String _userAddressKey = 'user_address';
+  static const String _languageKey = 'app_language';
+
+  // ===========================================================================
+  // 🌍 إدارة اللغة
+  // ===========================================================================
+
+  /// 💾 حفظ لغة التطبيق المختارة
+  Future<void> saveLanguage(String languageCode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_languageKey, languageCode);
+  }
+
+  /// 📤 استرجاع اللغة المحفوظة
+  Future<String?> getLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_languageKey);
+  }
 
   // ===========================================================================
   // 🔐 إدارة الـ Token
@@ -53,11 +72,15 @@ class TokenStorage {
     required String name,
     required String email,
     required String role,
+    String? phone,
+    String? address,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_userNameKey, name);
     await prefs.setString(_userEmailKey, email);
     await prefs.setString(_userRoleKey, role);
+    if (phone != null) await prefs.setString(_userPhoneKey, phone);
+    if (address != null) await prefs.setString(_userAddressKey, address);
   }
 
   /// 📤 استرجاع بيانات المستخدم (الاسم والدور) كـ Map.
@@ -67,6 +90,8 @@ class TokenStorage {
       'name': prefs.getString(_userNameKey),
       'email': prefs.getString(_userEmailKey),
       'role': prefs.getString(_userRoleKey),
+      'phone': prefs.getString(_userPhoneKey),
+      'address': prefs.getString(_userAddressKey),
     };
   }
 
@@ -77,6 +102,8 @@ class TokenStorage {
     await prefs.remove(_userNameKey);
     await prefs.remove(_userEmailKey);
     await prefs.remove(_userRoleKey);
+    await prefs.remove(_userPhoneKey);
+    await prefs.remove(_userAddressKey);
     // ومسح التوكن أيضاً للتأكد
     await prefs.remove(_tokenKey);
     // ومسح وضع الزائر

@@ -3,7 +3,10 @@ import 'dart:developer' as developer;
 import '../../../../core/network/api_service.dart';
 import '../../../../core/network/api_endpoints.dart';
 import '../models/category_model.dart';
+
 import '../models/service_model.dart';
+import '../models/category_details_model.dart';
+import '../../../../core/errors/api_error_handler.dart'; // ✅ الاستيراد الجديد
 
 /// 📂 اسم الملف: home_repository.dart
 /// 📝 الوصف: المستودع (Repository) الخاص بالصفحة الرئيسية.
@@ -88,5 +91,57 @@ class HomeRepository {
       // تفشل بصمت وترجع قائمة فارغة
       return [];
     }
+  }
+
+  // ===========================================================================
+  // 📂 جلب تفاصيل التصنيف (Category Details)
+  // ===========================================================================
+
+  /// يقوم بجلب تفاصيل التصنيف (تصنيفات فرعية، خدمات، موصى بهم).
+  // Future<CategoryDetailsModel> fetchCategoryDetails(int categoryId) async {
+  //   try {
+  //     final Response response = await _apiService.get(
+  //       ApiEndpoints.categoryDetails(categoryId),
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       final data = response.data;
+  //       // نتوقع أن تكون البيانات إما مباشرة أو داخل مفتاح 'data'
+  //       final Map<String, dynamic> jsonResponse =
+  //           (data is Map && data.containsKey('data')) ? data['data'] : data;
+
+  //       return CategoryDetailsModel.fromJson(jsonResponse);
+  //     } else {
+  //       return CategoryDetailsModel(); // إرجاع كائن فارغ عند الفشل
+  //     }
+  //   } catch (e) {
+  //     // print('❌ fetchCategoryDetails ERROR: $e');
+  //     // 🛑 استخدام معالج الأخطاء المركزي
+  //     throw ApiErrorHandler.handle(e);
+  //   }
+  // }
+  Future<CategoryDetailsModel> fetchCategoryDetails(int categoryId) async {
+    final Response response = await _apiService.get(
+      ApiEndpoints.categoryDetails(categoryId),
+    );
+
+    // print('✅ URL: ${response.requestOptions.uri}');
+    // print('✅ STATUS: ${response.statusCode}');
+    // print('✅ RAW: ${response.data}');
+
+    if (response.statusCode == 200) {
+      final data = response.data;
+
+      final Map<String, dynamic> jsonResponse =
+          (data is Map && data.containsKey('data')) ? data['data'] : data;
+
+      // print('✅ PARSED: $jsonResponse');
+
+      return CategoryDetailsModel.fromJson(jsonResponse);
+    }
+
+    throw Exception(
+      'Request failed: ${response.statusCode} - ${response.data}',
+    );
   }
 }

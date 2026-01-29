@@ -22,10 +22,19 @@ class AppRoutes {
 
   /// ⚙️ مسار صفحة الإعدادات.
   static const String settings = 'الاعدادات';
+
+  /// 📂 مسار صفحة تفاصيل التصنيف.
+  static const String categoryDetails = 'category_details';
+
+  /// 👤 مسار صفحة الملف الشخصي.
+  static const String profile = 'profile';
   //ميار االضافي
   /// ❤️ مسار صفحة المفضلة.
   static const String favorites = 'المفضلة';
 
   /// 🛒 مسار صفحة الطلبات
   static const String orders = 'الطلبات';
+
+  /// 🛠️ مسار صفحة طلب مزود خدمة
+  static const String beProvider = 'be_provider';
 }

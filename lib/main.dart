@@ -15,7 +15,9 @@ import 'package:seeker/features/provider/theme_provider.dart';
 // ViewModels
 import 'package:seeker/features/auth/viewmodel/login_view_model.dart';
 import 'package:seeker/features/intro/viewmodels/welcome_view_model.dart'; // ✅ تمت الإضافة
+
 import 'package:seeker/features/settings/viewmodels/settings_view_model.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/home/viewmodels/category_details_view_model.dart'; // ✅ تمت الإضافة
 
 // Views
 import 'package:seeker/features/auth/views/login_view.dart';
@@ -23,14 +25,25 @@ import 'package:seeker/features/intro/splash_view.dart';
 import 'package:seeker/features/intro/welcome_view.dart';
 import 'package:seeker/features/auth/views/terms_view.dart';
 import 'package:seeker/features/auth/views/verify_email_view.dart';
+
 import 'package:seeker/features/settings/views/settings_view.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/profile/view/profile_view.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/home/views/category_details_view.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/home/models/category_model.dart'; // ✅ تمت الإضافة
 
 // Repositories
 import 'package:seeker/features/auth/repositories/auth_repository.dart';
 import 'package:seeker/features/home/repositories/home_repository.dart';
 import 'package:seeker/features/home/viewmodels/home_view_model.dart';
+// Be Provider Feature
+import 'package:seeker/features/beProvider/repositories/be_provider_repository.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/beProvider/viewmodels/be_provider_view_model.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/beProvider/views/be_provider_view.dart'; // ✅ تمت الإضافة
+// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'dart:io';
+
+import 'package:seeker/l10n/app_localizations.dart';
 
 /// 📂 اسم الملف: main.dart
 /// 📝 الوصف: نقطة انطلاق التطبيق (Entry Point).
@@ -73,6 +86,11 @@ void main() {
           update: (_, apiService, __) => HomeRepository(apiService),
         ),
 
+        // BeProviderRepository يعتمد على ApiService فقط
+        ProxyProvider<ApiService, BeProviderRepository>(
+          update: (_, apiService, __) => BeProviderRepository(apiService),
+        ),
+
         // ----------------------------------------------------------
         // 3️⃣ طبقة إدارة الحالة (ViewModels Layer)
         // ----------------------------------------------------------
@@ -106,6 +124,18 @@ void main() {
         ChangeNotifierProvider<SettingsViewModel>(
           create: (context) => SettingsViewModel(context.read<TokenStorage>()),
         ),
+
+        // Category Details ViewModel - يحتاج HomeRepository
+        ChangeNotifierProvider<CategoryDetailsViewModel>(
+          create: (context) =>
+              CategoryDetailsViewModel(context.read<HomeRepository>()),
+        ),
+
+        // Be Provider ViewModel - يحتاج BeProviderRepository
+        ChangeNotifierProvider<BeProviderViewModel>(
+          create: (context) =>
+              BeProviderViewModel(context.read<BeProviderRepository>()),
+        ),
       ],
       child: const MyApp(),
     ),
@@ -117,25 +147,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // نستخدم Consumer<ThemeProvider> لتحديث التطبيق عند تغيير الثيم
+    // نراقب SettingsViewModel للحصول على اللغة الحالية
+    final settingsViewModel = context.watch<SettingsViewModel>();
+
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, _) {
         return MaterialApp(
           title: 'Seeker App',
-          debugShowCheckedModeBanner: false, // إخفاء شريط Debug
-          // 🌍 إعدادات اللغة (Localization) - التطبيق عربي بالكامل
-          locale: const Locale('ar', 'SA'),
-          supportedLocales: const [Locale('ar', 'SA'), Locale('en', 'US')],
-          localizationsDelegates: const [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
+          debugShowCheckedModeBanner: false,
+
+          // 🌍 إعدادات اللغة (Localization)
+          locale: settingsViewModel.locale,
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
 
           // 🎨 الثيمات (فاتح / داكن)
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
-          themeMode: themeProvider.themeMode, // تبديل الثيم ديناميكياً
+          themeMode: themeProvider.themeMode,
           // 📍 المسارات (Navigation Routes)
           initialRoute: '/',
           routes: {
@@ -148,6 +177,14 @@ class MyApp extends StatelessWidget {
                 VerifyEmailView(), // تفعيل البريد
             AppRoutes.home: (context) => HomeView(title: 'Home'), // الرئيسية
             AppRoutes.settings: (context) => SettingsView(), // الإعدادات
+            AppRoutes.profile: (context) => const ProfileView(), // الملف الشخصي
+            // التعامل مع تمرير البيانات (CategoryModel) عبر المسار
+            AppRoutes.categoryDetails: (context) {
+              final category =
+                  ModalRoute.of(context)!.settings.arguments as CategoryModel;
+              return CategoryDetailsView(category: category);
+            },
+            AppRoutes.beProvider: (context) => const BeProviderView(),
           },
         );
       },

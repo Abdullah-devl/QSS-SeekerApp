@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:seeker/core/routes/app_routes.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
 
 import 'package:seeker/features/provider/theme_provider.dart';
 // تأكد من استدعاء الويجت الخاص بك
 import 'package:seeker/core/widgets/custom_text_field.dart';
-import '../viewmodel/login_view_model.dart';
+import 'package:seeker/features/auth/viewmodel/login_view_model.dart';
+import 'package:seeker/l10n/app_localizations.dart';
+// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// 📂 اسم الملف: login_view.dart
 /// 📝 الوصف: واجهة المستخدم لصفحة تسجيل الدخول.
@@ -60,7 +63,7 @@ class LoginView extends StatelessWidget {
 
                         // 2️⃣ نصوص الترحيب
                         Text(
-                          'مرحباً بعودتك!',
+                          AppLocalizations.of(context)!.welcomeBack,
                           style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
@@ -70,7 +73,7 @@ class LoginView extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'سجل الدخول للمتابعة في QuickServe',
+                          AppLocalizations.of(context)!.loginToContinue,
                           style: TextStyle(
                             fontSize: 16,
                             color: colors.textSub, // لون النص الفرعي
@@ -100,7 +103,10 @@ class LoginView extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               // -- حقل البريد الإلكتروني --
-                              _buildLabel(context, 'البريد الإلكتروني'),
+                              _buildLabel(
+                                context,
+                                AppLocalizations.of(context)!.email,
+                              ),
                               const SizedBox(height: 8),
                               CustomTextField(
                                 labelText:
@@ -121,7 +127,9 @@ class LoginView extends StatelessWidget {
                                   GestureDetector(
                                     onTap: () {}, // لم يتم تفعيله بعد
                                     child: Text(
-                                      'نسيت كلمة المرور؟',
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.forgotPassword,
                                       style: TextStyle(
                                         color: colors.primary,
                                         fontSize: 12,
@@ -130,7 +138,10 @@ class LoginView extends StatelessWidget {
                                     ),
                                   ),
                                   // العنوان (يمين)
-                                  _buildLabel(context, 'كلمة المرور'),
+                                  _buildLabel(
+                                    context,
+                                    AppLocalizations.of(context)!.password,
+                                  ),
                                 ],
                               ),
                               const SizedBox(height: 8),
@@ -183,7 +194,8 @@ class LoginView extends StatelessWidget {
                                           ),
                                           SizedBox(width: 8),
                                           Text(
-                                            'تسجيل الدخول',
+                                            // AppLocalizations.of(context)!.login,
+                                            "Login",
                                             style: TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.bold,
@@ -212,7 +224,7 @@ class LoginView extends StatelessWidget {
                                 horizontal: 16,
                               ),
                               child: Text(
-                                'أو المتابعة باستخدام',
+                                AppLocalizations.of(context)!.orContinueWith,
                                 style: TextStyle(
                                   color: colors.textSub,
                                   fontSize: 12,
@@ -262,10 +274,13 @@ class LoginView extends StatelessWidget {
                             GestureDetector(
                               onTap: () {
                                 // الانتقال لصفحة التسجيل
-                                Navigator.pushNamed(context, '/register');
+                                Navigator.pushNamed(
+                                  context,
+                                  AppRoutes.register,
+                                );
                               },
                               child: Text(
-                                'إنشاء حساب جديد',
+                                AppLocalizations.of(context)!.signUp,
                                 style: TextStyle(
                                   color: colors.primary,
                                   fontWeight: FontWeight.bold,
@@ -274,7 +289,7 @@ class LoginView extends StatelessWidget {
                             ),
                             const SizedBox(width: 5),
                             Text(
-                              'ليس لديك حساب؟',
+                              AppLocalizations.of(context)!.dontHaveAccount,
                               style: TextStyle(color: colors.textSub),
                             ),
                           ],
@@ -294,8 +309,9 @@ class LoginView extends StatelessWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text(
-                                'الدخول كزائر',
+                              // Warning: I made a mistake in previous thought. The Text widget is inside Row.
+                              Text(
+                                AppLocalizations.of(context)!.loginAsGuest,
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,

@@ -1,8 +1,11 @@
+// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/features/intro/viewmodels/welcome_view_model.dart';
 import 'package:seeker/features/provider/theme_provider.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 
 /// 📂 اسم الملف: welcome_view.dart
 /// 📝 الوصف: شاشة الترحيب (Welcome Screen).
@@ -16,6 +19,7 @@ class WelcomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     // الوصول للألوان بناءً على الثيم الحالي
     final colors = context.qsColors;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -100,7 +104,7 @@ class WelcomeView extends StatelessWidget {
               const SizedBox(height: 16),
 
               Text(
-                'خدماتك اليومية، أسرع وأسهل.\nنصلك بمحترفين موثوقين في لحظات.',
+                l10n.welcomeDescription,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
@@ -132,13 +136,13 @@ class WelcomeView extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      Icons.arrow_back, // سهم للخلف لأنه عربي (RTl)
+                      Icons.arrow_back,
                       color: context.qsColors.text,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'تسجيل الدخول',
+                      l10n.login,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -174,7 +178,7 @@ class WelcomeView extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'إنشاء حساب جديد',
+                      l10n.createNewAccount,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -191,7 +195,7 @@ class WelcomeView extends StatelessWidget {
               // 5️⃣ الشروط والأحكام (Terms)
               // ==========================================
               Text(
-                'بتسجيل الدخول، أنت توافق على شروط الخدمة و سياسة الخصوصية',
+                l10n.termsAndConditions,
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 12, color: context.qsColors.textSub),
               ),

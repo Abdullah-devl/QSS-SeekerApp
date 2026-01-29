@@ -31,7 +31,7 @@ class HomeViewModel extends ChangeNotifier {
   String _errorMessage = '';
 
   // بيانات المستخدم والموقع
-  String _userName = 'زائjvykر';
+  String _userName = 'زائر';
   String _role = 'زائر';
   String _currentAddress = 'اليمن التعيس';
   bool _isLocationLoading = false;
@@ -72,9 +72,15 @@ class HomeViewModel extends ChangeNotifier {
     try {
       // 1. جلب بيانات المستخدم المحفوظة محلياً
       final userData = await _tokenStorage.getUserData();
-      if (userData['name'] != null && userData['role'] != null) {
+
+      if (userData != null &&
+          userData['name'] != null &&
+          userData['role'] != null) {
         _userName = userData['name']!;
         _role = userData['role']!;
+      } else {
+        _userName = 'زائر';
+        _role = 'زائر';
       }
 
       // 2. جلب التصنيفات والخدمات من السيرفر بالتوازي لتقليل وقت الانتظار
@@ -82,7 +88,7 @@ class HomeViewModel extends ChangeNotifier {
         _homeRepository.fetchCategories(),
         _homeRepository.fetchPopularServices(),
       ]);
-      print(results);
+      // print(results);
 
       // 3. تحديث القوائم بالبيانات القادمة
       _categories = results[0] as List<CategoryModel>;

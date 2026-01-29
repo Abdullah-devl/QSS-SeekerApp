@@ -8,6 +8,8 @@ class UserModel {
   final String email; // البريد الإلكتروني
   final String? token; // التوكن الخاص بالمصادقة (يأتي عند تسجيل الدخول/التسجيل)
   final String? role; // نوع المستخدم (مثلاً: client أو provider)
+  final String? phone; // رقم الهاتف
+  final String? address; // العنوان
 
   /// 🏗️ البناء (Constructor)
   UserModel({
@@ -16,6 +18,8 @@ class UserModel {
     required this.email,
     this.token,
     this.role,
+    this.phone,
+    this.address,
   });
 
   /// 🔄 تحويل الـ JSON إلى كائن UserModel.
@@ -26,6 +30,8 @@ class UserModel {
       name: json['user']['name'], // استخراج الاسم
       email: json['user']['email'], // استخراج البريد
       role: json['user']['role'], // استخراج الدور
+      phone: json['user']['phone'], // استخراج الهاتف
+      address: json['user']['address'], // استخراج العنوان
       token: json['token'], // استخراج التوكن (قد يكون خارج كائن user)
     );
   }

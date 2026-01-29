@@ -15,14 +15,20 @@ class SettingsViewModel extends ChangeNotifier {
   // ---------------------------------------------------------------------------
 
   bool _notificationsEnabled = true;
+  Locale _locale = const Locale('ar'); // اللغة الافتراضية
 
   String _userName = 'زائر';
   String _userEmail = 'visitor@example.com';
+  String _userPhone = '';
+  String _userAddress = '';
 
   bool get notificationsEnabled => _notificationsEnabled;
+  Locale get locale => _locale;
 
   String get userName => _userName;
   String get userEmail => _userEmail;
+  String get userPhone => _userPhone;
+  String get userAddress => _userAddress;
 
   // ---------------------------------------------------------------------------
   // ⚙️ العمليات (Actions)
@@ -33,7 +39,24 @@ class SettingsViewModel extends ChangeNotifier {
     final data = await _tokenStorage.getUserData();
     _userName = data['name'] ?? 'زائر';
     _userEmail = data['email'] ?? 'visitor@example.com';
+    _userPhone = data['phone'] ?? '';
+    _userAddress = data['address'] ?? '';
+
+    // تحميل اللغة المحفوظة
+    final savedLang = await _tokenStorage.getLanguage();
+    if (savedLang != null) {
+      _locale = Locale(savedLang);
+    }
+
     notifyListeners();
+  }
+
+  /// 🌍 تغيير اللغة
+  Future<void> changeLanguage(Locale locale) async {
+    if (_locale == locale) return;
+    _locale = locale;
+    notifyListeners(); // ⚡ تحديث فوري للواجهة
+    await _tokenStorage.saveLanguage(locale.languageCode);
   }
 
   /// 🔔 تبديل تفعيل الإشعارات

@@ -30,7 +30,7 @@ class ApiService {
 
           /// 📋 الهيدرز (Headers) الافتراضية لكل الطلبات.
           headers: {
-            'Content-Type': 'application/json',
+            // 'Content-Type': 'application/json',
             'Accept': 'application/json',
           },
         ),
@@ -80,7 +80,14 @@ class ApiService {
               '⚠️ Unauthorized! Token might be expired.',
               name: 'ApiService',
             );
-            // 💡 ملاحظة: يمكن هنا إضافة منطق لتوجيه المستخدم لشاشة تسجيل الدخول تلقائياً.
+          }
+          // ⚠️ طباعة تفاصيل أخطاء التحقق (422 Validation Error)
+          if (e.response?.statusCode == 422) {
+            developer.log(
+              '⚠️ Validation Error: ${e.response?.data}',
+              name: 'ApiService',
+              error: e.response?.data,
+            );
           }
           return handler.next(
             e,
@@ -115,9 +122,17 @@ class ApiService {
   /// 🔹 دالة POST: لإرسال بيانات جديدة إلى السيرفر (مثل تسجيل الدخول).
   /// [endpoint]: المسار الفرعي.
   /// [data]: البيانات المراد إرسالها (عادة تكون Map أو Json).
-  Future<Response> post(String endpoint, {dynamic data}) async {
+  Future<Response> post(
+    String endpoint, {
+    dynamic data,
+    Options? options,
+  }) async {
     try {
-      final response = await _dio.post(endpoint, data: data);
+      final response = await _dio.post(
+        endpoint,
+        data: data,
+        options: options, //هاذا من اجل الصور
+      );
       return response;
     } catch (e) {
       rethrow;

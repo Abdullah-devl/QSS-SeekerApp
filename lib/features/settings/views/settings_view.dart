@@ -7,6 +7,8 @@ import 'package:seeker/features/auth/repositories/auth_repository.dart';
 import 'package:seeker/features/provider/theme_provider.dart';
 import 'package:seeker/features/settings/viewmodels/settings_view_model.dart';
 import 'package:seeker/features/home/viewmodels/home_view_model.dart'; // ✅ نحتاج HomeViewModel لمعرفة الدور
+// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 
 /// 📂 اسم الملف: settings_view.dart
 /// 📝 الوصف: شاشة الإعدادات.
@@ -67,9 +69,9 @@ class _SettingsViewState extends State<SettingsView> {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: const Text(
-          'الإعدادات',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          AppLocalizations.of(context)!.settings,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: colors.primary,
@@ -142,9 +144,11 @@ class _SettingsViewState extends State<SettingsView> {
                                       color: const Color(0xFFE0F2F1),
                                       borderRadius: BorderRadius.circular(20),
                                     ),
-                                    child: const Text(
-                                      'عميل موثوق',
-                                      style: TextStyle(
+                                    child: Text(
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.trustedCustomer,
+                                      style: const TextStyle(
                                         color: Color(0xFF00796B),
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
@@ -201,23 +205,28 @@ class _SettingsViewState extends State<SettingsView> {
             // 2. إعدادات الحساب (تختفي للزائر)
             // =================================================================
             if (userRole != 'زائر') ...[
-              _buildSectionTitle('الحساب', colors.textSub),
+              _buildSectionTitle(
+                AppLocalizations.of(context)!.account,
+                colors.textSub,
+              ),
               _buildSettingsContainer(context, [
                 _buildSettingsTile(
                   icon: Icons.person_outline,
-                  title: 'تعديل الملف الشخصي',
-                  onTap: () {},
+                  title: AppLocalizations.of(context)!.editProfile,
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutes.profile);
+                  },
                 ),
                 _buildDivider(colors.textSub),
                 _buildSettingsTile(
                   icon: Icons.lock_outline,
-                  title: 'تغيير كلمة المرور',
+                  title: AppLocalizations.of(context)!.changePassword,
                   onTap: () {},
                 ),
                 _buildDivider(colors.textSub),
                 _buildSettingsTile(
                   icon: Icons.account_balance_wallet_outlined,
-                  title: 'طرق الدفع',
+                  title: AppLocalizations.of(context)!.paymentMethods,
                   onTap: () {},
                 ),
               ]),
@@ -227,14 +236,17 @@ class _SettingsViewState extends State<SettingsView> {
             // =================================================================
             // 3. إعدادات التطبيق (متاحة للجميع)
             // =================================================================
-            _buildSectionTitle('التطبيق', colors.textSub),
+            _buildSectionTitle(
+              AppLocalizations.of(context)!.appSettings,
+              colors.textSub,
+            ),
             _buildSettingsContainer(context, [
               Selector<SettingsViewModel, bool>(
                 selector: (context, vm) => vm.notificationsEnabled,
                 builder: (context, notificationsEnabled, child) {
                   return _buildSwitchTile(
                     icon: Icons.notifications_none,
-                    title: 'الإشعارات',
+                    title: AppLocalizations.of(context)!.notifications,
                     value: notificationsEnabled,
                     onChanged: (val) => context
                         .read<SettingsViewModel>()
@@ -245,16 +257,94 @@ class _SettingsViewState extends State<SettingsView> {
               _buildDivider(colors.textSub),
               _buildSwitchTile(
                 icon: isDark ? Icons.dark_mode : Icons.light_mode,
-                title: 'الوضع الداكن',
+                title: AppLocalizations.of(context)!.darkMode,
                 value: isDark,
                 onChanged: (_) => context.read<ThemeProvider>().toggleTheme(),
               ),
               _buildDivider(colors.textSub),
               _buildSettingsTile(
                 icon: Icons.language,
-                title: 'اللغة',
-                trailingText: 'العربية',
-                onTap: () {},
+                title: AppLocalizations.of(context)!.language,
+                trailingText:
+                    context
+                            .select<SettingsViewModel, Locale>(
+                              (vm) => vm.locale,
+                            )
+                            .languageCode ==
+                        'ar'
+                    ? 'العربية'
+                    : 'English',
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
+                    ),
+                    builder: (context) {
+                      return Container(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.selectLanguage,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            ListTile(
+                              leading: const Text(
+                                '🇸🇦',
+                                style: TextStyle(fontSize: 24),
+                              ),
+                              title: const Text('العربية'),
+                              trailing:
+                                  context
+                                          .read<SettingsViewModel>()
+                                          .locale
+                                          .languageCode ==
+                                      'ar'
+                                  ? const Icon(Icons.check, color: Colors.green)
+                                  : null,
+                              onTap: () {
+                                context
+                                    .read<SettingsViewModel>()
+                                    .changeLanguage(const Locale('ar'));
+                                Navigator.pop(context);
+                              },
+                            ),
+                            const Divider(),
+                            ListTile(
+                              leading: const Text(
+                                '🇺🇸',
+                                style: TextStyle(fontSize: 24),
+                              ),
+                              title: const Text('English'),
+                              trailing:
+                                  context
+                                          .read<SettingsViewModel>()
+                                          .locale
+                                          .languageCode ==
+                                      'en'
+                                  ? const Icon(Icons.check, color: Colors.green)
+                                  : null,
+                              onTap: () {
+                                context
+                                    .read<SettingsViewModel>()
+                                    .changeLanguage(const Locale('en'));
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ]),
             const SizedBox(height: 24),
@@ -262,17 +352,20 @@ class _SettingsViewState extends State<SettingsView> {
             // =================================================================
             // 4. الدعم والمساعدة
             // =================================================================
-            _buildSectionTitle('الدعم والمساعدة', colors.textSub),
+            _buildSectionTitle(
+              AppLocalizations.of(context)!.support,
+              colors.textSub,
+            ),
             _buildSettingsContainer(context, [
               _buildSettingsTile(
                 icon: Icons.help_outline,
-                title: 'مركز المساعدة',
+                title: AppLocalizations.of(context)!.helpCenter,
                 onTap: () {},
               ),
               _buildDivider(colors.textSub),
               _buildSettingsTile(
                 icon: Icons.privacy_tip_outlined,
-                title: 'سياسة الخصوصية',
+                title: AppLocalizations.of(context)!.privacyPolicy,
                 onTap: () {},
               ),
             ]),
@@ -305,7 +398,9 @@ class _SettingsViewState extends State<SettingsView> {
                   ),
                 ),
                 child: Text(
-                  userRole == 'زائر' ? 'تسجيل الدخول' : 'تسجيل الخروج',
+                  userRole == 'زائر'
+                      ? AppLocalizations.of(context)!.login
+                      : AppLocalizations.of(context)!.logout,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -316,7 +411,7 @@ class _SettingsViewState extends State<SettingsView> {
             const SizedBox(height: 20),
             Center(
               child: Text(
-                'اعتنم الفرصة وكن من مستخمي التطبيق لاتترد اطلب خدمتك الان مابتحصل كمانا دقه واتقان وامن وامان',
+                AppLocalizations.of(context)!.settingsFooter,
                 style: TextStyle(color: colors.textSub, fontSize: 12),
               ),
             ),
@@ -340,13 +435,13 @@ class _SettingsViewState extends State<SettingsView> {
         children: [
           Icon(Icons.account_circle, size: 50, color: colors.primary),
           const SizedBox(height: 10),
-          const Text(
-            'أهلاً بك عزيزي الزائر',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Text(
+            AppLocalizations.of(context)!.welcomeGuest,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 5),
           Text(
-            'سجل دخولك للاستمتاع بكل مايوفره التطبيق',
+            AppLocalizations.of(context)!.guestLoginDesc,
             textAlign: TextAlign.center,
             style: TextStyle(color: colors.textSub, fontSize: 14),
           ),
@@ -355,7 +450,6 @@ class _SettingsViewState extends State<SettingsView> {
     );
   }
 
-  // ... (بقية الدوال المساعدة كما هي في كودك الأصلي)
   Widget _buildSectionTitle(String title, Color color) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10, right: 4),

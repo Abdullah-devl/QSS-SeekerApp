@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/routes/app_routes.dart';
+import 'package:seeker/core/storage/token_storage.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/core/theme/qs_colors.dart';
 import 'package:seeker/features/home/viewmodels/home_view_model.dart';
 import 'package:seeker/features/provider/theme_provider.dart';
 import 'package:seeker/features/auth/repositories/auth_repository.dart';
+// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 
 /// 📂 اسم الملف: home_drawer.dart
 /// 📝 الوصف: القائمة الجانبية (Drawer).
@@ -32,6 +35,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
           AppRoutes.login,
           (route) => false,
         );
+        TokenStorage().deleteToken();
       }
     } catch (e) {
       if (mounted) {
@@ -110,7 +114,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'أهلا، $userName',
+                              '${AppLocalizations.of(context)!.hello}$userName',
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -143,17 +147,23 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   child: ListView(
                     padding: EdgeInsets.zero,
                     children: [
-                      _buildNavItem(colors, Icons.home, 'الرئيسية', true, () {
-                        Navigator.pop(context);
-                        widget.onLinkTap?.call(0);
-                      }),
+                      _buildNavItem(
+                        colors,
+                        Icons.home,
+                        AppLocalizations.of(context)!.home,
+                        true,
+                        () {
+                          Navigator.pop(context);
+                          widget.onLinkTap?.call(0);
+                        },
+                      ),
 
                       // 🛡️ شرط الصلاحيات: عرض "طلباتي" و "المفضلة" فقط إذا لم يكن زائر
                       if (userRole != 'زائر') ...[
                         _buildNavItem(
                           colors,
                           Icons.archive,
-                          'طلباتي',
+                          AppLocalizations.of(context)!.myOrders,
                           false,
                           () {
                             Navigator.pop(context);
@@ -165,7 +175,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                         _buildNavItem(
                           colors,
                           Icons.favorite_border,
-                          'المفضلة',
+                          AppLocalizations.of(context)!.favorites,
                           false,
                           () {
                             Navigator.pop(context);
@@ -175,7 +185,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                         _buildNavItem(
                           colors,
                           Icons.notifications,
-                          'الإشعارات',
+                          AppLocalizations.of(context)!.notifications,
                           false,
                           () {},
                         ),
@@ -184,7 +194,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       _buildNavItem(
                         colors,
                         Icons.settings,
-                        'الإعدادات',
+                        AppLocalizations.of(context)!.settings,
                         true,
                         () {
                           Navigator.pop(context);
@@ -195,7 +205,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       const SizedBox(height: 20),
 
                       // 🛡️ شرط الصلاحيات: كارد الترويج يظهر فقط للأعضاء المسجلين
-                      if (userRole == 'seeker')
+                      // if (userRole == 'seeker')
+                      //   _buildPromoCard(context, colors),
+                      if (userRole != 'provider' && userRole == 'seeker')
                         _buildPromoCard(context, colors),
                     ],
                   ),
@@ -219,7 +231,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                               Icon(Icons.login, color: colors.text),
                               const SizedBox(width: 8),
                               Text(
-                                'تسجيل الدخول',
+                                AppLocalizations.of(context)!.login,
                                 style: TextStyle(
                                   color: colors.text, // لون مختلف للتمييز
                                   fontWeight: FontWeight.bold,
@@ -232,12 +244,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       : // إذا لم يكن زائراً، نعرض زر تسجيل الخروج الأصلي
                         InkWell(
                           onTap: _logout,
-                          child: const Row(
+                          child: Row(
                             children: [
                               Icon(Icons.logout, color: Colors.red),
                               const SizedBox(width: 8),
                               Text(
-                                'تسجيل الخروج',
+                                AppLocalizations.of(context)!.logout,
                                 style: TextStyle(
                                   color: Colors.red,
                                   fontWeight: FontWeight.bold,
@@ -279,8 +291,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'كن مزود خدمة',
+              Text(
+                AppLocalizations.of(context)!.beProvider,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               Container(
@@ -299,14 +311,17 @@ class _HomeDrawerState extends State<HomeDrawer> {
           ),
           const SizedBox(height: 8),
           Text(
-            'هل تريد تقديم خدماتك والربح معنا؟ انضم إلينا وكن مزود خدمة.',
+            AppLocalizations.of(context)!.beProviderDesc,
             style: TextStyle(fontSize: 12, color: colors.text),
           ),
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pop(context); // إغلاق القائمة الجانبية
+                Navigator.pushNamed(context, AppRoutes.beProvider);
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: colors.primary,
                 foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -314,7 +329,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('سجل الآن'),
+              child: Text(AppLocalizations.of(context)!.registerNow),
             ),
           ),
         ],

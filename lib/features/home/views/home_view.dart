@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
+import 'package:seeker/core/routes/app_routes.dart';
 import 'package:seeker/core/theme/qs_colors.dart'; // Import QSColors definition
 import 'package:seeker/features/home/models/category_model.dart';
 import 'package:seeker/features/home/models/service_model.dart';
@@ -9,6 +10,8 @@ import 'package:seeker/features/home/views/home_drawer.dart';
 import 'package:seeker/features/home/widgets/custom_nav_bar.dart'; // Import CustomNavBar
 import 'package:seeker/features/settings/views/settings_view.dart'; // Import SettingsView
 import 'package:seeker/core/network/api_endpoints.dart';
+// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 
 /// 📂 اسم الملف: home_view.dart
 /// 📝 الوصف: واجهة الصفحة الرئيسية (Home Screen).
@@ -41,10 +44,13 @@ class _HomeViewState extends State<HomeView> {
     // الوصول للألوان بناءً على الثيم الحالي (فاتح/داكن)
     final colors = context.qsColors;
 
-    // نستخدم Selector للاستماع فقط لتغييرات الـ Index لتقليل إعادة البناء
-    return Selector<HomeViewModel, int>(
-      selector: (context, viewModel) => viewModel.currentIndex,
-      builder: (context, currentIndex, child) {
+    // ✅ تم استبدال Selector بـ Consumer
+    // السبب: Selector كان يستمع فقط لتغير currentIndex
+    // وهذا يمنع إعادة بناء الصفحة عند تحديث البيانات (التصنيفات / الخدمات)
+    return Consumer<HomeViewModel>(
+      builder: (context, viewModel, child) {
+        final currentIndex = viewModel.currentIndex;
+
         // تحديد الشاشة المعروضة بناءً على المؤشر
         Widget currentScreen;
         switch (currentIndex) {
@@ -52,13 +58,22 @@ class _HomeViewState extends State<HomeView> {
             currentScreen = _buildHomeContent(colors);
             break;
           case 1:
-            currentScreen = _buildPlaceholderPage(context, 'طلباتي');
+            currentScreen = _buildPlaceholderPage(
+              context,
+              AppLocalizations.of(context)!.myOrders,
+            );
             break;
           case 2:
-            currentScreen = _buildPlaceholderPage(context, 'البحث');
+            currentScreen = _buildPlaceholderPage(
+              context,
+              AppLocalizations.of(context)!.search,
+            );
             break;
           case 3:
-            currentScreen = _buildPlaceholderPage(context, 'المفضلة');
+            currentScreen = _buildPlaceholderPage(
+              context,
+              AppLocalizations.of(context)!.favorites,
+            );
             break;
           case 4:
             currentScreen = SettingsView(
@@ -131,7 +146,10 @@ class _HomeViewState extends State<HomeView> {
               // ===========================================
               // 4️⃣ قسم التصنيفات (Categories)
               // ===========================================
-              _buildSectionTitle('التصنيفات', onSeeAll: () {}),
+              _buildSectionTitle(
+                AppLocalizations.of(context)!.categories,
+                onSeeAll: () {},
+              ),
               const SizedBox(height: 16),
               _buildCategoriesList(viewModel.categories),
               const SizedBox(height: 24),
@@ -139,7 +157,7 @@ class _HomeViewState extends State<HomeView> {
               // ===========================================
               // 5️⃣ قسم الأكثر طلباً (Popular Services)
               // ===========================================
-              _buildSectionTitle('الأكثر طلباً'),
+              _buildSectionTitle(AppLocalizations.of(context)!.mostPopular),
               const SizedBox(height: 16),
               _buildPopularServicesList(viewModel.popularServices),
 
@@ -170,7 +188,7 @@ class _HomeViewState extends State<HomeView> {
       ),
       body: Center(
         child: Text(
-          '$title - قريباً هلا عبدالله',
+          '$title - ${AppLocalizations.of(context)!.soon}',
           style: TextStyle(fontSize: 18, color: context.qsColors.textSub),
         ),
       ),
@@ -233,10 +251,10 @@ class _HomeViewState extends State<HomeView> {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: const Text(
-                        'تنبيه',
+                      title: Text(
+                        AppLocalizations.of(context)!.alert,
                         textAlign: TextAlign.right,
-                        style: TextStyle(fontFamily: 'Cairo'),
+                        style: const TextStyle(fontFamily: 'Cairo'),
                       ),
                       content: Text(
                         error,
@@ -246,9 +264,9 @@ class _HomeViewState extends State<HomeView> {
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text(
-                            'حسناً',
-                            style: TextStyle(fontFamily: 'Cairo'),
+                          child: Text(
+                            AppLocalizations.of(context)!.ok,
+                            style: const TextStyle(fontFamily: 'Cairo'),
                           ),
                         ),
                       ],
@@ -302,7 +320,7 @@ class _HomeViewState extends State<HomeView> {
                       fontFamily: 'Cairo', // تأكيد استخدام خط Cairo
                     ),
                     children: [
-                      const TextSpan(text: 'مرحباً، '),
+                      TextSpan(text: AppLocalizations.of(context)!.welcome),
                       TextSpan(
                         text: userName, // ✅ الاسم ديناميكي
                         style: TextStyle(
@@ -316,7 +334,7 @@ class _HomeViewState extends State<HomeView> {
               ],
             ),
             Text(
-              'أي خدمة تبحث عنها اليوم؟',
+              AppLocalizations.of(context)!.lookingForService,
               style: TextStyle(color: context.qsColors.textSub, fontSize: 14),
             ),
           ],
@@ -344,7 +362,7 @@ class _HomeViewState extends State<HomeView> {
       child: TextField(
         textAlign: TextAlign.right,
         decoration: InputDecoration(
-          hintText: '... ابحث عن سباك، كهربائي، تنظيف',
+          hintText: AppLocalizations.of(context)!.searchHint,
           hintStyle: TextStyle(
             color: context.qsColors.text.withValues(alpha: 5),
             fontSize: 14,
@@ -417,22 +435,22 @@ class _HomeViewState extends State<HomeView> {
                     color: const Color(0xFF10B981), // أخضر
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Text(
-                    'عرض خاص',
+                  child: Text(
+                    AppLocalizations.of(context)!.specialOffer,
                     style: TextStyle(color: Colors.white, fontSize: 12),
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'خصم 30% على التنظيف',
+                Text(
+                  AppLocalizations.of(context)!.cleaningDiscount,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const Text(
-                  'احصل على منزلك لامعاً بأسعار لا تقاوم',
+                Text(
+                  AppLocalizations.of(context)!.getShinier,
                   style: TextStyle(color: Colors.white70, fontSize: 12),
                 ),
                 const SizedBox(height: 12),
@@ -449,7 +467,7 @@ class _HomeViewState extends State<HomeView> {
                       vertical: 8,
                     ),
                   ),
-                  child: const Text('احجز الآن'),
+                  child: Text(AppLocalizations.of(context)!.bookNow),
                 ),
               ],
             ),
@@ -467,8 +485,8 @@ class _HomeViewState extends State<HomeView> {
         if (onSeeAll != null)
           GestureDetector(
             onTap: onSeeAll,
-            child: const Text(
-              'عرض الكل',
+            child: Text(
+              AppLocalizations.of(context)!.seeAll,
               style: TextStyle(color: Color(0xFF3B82F6), fontSize: 14),
             ),
           ),
@@ -502,24 +520,33 @@ class _HomeViewState extends State<HomeView> {
           ];
           final bgColor = colors[index % colors.length];
 
-          return Column(
-            children: [
-              Container(
-                width: 70,
-                height: 70,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: bgColor,
-                  borderRadius: BorderRadius.circular(20),
+          return GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                AppRoutes.categoryDetails,
+                arguments: cat,
+              );
+            },
+            child: Column(
+              children: [
+                Container(
+                  width: 70,
+                  height: 70,
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: bgColor,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: _buildCategoryImage(cat),
                 ),
-                child: _buildCategoryImage(cat),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                cat.name,
-                style: const TextStyle(fontWeight: FontWeight.w500),
-              ),
-            ],
+                const SizedBox(height: 8),
+                Text(
+                  cat.name,
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
           );
         },
       ),
@@ -644,7 +671,7 @@ class _HomeViewState extends State<HomeView> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            'حجز',
+                            AppLocalizations.of(context)!.book,
                             style: TextStyle(
                               color: context.qsColors.primary,
                               fontWeight: FontWeight.bold,
@@ -668,12 +695,12 @@ class _HomeViewState extends State<HomeView> {
                                   fontSize: 18,
                                 ),
                               ),
-                              const TextSpan(
-                                text: 'ر.س',
+                              TextSpan(
+                                text: AppLocalizations.of(context)!.sar,
                                 style: TextStyle(fontSize: 12),
                               ),
-                              const TextSpan(
-                                text: ' / ساعة',
+                              TextSpan(
+                                text: AppLocalizations.of(context)!.perHour,
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontSize: 10,

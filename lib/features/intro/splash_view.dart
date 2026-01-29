@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:seeker/core/routes/app_routes.dart';
 import 'package:seeker/core/storage/token_storage.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 
 /// 📂 اسم الملف: splash_view.dart
 /// 📝 الوصف: شاشة البداية (Splash Screen).
@@ -84,7 +85,7 @@ class _SplashViewState extends State<SplashView> {
 
             // اسم التطبيق
             Text(
-              'QuickServe',
+              AppLocalizations.of(context)!.appTitle,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,

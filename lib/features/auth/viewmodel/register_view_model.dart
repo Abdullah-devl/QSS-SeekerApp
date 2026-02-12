@@ -3,6 +3,7 @@
 /// يدير عمليات التحقق من البيانات، الموافقة على الشروط، والتواصل مع الـ Repository لإنشاء الحساب.
 
 import 'package:flutter/material.dart';
+import 'package:seeker/core/routes/app_routes.dart';
 import '../repositories/auth_repository.dart';
 
 class RegisterViewModel extends ChangeNotifier {
@@ -14,7 +15,8 @@ class RegisterViewModel extends ChangeNotifier {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   // ⏳ حالة التحميل
   bool _isLoading = false;
@@ -84,14 +86,18 @@ class RegisterViewModel extends ChangeNotifier {
 
       // 6. في حال النجاح، التوجيه لصفحة التحقق من الإيميل (OTP)
       if (context.mounted) {
-        Navigator.pushReplacementNamed(context, '/verify_email');
+        Navigator.pushReplacementNamed(
+          context,
+          AppRoutes.verifyEmail,
+          arguments: emailController.text.trim(),
+        );
       }
     } catch (e) {
       // 7. معالجة الأخطاء وعرضها
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
+            content: Text(e.toString().replaceAll('Exception: ', '$e')),
             backgroundColor: Colors.red,
           ),
         );

@@ -89,6 +89,14 @@ class ApiService {
               error: e.response?.data,
             );
           }
+          // ⚠️ طباعة تفاصيل أخطاء الصلاحيات (403 Forbidden)
+          if (e.response?.statusCode == 403) {
+            developer.log(
+              '⛔ Forbidden: ${e.response?.data}',
+              name: 'ApiService',
+              error: e.response?.data,
+            );
+          }
           return handler.next(
             e,
           ); // ⚠️ تمرير الخطأ ليتم معالجته في المكان المناسب

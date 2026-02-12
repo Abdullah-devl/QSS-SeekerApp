@@ -29,14 +29,25 @@ class _PickLocationViewState extends State<PickLocationView> {
 
   // موقع افتراضي (الرياض) في حال لم نتمكن من جلب الموقع الحالي فوراً
   static const CameraPosition _kDefaultLocation = CameraPosition(
-    target: LatLng(24.7136, 46.6753),
-    zoom: 14.4746,
+    target: LatLng(14.5425, 49.1242), // المكلا
+    zoom: 14,
   );
 
   @override
   void initState() {
     super.initState();
-    _determinePosition();
+    // _determinePosition();
+  }
+
+  bool _initialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      _initialized = true;
+      _determinePosition(); // ✅ context صار جاهز
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -96,7 +107,7 @@ class _PickLocationViewState extends State<PickLocationView> {
         _isLoading = false;
         _isAddressing = false;
         // نستخدم الموقع الافتراضي
-        _currentPosition = _kDefaultLocation.target;
+        // _currentPosition = _kDefaultLocation.target;
       });
       _getAddressFromLatLng(_currentPosition!);
     }

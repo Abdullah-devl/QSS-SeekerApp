@@ -10,6 +10,7 @@ class ApiEndpoints {
   /// يتم استخدامه كأساس لجميع الروابط الأخرى.
   // static String get domain => "http://10.0.2.2:8000";
   static String get domain => "http://127.0.0.1:8000";
+  // static String get domain => "http://192.168.43.245:8000";
   // static String get domain => "http://localhost:8000/api";
 
   /// 🗄️ رابط التخزين (Storage).
@@ -36,6 +37,13 @@ class ApiEndpoints {
 
   /// 🚪 رابط تسجيل الخروج.
   static String get logout => "$baseUrl/logout";
+
+  /// ✅ رابط تفعيل البريد الإلكتروني (OTP).
+  static String get verifyEmail => "$baseUrl/resend-verification-code";
+
+  /// 🔄 رابط إعادة إرسال كود التفعيل.
+  static String get resendVerificationCode =>
+      "$baseUrl/resend-verification-code";
 
   // ===========================================================================
   // 🏠 روابط الصفحة الرئيسية (Home Endpoints)

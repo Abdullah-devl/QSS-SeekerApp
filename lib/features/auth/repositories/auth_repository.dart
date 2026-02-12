@@ -16,6 +16,88 @@ class AuthRepository {
   AuthRepository(this._apiService, this._tokenStorage);
 
   // ===========================================================================
+  // ✅ تفعيل البريد الإلكتروني (Verify Email)
+  // ===========================================================================
+
+  /// يقوم بإرسال كود التفعيل (OTP) والبريد الإلكتروني للسيرفر.
+  Future<void> verifyEmail(String email, String otp) async {
+    try {
+      final response = await _apiService.post(
+        ApiEndpoints.verifyEmail,
+        data: {'email': email, 'code': otp},
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception(
+          'فشل تفعيل البريد الإلكتروني: ${response.statusMessage}',
+        );
+      }
+    } catch (e) {
+      if (e is DioException) {
+        if (e.response?.statusCode == 422) {
+          final data = e.response?.data;
+          String errorMessage = data['message'] ?? 'بيانات غير صالحة';
+
+          if (data['errors'] != null && data['errors'] is Map) {
+            final errorsMap = data['errors'] as Map<String, dynamic>;
+            final messages = <String>[];
+            errorsMap.forEach((key, value) {
+              if (value is List) {
+                messages.addAll(value.map((v) => v.toString()));
+              } else {
+                messages.add(value.toString());
+              }
+            });
+            if (messages.isNotEmpty) {
+              errorMessage = messages.join('\n');
+            }
+          }
+          throw Exception(errorMessage);
+        }
+      }
+      rethrow;
+    }
+  }
+
+  /// 🔄 إعادة إرسال كود التفعيل (Resend Verification Code)
+  Future<void> resendVerificationCode(String email) async {
+    try {
+      final response = await _apiService.post(
+        ApiEndpoints.resendVerificationCode,
+        data: {'email': email},
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('فشل إعادة إرسال الكود: ${response.statusMessage}');
+      }
+    } catch (e) {
+      if (e is DioException) {
+        if (e.response?.statusCode == 422) {
+          final data = e.response?.data;
+          String errorMessage = data['message'] ?? 'بيانات غير صالحة';
+
+          if (data['errors'] != null && data['errors'] is Map) {
+            final errorsMap = data['errors'] as Map<String, dynamic>;
+            final messages = <String>[];
+            errorsMap.forEach((key, value) {
+              if (value is List) {
+                messages.addAll(value.map((v) => v.toString()));
+              } else {
+                messages.add(value.toString());
+              }
+            });
+            if (messages.isNotEmpty) {
+              errorMessage = messages.join('\n');
+            }
+          }
+          throw Exception(errorMessage);
+        }
+      }
+      rethrow;
+    }
+  }
+
+  // ===========================================================================
   // 🔐 تسجيل الدخول (Login)
   // ===========================================================================
 
@@ -89,63 +171,87 @@ class AuthRepository {
   // 📝 إنشاء حساب جديد (Register)
   // ===========================================================================
 
-  /// يقوم بإنشاء حساب جديد للمستخدم.
-  Future<UserModel> register({
+  // /// يقوم بإنشاء حساب جديد للمستخدم.
+  // Future<UserModel> register({
+  //   required String name,
+  //   required String email,
+  //   required String password,
+  //   required String passwordConfirmation,
+  //   required bool isAgreed,
+  // }) async {
+  //   try {
+  //     final response = await _apiService.post(
+  //       ApiEndpoints.register,
+  //       data: {
+  //         'name': name,
+  //         'email': email,
+  //         'password': password,
+  //         'password_confirmation': passwordConfirmation,
+  //         'seeker_policy': isAgreed ? 1 : 0, // إرسال 1 للموافقة على الشروط
+  //       },
+  //     );
+
+  //     if (response.statusCode == 200 || response.statusCode == 201) {
+  //       try {
+  //         final user = UserModel.fromJson(response.data);
+  //         return user;
+  //       } catch (_) {
+  //         // حالة خاصة: إذا نجح التسجيل ولكن الرد لا يحتوي على بيانات المستخدم الكاملة
+  //         return UserModel(id: 0, name: '', email: email, role: 'client');
+  //       }
+  //     } else {
+  //       throw Exception('فشل إنشاء الحساب: ${response.statusMessage}');
+  //     }
+  //   } catch (e) {
+  //     // نفس منطق معالجة الأخطاء في تسجيل الدخول
+  //     if (e is DioException) {
+  //       if (e.response?.statusCode == 422) {
+  //         final data = e.response?.data;
+  //         String errorMessage = data['message'] ?? 'بيانات غير صالحة';
+
+  //         if (data['errors'] != null && data['errors'] is Map) {
+  //           final errorsMap = data['errors'] as Map<String, dynamic>;
+  //           final messages = <String>[];
+  //           errorsMap.forEach((key, value) {
+  //             if (value is List) {
+  //               messages.addAll(value.map((v) => v.toString()));
+  //             } else {
+  //               messages.add(value.toString());
+  //             }
+  //           });
+  //           if (messages.isNotEmpty) {
+  //             errorMessage = messages.join('\n');
+  //           }
+  //         }
+  //         throw Exception(errorMessage);
+  //       }
+  //     }
+  //     rethrow;
+  //   }
+  // }
+  Future<void> register({
     required String name,
     required String email,
     required String password,
     required String passwordConfirmation,
     required bool isAgreed,
   }) async {
-    try {
-      final response = await _apiService.post(
-        ApiEndpoints.register,
-        data: {
-          'name': name,
-          'email': email,
-          'password': password,
-          'password_confirmation': passwordConfirmation,
-          'seeker_policy': isAgreed ? 1 : 0, // إرسال 1 للموافقة على الشروط
-        },
-      );
+    final response = await _apiService.post(
+      ApiEndpoints.register,
+      data: {
+        'name': name,
+        'email': email,
+        'password': password,
+        'password_confirmation': passwordConfirmation,
+        'seeker_policy': isAgreed ? 1 : 0,
+      },
+    );
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        try {
-          final user = UserModel.fromJson(response.data);
-          return user;
-        } catch (_) {
-          // حالة خاصة: إذا نجح التسجيل ولكن الرد لا يحتوي على بيانات المستخدم الكاملة
-          return UserModel(id: 0, name: '', email: email, role: 'client');
-        }
-      } else {
-        throw Exception('فشل إنشاء الحساب: ${response.statusMessage}');
-      }
-    } catch (e) {
-      // نفس منطق معالجة الأخطاء في تسجيل الدخول
-      if (e is DioException) {
-        if (e.response?.statusCode == 422) {
-          final data = e.response?.data;
-          String errorMessage = data['message'] ?? 'بيانات غير صالحة';
-
-          if (data['errors'] != null && data['errors'] is Map) {
-            final errorsMap = data['errors'] as Map<String, dynamic>;
-            final messages = <String>[];
-            errorsMap.forEach((key, value) {
-              if (value is List) {
-                messages.addAll(value.map((v) => v.toString()));
-              } else {
-                messages.add(value.toString());
-              }
-            });
-            if (messages.isNotEmpty) {
-              errorMessage = messages.join('\n');
-            }
-          }
-          throw Exception(errorMessage);
-        }
-      }
-      rethrow;
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return;
     }
+
+    throw Exception('فشل إنشاء الحساب');
   }
 
   // ===========================================================================

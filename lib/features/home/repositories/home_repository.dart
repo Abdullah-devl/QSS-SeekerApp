@@ -1,3 +1,43 @@
+// import 'dart:developer';
+
+// import 'package:connectivity_plus/connectivity_plus.dart';
+// import 'package:flutter/foundation.dart';
+// import 'package:seeker/features/home/models/category_model.dart';
+// import 'package:seeker/features/home/models/service_model.dart';
+// import 'package:seeker/features/home/repositories/home_local_data_source.dart';
+// import 'package:seeker/features/home/repositories/home_remote_data_source.dart';
+
+// class HomeRepository {
+//   final HomeRemoteDataSource remote;
+//   final HomeLocalDataSource local;
+//   final Connectivity connectivity;
+
+//   HomeRepository(this.remote, this.local, this.connectivity);
+
+//   Future<List<Category>> getCategories() async {
+//     if (await connectivity.hasInternet()) {
+//       final data = await remote.getCategories();
+//       await local.saveCategories(data);
+//       return data;
+//     } else {
+//       return local.getCategories();
+//     }
+//   }
+
+//   Future<List<Service>> getTopServices() async {
+//     if (await connectivity.hasInternet()) {
+//       final data = await remote.getTopServices();
+//       await local.saveTopServices(data);
+//       return data;
+//     } else {
+//       return local.getTopServices();
+//     }
+//   }
+// }
+
+
+
+
 import 'package:dio/dio.dart';
 import 'dart:developer' as developer;
 import '../../../../core/network/api_service.dart';

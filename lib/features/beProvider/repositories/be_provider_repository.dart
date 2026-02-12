@@ -25,10 +25,10 @@ class BeProviderRepository {
       );
     } catch (e) {
       if (e is DioException) {
-        if (e.response?.statusCode == 422) {
+        if (e.response?.statusCode == 422 || e.response?.statusCode == 403) {
           final data = e.response?.data;
           if (data is Map) {
-            String errorMessage = data['message'] ?? 'بيانات غير صالحة';
+            String errorMessage = data['message'] ?? 'حدث خطأ غير متوقع';
             if (data['errors'] != null && data['errors'] is Map) {
               final errors = data['errors'] as Map;
               final messages = <String>[];

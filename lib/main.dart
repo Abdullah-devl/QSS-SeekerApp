@@ -18,6 +18,7 @@ import 'package:seeker/features/intro/viewmodels/welcome_view_model.dart'; // �
 
 import 'package:seeker/features/settings/viewmodels/settings_view_model.dart'; // ✅ تمت الإضافة
 import 'package:seeker/features/home/viewmodels/category_details_view_model.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/auth/viewmodel/verify_email_view_model.dart'; // ✅ تمت الإضافة
 
 // Views
 import 'package:seeker/features/auth/views/login_view.dart';
@@ -136,6 +137,12 @@ void main() {
           create: (context) =>
               BeProviderViewModel(context.read<BeProviderRepository>()),
         ),
+        //
+        ChangeNotifierProvider<VerifyEmailViewModel>(
+  create: (context) => VerifyEmailViewModel(
+     authRepository: context.read<AuthRepository>(),
+  ),
+),
       ],
       child: const MyApp(),
     ),
@@ -173,8 +180,12 @@ class MyApp extends StatelessWidget {
             AppRoutes.login: (context) => LoginView(), // تسجيل الدخول
             AppRoutes.register: (context) => RegisterView(), // تسجيل جديد
             AppRoutes.terms: (context) => TermsView(), // الشروط والأحكام
-            AppRoutes.verifyEmail: (context) =>
-                VerifyEmailView(), // تفعيل البريد
+            AppRoutes.verifyEmail: (context) => ChangeNotifierProvider(
+              create: (_) => VerifyEmailViewModel(
+                authRepository: context.read<AuthRepository>(),
+              ),
+              child: const VerifyEmailView(),
+            ),
             AppRoutes.home: (context) => HomeView(title: 'Home'), // الرئيسية
             AppRoutes.settings: (context) => SettingsView(), // الإعدادات
             AppRoutes.profile: (context) => const ProfileView(), // الملف الشخصي
@@ -185,6 +196,7 @@ class MyApp extends StatelessWidget {
               return CategoryDetailsView(category: category);
             },
             AppRoutes.beProvider: (context) => const BeProviderView(),
+            AppRoutes.verifyEmail: (context) => const VerifyEmailView(),
           },
         );
       },

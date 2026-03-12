@@ -13,11 +13,6 @@ import 'package:seeker/core/network/api_endpoints.dart';
 // import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:seeker/l10n/app_localizations.dart';
 
-/// 📂 اسم الملف: home_view.dart
-/// 📝 الوصف: واجهة الصفحة الرئيسية (Home Screen).
-/// تعرض شريط البحث، العروض الترويجية، التصنيفات، والخدمات الأكثر طلباً.
-/// تستخدم [HomeViewModel] لإدارة الحالة وجلب البيانات.
-
 class HomeView extends StatefulWidget {
   final String title;
   const HomeView({super.key, required this.title});

@@ -10,6 +10,7 @@ class UserModel {
   final String? role; // نوع المستخدم (مثلاً: client أو provider)
   final String? phone; // رقم الهاتف
   final String? address; // العنوان
+  final bool isVerified; // هل الحساب مفعل؟
 
   /// 🏗️ البناء (Constructor)
   UserModel({
@@ -20,6 +21,7 @@ class UserModel {
     this.role,
     this.phone,
     this.address,
+    this.isVerified = false,
   });
 
   /// 🔄 تحويل الـ JSON إلى كائن UserModel.
@@ -33,6 +35,10 @@ class UserModel {
       phone: json['user']['phone'], // استخراج الهاتف
       address: json['user']['address'], // استخراج العنوان
       token: json['token'], // استخراج التوكن (قد يكون خارج كائن user)
+      isVerified:
+          // json['user']['email_verified_at'] !=
+          // null, // التحقق مما إذا كان التاريخ موجوداً
+          json['email_verified'] ?? false,
     );
   }
 }

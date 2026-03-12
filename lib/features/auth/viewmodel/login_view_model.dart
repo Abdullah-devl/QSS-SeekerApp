@@ -39,14 +39,30 @@ class LoginViewModel extends ChangeNotifier {
 
     try {
       // 3. استدعاء الدالة من الـ Repository
-      await authRepository.login(
+      final user = await authRepository.login(
         emailController.text.trim(),
         passwordController.text.trim(),
       );
 
-      // 4. في حال النجاح وموائمة الـ Context، الانتقال للصفحة الرئيسية
+      // 4. التحقق من حالة التفعيل
       if (context.mounted) {
-        Navigator.pushReplacementNamed(context, AppRoutes.home);
+        if (user.isVerified) {
+          // ✅ الحساب مفعل -> الذهاب للرئيسية
+          Navigator.pushReplacementNamed(context, AppRoutes.home);
+        } else {
+          // ⚠️ الحساب غير مفعل -> الذهاب لصفحة التفعيل
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('الرجاء تفعيل حسابك أولاً'),
+              backgroundColor: Colors.orange,
+            ),
+          );
+          Navigator.pushNamed(
+            context,
+            AppRoutes.verifyEmail,
+            arguments: user.email,
+          );
+        }
       }
     } catch (e) {
       // 5. في حال الفشل، عرض رسالة الخطأ للمستخدم

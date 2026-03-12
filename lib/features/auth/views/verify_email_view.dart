@@ -74,60 +74,65 @@ class VerifyEmailView extends StatelessWidget {
                   const SizedBox(height: 48),
 
                   // 4️⃣ حقول إدخال الكود (OTP Fields)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(6, (index) {
-                      return SizedBox(
-                        width: 45,
-                        height: 55,
-                        child: TextField(
-                          controller: viewModel.otpControllers[index],
-                          focusNode: viewModel.focusNodes[index],
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          inputFormatters: [
-                            LengthLimitingTextInputFormatter(1),
-                            FilteringTextInputFormatter.digitsOnly,
-                          ],
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.zero,
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: Colors.grey.withValues(alpha: 0.3),
+                  Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: List.generate(6, (index) {
+                        return SizedBox(
+                          width: 45,
+                          height: 55,
+                          child: TextField(
+                            controller: viewModel.otpControllers[index],
+                            focusNode: viewModel.focusNodes[index],
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(1),
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.zero,
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(
+                                  color: Colors.grey.withValues(alpha: 0.3),
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                  color: Colors.blue,
+                                  width: 2,
+                                ),
                               ),
                             ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: Colors.blue,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                          onChanged: (value) {
-                            if (value.isNotEmpty) {
-                              // الانتقال للحقل التالي إذا لم يكن الأخير
-                              if (index < 5) {
-                                viewModel.focusNodes[index + 1].requestFocus();
+                            onChanged: (value) {
+                              if (value.isNotEmpty) {
+                                // الانتقال للحقل التالي إذا لم يكن الأخير
+                                if (index < 5) {
+                                  viewModel.focusNodes[index + 1]
+                                      .requestFocus();
+                                } else {
+                                  // إخفاء الكيبورد إذا كان الحقل الأخير
+                                  viewModel.focusNodes[index].unfocus();
+                                }
                               } else {
-                                // إخفاء الكيبورد إذا كان الحقل الأخير
-                                viewModel.focusNodes[index].unfocus();
+                                // الرجوع للحقل السابق عند الحذف
+                                if (index > 0) {
+                                  viewModel.focusNodes[index - 1]
+                                      .requestFocus();
+                                }
                               }
-                            } else {
-                              // الرجوع للحقل السابق عند الحذف
-                              if (index > 0) {
-                                viewModel.focusNodes[index - 1].requestFocus();
-                              }
-                            }
-                          },
-                        ),
-                      );
-                    }),
+                            },
+                          ),
+                        );
+                      }),
+                    ),
                   ),
                   const SizedBox(height: 48),
 
@@ -190,16 +195,19 @@ class VerifyEmailView extends StatelessWidget {
                         style: TextStyle(color: Colors.grey),
                       ),
                       GestureDetector(
-                        // TODO: يمكن إضافة وظيفة إعادة الإرسال هنا لاحقاً
                         onTap: () {
-                          if (email != null) {
+                          if (email != null && !viewModel.isTimerRunning) {
                             viewModel.resendCode(context, email);
                           }
                         },
-                        child: const Text(
-                          'إعادة إرسال',
+                        child: Text(
+                          viewModel.isTimerRunning
+                              ? 'إعادة إرسال (${viewModel.timerCurrentValue}ث)'
+                              : 'إعادة إرسال',
                           style: TextStyle(
-                            color: Colors.blue,
+                            color: viewModel.isTimerRunning
+                                ? Colors.grey
+                                : Colors.blue,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

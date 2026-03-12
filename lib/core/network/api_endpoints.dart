@@ -39,7 +39,7 @@ class ApiEndpoints {
   static String get logout => "$baseUrl/logout";
 
   /// ✅ رابط تفعيل البريد الإلكتروني (OTP).
-  static String get verifyEmail => "$baseUrl/resend-verification-code";
+  static String get verifyEmail => "$baseUrl/verify-email-code";
 
   /// 🔄 رابط إعادة إرسال كود التفعيل.
   static String get resendVerificationCode =>
@@ -60,6 +60,7 @@ class ApiEndpoints {
 
   /// 📂 رابط جلب تفاصيل التصنيف (خدمات، تصنيفات فرعية، موصى بهم).
   /// [id] هو معرف التصنيف.
+  // static String categoryDetails(int id) => "$baseUrl/categories/$id";
   static String categoryDetails(int id) => "$baseUrl/categories/$id";
 
   static String get beProvider => "$baseUrl/provider-requests";

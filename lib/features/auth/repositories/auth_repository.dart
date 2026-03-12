@@ -115,8 +115,8 @@ class AuthRepository {
         // تحويل الاستجابة إلى موديل مستخدم
         final user = UserModel.fromJson(response.data);
 
-        // حفظ التوكن وبيانات المستخدم لاستخدامها لاحقاً
-        if (user.token != null) {
+        // حفظ التوكن وبيانات المستخدم فقط إذا كان الحساب مفعلاً
+        if (user.isVerified && user.token != null) {
           await _tokenStorage.saveToken(user.token!);
           await _tokenStorage.saveUserData(
             name: user.name,

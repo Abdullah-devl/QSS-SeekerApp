@@ -35,9 +35,6 @@
 //   }
 // }
 
-
-
-
 import 'package:dio/dio.dart';
 import 'dart:developer' as developer;
 import '../../../../core/network/api_service.dart';
@@ -175,7 +172,7 @@ class HomeRepository {
       final Map<String, dynamic> jsonResponse =
           (data is Map && data.containsKey('data')) ? data['data'] : data;
 
-      // print('✅ PARSED: $jsonResponse');
+      print('✅ PARSED: $jsonResponse');
 
       return CategoryDetailsModel.fromJson(jsonResponse);
     }
@@ -183,5 +180,30 @@ class HomeRepository {
     throw Exception(
       'Request failed: ${response.statusCode} - ${response.data}',
     );
+  }
+}
+
+// ===========================================================================
+// 🔍 جلب تفاصيل خدمة معينة (مع خدماتها الفرعية)
+// ===========================================================================
+Future<ServiceModel> fetchServiceById(int serviceId) async {
+  try {
+    // 🚀 استدعاء الرابط: GET /services/{id}
+    var _apiService;
+    final Response response = await _apiService.get('/services/$serviceId');
+
+    if (response.statusCode == 200) {
+      // استخراج البيانات (سواء كانت داخل 'data' أو مباشرة)
+      final data = response.data;
+      final Map<String, dynamic> jsonResponse =
+          (data is Map && data.containsKey('data')) ? data['data'] : data;
+
+      // 🪄 المودل الخاص بك (ServiceModel) سيقوم تلقائياً بقراءة الخدمات الفرعية بفضل تعديلنا السابق!
+      return ServiceModel.fromJson(jsonResponse);
+    } else {
+      throw Exception('فشل في تحميل الخدمة');
+    }
+  } catch (e) {
+    throw Exception('خطأ في الاتصال: $e');
   }
 }

@@ -2,12 +2,13 @@
 /// 📝 الوصف: ViewModel لصفحة تفعيل البريد الإلكتروني.
 /// يدير عملية إرسال كود التفعيل (OTP) والتحقق منه.
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../repositories/auth_repository.dart';
 
 class VerifyEmailViewModel extends ChangeNotifier {
- final AuthRepository authRepository;
+  final AuthRepository authRepository;
 
   VerifyEmailViewModel({required this.authRepository});
 
@@ -81,22 +82,49 @@ class VerifyEmailViewModel extends ChangeNotifier {
     }
   }
 
-  /// 🗑️ تنظيف الموارد
-  @override
-  void dispose() {
-    for (var controller in otpControllers) {
-      controller.dispose();
-    }
-    for (var node in focusNodes) {
-      node.dispose();
-    }
-    super.dispose();
+  // ⏱️ المؤقت (Timer)
+  Timer? _timer;
+  int _start = 120; // 120 ثانية = دقيقتان
+  bool _isTimerRunning = false;
+
+  bool get isTimerRunning => _isTimerRunning;
+  int get timerCurrentValue => _start;
+
+  /// بدء المؤقت
+  void startTimer() {
+    _start = 120;
+    _isTimerRunning = true;
+    notifyListeners();
+
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_start == 0) {
+        _isTimerRunning = false;
+        timer.cancel();
+        notifyListeners();
+      } else {
+        _start--;
+        notifyListeners();
+      }
+    });
   }
 
   /// 🔄 دالة إعادة إرسال كود التفعيل
   Future<void> resendCode(BuildContext context, String email) async {
-    // منع الضغط المتكرر
+    // منع الضغط المتكرر أو إذا كان المؤقت يعمل
     if (_isLoading) return;
+
+    if (_isTimerRunning) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('يرجى الانتظار ${_start} ثانية قبل إعادة الإرسال'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return;
+    }
 
     _isLoading = true;
     notifyListeners();
@@ -112,6 +140,8 @@ class VerifyEmailViewModel extends ChangeNotifier {
           ),
         );
       }
+      // بدء المؤقت عند النجاح
+      startTimer();
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -125,5 +155,17 @@ class VerifyEmailViewModel extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    for (var controller in otpControllers) {
+      controller.dispose();
+    }
+    for (var node in focusNodes) {
+      node.dispose();
+    }
+    super.dispose();
   }
 }

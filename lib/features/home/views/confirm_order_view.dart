@@ -367,7 +367,7 @@ class ConfirmOrderView extends StatelessWidget {
     dynamic colors,
   ) {
     // 🚀 إذا كانت البيانات لا تزال تُحمل من السيرفر، نعرض مؤشر دوران
-    if (vm.isLoadingData) {
+    if (vm.errorMessage != null) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 24.0),
         child: Center(

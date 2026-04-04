@@ -32,6 +32,7 @@ class AuthRepository {
           'فشل تفعيل البريد الإلكتروني: ${response.statusMessage}',
         );
       }
+      
     } catch (e) {
       if (e is DioException) {
         if (e.response?.statusCode == 422) {

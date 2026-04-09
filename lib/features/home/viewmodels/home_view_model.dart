@@ -4,7 +4,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:seeker/core/storage/token_storage.dart';
 import '../repositories/home_repository.dart';
 import '../models/category_model.dart';
-import '../models/service_model.dart';
+import '../services/models/service_model.dart';
 
 /// 🧠 اسم الملف: home_view_model.dart
 /// 📝 الوصف: مسؤول عن إدارة حالة ومنطق الصفحة الرئيسية.

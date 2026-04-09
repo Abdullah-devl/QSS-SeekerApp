@@ -1,5 +1,5 @@
 // // import 'package:flutter/material.dart';
-// // import '../models/service_model.dart';
+// // import '../services/service_model.dart';
 // // // import '../repositories/order_repository.dart'; // للربط بالـ API لاحقاً
 
 // // /// 📂 نموذج إضافات الخدمة (محاكاة للبيانات التي ستأتي من الـ API)
@@ -101,7 +101,7 @@
 // // }
 
 // import 'package:flutter/material.dart';
-// import '../models/service_model.dart';
+// import '../services/service_model.dart';
 
 // /// 📂 نموذج مساعد لإدارة حالة الكمية (Quantity) للخدمة الفرعية في واجهة المستخدم
 // class SubServiceItem {
@@ -220,7 +220,8 @@
 // }
 
 import 'package:flutter/material.dart';
-import '../models/service_model.dart';
+import '../services/models/service_model.dart';
+import '../../profile/requests/repository/request_repository.dart';
 
 /// 📂 نموذج مساعد لإدارة حالة الكمية (Quantity) للخدمة الفرعية في واجهة المستخدم
 class SubServiceItem {
@@ -241,9 +242,12 @@ class SubServiceItem {
 /// 📝 الوصف: المحاسب والعقل المدبر لشاشة تأكيد الطلب وتخصيصه.
 class ConfirmOrderViewModel extends ChangeNotifier {
   final ServiceModel mainService;
+  final RequestRepository _repository;
 
-  // ✅ تم إصلاح الـ Constructor لطلب mainService فقط
-  ConfirmOrderViewModel({required this.mainService}) {
+  ConfirmOrderViewModel({
+    required this.mainService,
+    required RequestRepository repository,
+  }) : _repository = repository {
     _initializeSubServices();
   }
 
@@ -254,11 +258,29 @@ class ConfirmOrderViewModel extends ChangeNotifier {
   String? _errorMessage;
   List<SubServiceItem> _subServices = [];
   final TextEditingController notesController = TextEditingController();
+  final TextEditingController userNameController = TextEditingController();
+  final TextEditingController userPhoneController = TextEditingController();
+
+  // Location State
+  double? _selectedLatitude;
+  double? _selectedLongitude;
+  String? _selectedAddress;
 
   // Getters
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   List<SubServiceItem> get subServices => _subServices;
+  double? get selectedLatitude => _selectedLatitude;
+  double? get selectedLongitude => _selectedLongitude;
+  String? get selectedAddress => _selectedAddress;
+
+  /// 📍 تحديث الموقع المختار من الخريطة
+  void setLocation(double lat, double lng, String address) {
+    _selectedLatitude = lat;
+    _selectedLongitude = lng;
+    _selectedAddress = address;
+    notifyListeners();
+  }
 
   // ---------------------------------------------------------------------------
   // ⚙️ العمليات (Actions)
@@ -308,25 +330,46 @@ class ConfirmOrderViewModel extends ChangeNotifier {
   /// 🚀 إرسال الطلب للـ API
   Future<bool> confirmOrder() async {
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
     try {
-      final selectedChildServices = _subServices
+      // 🚀 تجهيز مصفوفة الخدمات الفرعية بالشكل المطلوب للباكيند
+      final supServices = _subServices
           .where((s) => s.quantity > 0)
+          .map((s) => {'id': s.id, 'quantity': s.quantity})
           .toList();
 
-      print('تم طلب الخدمة: ${mainService.title}');
-      print('عدد الخدمات الفرعية المختارة: ${selectedChildServices.length}');
-      print('الإجمالي النهائي: $finalTotal');
+      // دمج بيانات المستخدم (الاسم والهاتف) مع الملاحظات في حقل الرسالة
+      final combinedMessage = '''
+الاسم: ${userNameController.text}
+الهاتف: ${userPhoneController.text}
+ملاحظات: ${notesController.text}
+''';
 
-      await Future.delayed(const Duration(seconds: 2));
-      return true;
+      final success = await _repository.createServiceRequest(
+        serviceId: mainService.id,
+        message: combinedMessage,
+        supServices: supServices,
+        latitude: _selectedLatitude,
+        longitude: _selectedLongitude,
+      );
+
+      return success;
     } catch (e) {
-      _errorMessage = 'حدث خطأ أثناء التأكيد';
+      _errorMessage = e.toString().replaceAll('Exception: ', '');
       return false;
     } finally {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  @override
+  void dispose() {
+    notesController.dispose();
+    userNameController.dispose();
+    userPhoneController.dispose();
+    super.dispose();
   }
 }

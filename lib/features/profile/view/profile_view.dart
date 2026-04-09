@@ -1,455 +1,296 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:seeker/core/network/api_service.dart';
+import 'package:seeker/core/storage/token_storage.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
-import 'package:seeker/features/settings/viewmodels/settings_view_model.dart';
-import 'package:seeker/core/theme/qs_colors.dart';
-// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:seeker/core/routes/app_routes.dart';
 import 'package:seeker/l10n/app_localizations.dart';
+import 'package:seeker/features/profile/repositories/profile_repository.dart';
+import 'package:seeker/features/profile/viewmodels/profile_view_model.dart';
+import 'package:seeker/features/profile/viewmodels/parts/services_view_model.dart';
+import 'package:seeker/features/profile/viewmodels/parts/contact_info_view_model.dart';
+import 'package:seeker/features/profile/models/profile_model.dart';
+import 'package:seeker/features/profile/view/parts/services_view.dart';
+import 'package:seeker/features/profile/view/parts/contact_info_view.dart';
+import '../provider_works/view/provider_works_view.dart';
+import '../provider_works/viewmodel/provider_works_view_model.dart';
+import '../requests/custom/view/custom_request_view.dart';
+import '../requests/custom/viewmodel/custom_request_view_model.dart';
+import '../requests/meeting/view/meeting_request_view.dart';
+import '../requests/meeting/viewmodel/meeting_request_view_model.dart';
+import '../requests/repository/request_repository.dart';
 
 /// 📂 اسم الملف: profile_view.dart
-/// 📝 الوصف: شاشة لعرض الملف الشخصي (Profile Page).
-/// تعرض صورة المستخدم، اسمه، ومعلومات التواصل (البريد، الهاتف، العنوان).
-/// كما تحتوي على بطاقة دعوة للانضمام كمزود خدمة.
+/// 📝 الوصف: شاشة الملف الشخصي بتصميم عصري (Instagram-style).
+/// تدعم التبويبات المتعددة، عرض الإحصائيات، وإدارة معرض الأعمال.
 class ProfileView extends StatelessWidget {
-  const ProfileView({super.key});
+  final int? userId; // إذا كان null، نعرض ملف المستخدم الحالي (أو نتركه للـ ViewModel)
+
+  const ProfileView({super.key, this.userId});
 
   @override
   Widget build(BuildContext context) {
-    // 🎨 الوصول للألوان من خلال الامتداد qsColors
     final colors = context.qsColors;
+    final vm = context.watch<ProfileViewModel>();
+    final bgColor = Theme.of(context).scaffoldBackgroundColor;
 
     return Scaffold(
-      backgroundColor: colors.background, // لون الخلفية
-      // 🏷️ الشريط العلوي (AppBar)
-      appBar: AppBar(
-        title: Text(
-          AppLocalizations.of(context)!.profileTitle,
-          style: TextStyle(
-            color: colors.text,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.transparent, // خلفية شفافة
-        elevation: 0, // بدون ظل
-        leading: BackButton(color: colors.primary), // زر العودة
-        actions: [
-          // 🌗 أيقونة لتغيير الثيم (اختياري كما في التصميم قد يكون هناك أيقونات أخرى)
-          Icon(Icons.nightlight_round, color: colors.primary),
-          const SizedBox(width: 16),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            // ===================================
-            // 1️⃣ قسم الصورة والاسم
-            // ===================================
-            _buildProfileHeader(context, colors),
-
-            const SizedBox(height: 24),
-
-            // ===================================
-            // 2️⃣ بطاقة معلومات الحساب
-            // ===================================
-            _buildInfoCard(context, colors),
-
-            const SizedBox(height: 24),
-
-            // ===================================
-            // 3️⃣ بطاقة الانضمام للفريق
-            // ===================================
-            _buildJoinTeamCard(context, colors),
-          ],
-        ),
-      ),
+      backgroundColor: bgColor,
+      appBar: _buildAppBar(context, vm, colors, bgColor),
+      body: _buildBody(context, vm, colors, bgColor),
     );
   }
 
-  /// 👤 بناء رأس الصفحة (الصورة + الاسم)
-  Widget _buildProfileHeader(BuildContext context, QSColors colors) {
-    // نستخدم Selector للاستماع لتغييرات الاسم فقط
-    return Selector<SettingsViewModel, String>(
-      selector: (_, vm) => vm.userName,
-      builder: (context, userName, _) {
-        return Column(
-          children: [
-            Stack(
-              alignment: Alignment.bottomRight,
-              children: [
-                // 🖼️ صورة المستخدم
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 4),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: ClipOval(
-                    // صورة افتراضية أو يمكن استبدالها بصورة من الشبكة
-                    child: Image.asset(
-                      'assets/images/user_avatar.png', // تأكد من وجود صورة افتراضية
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) =>
-                          Icon(Icons.person, size: 60, color: colors.textSub),
-                    ),
-                  ),
-                ),
-                // 📷 أيقونة الكاميرا (للتعديل)
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF448AFF), // لون أزرق كما في التصميم
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 2),
-                  ),
-                  child: const Icon(
-                    Icons.camera_alt,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            // ✏️ اسم المستخدم
-            Text(
-              userName,
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: colors.text,
-              ),
-            ),
-            const SizedBox(height: 4),
-            // 📄 نص توضيحي
-            Text(
-              AppLocalizations.of(context)!.profileSubtitle,
-              style: TextStyle(
-                color: colors.primary, // اللون الأزرق
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  Widget _buildBody(BuildContext context, ProfileViewModel vm, dynamic colors, Color bgColor) {
+    if (vm.isLoading && vm.profile == null) {
+      return Center(child: CircularProgressIndicator(color: colors.primary));
+    }
+    
+    if (vm.errorMessage != null && vm.profile == null) {
+      return Center(child: Text(vm.errorMessage!, style: const TextStyle(color: Colors.red)));
+    }
 
-  /// 📝 بناء بطاقة المعلومات (الاسم، البريد، الجوال، العنوان)
-  //                         Widget _buildInfoCard(BuildContext context, QSColors colors) {
-  //   // نستخدم Consumer لنحصل على كل البيانات دفعة واحدة (أبسط للقراءة هنا)
-  //   return Consumer<SettingsViewModel>(
-  //     builder: (context, vm, _) {
-  //       return Container(
-  //         padding: const EdgeInsets.all(20),
-  //         decoration: BoxDecoration(
-  //           color: Theme.of(context).cardColor,
-  //           borderRadius: BorderRadius.circular(20),
-  //           boxShadow: [
-  //             BoxShadow(
-  //               color: colors.text.withValues(alpha: 0.05),
-  //               blurRadius: 15,
-  //               offset: const Offset(0, 5),
-  //             ),
-  //           ],
-  //         ),
-  //         child: Column(
-  //           children: [
-  //             // 🏷️ عنوان البطاقة وزر التعديل
-  //             Row(
-  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //               children: [
-  //                   Text(
-  //                     AppLocalizations.of(context)!.accountInfo,
-  //                     style: TextStyle(
-  //                       fontSize: 18,
-  //                       fontWeight: FontWeight.bold,
-  //                       color: colors.text,
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //               TextButton.icon(
-  //                 onPressed: () {
-  //                   // TODO: فتح صفحة تعديل البيانات
-  //                 },
-  //                 icon: const Icon(Icons.edit, size: 16),
-  //                 label: Text(AppLocalizations.of(context)!.edit),
-  //                 style: TextButton.styleFrom(
-  //                   foregroundColor: const Color(0xFF448AFF),
-  //                   textStyle: const TextStyle(fontWeight: FontWeight.bold),
-  //                 ),
-  //               ),
-  //               ],
-  //             ),
-  //             const Divider(height: 24),
-  //             // 📋 الحقول
-  //             _buildInfoField(
-  //               AppLocalizations.of(context)!.fullName,
-  //               vm.userName,
-  //               Icons.person,
-  //               colors,
-  //             ),
-  //             const SizedBox(height: 16),
-  //             _buildInfoField(
-  //               AppLocalizations.of(context)!.email,
-  //               vm.userEmail,
-  //               Icons.email,
-  //               colors,
-  //             ),
-  //             const SizedBox(height: 16),
-  //             _buildInfoField(
-  //               AppLocalizations.of(context)!.phoneNumber,
-  //               vm.userPhone.isEmpty ? AppLocalizations.of(context)!.notSpecified : vm.userPhone,
-  //               Icons.phone,
-  //               colors,
-  //             ),
-  //             const SizedBox(height: 16),
-  //             _buildInfoField(
-  //               AppLocalizations.of(context)!.address,
-  //               vm.userAddress.isEmpty ? AppLocalizations.of(context)!.notSpecified : vm.userAddress,
-  //               Icons.location_on,
-  //               colors,
-  //              ),
-  //         ],
-  //       ),
-  //     );
-  //   },
-  // );
-  Widget _buildInfoCard(BuildContext context, QSColors colors) {
-    return Consumer<SettingsViewModel>(
-      builder: (context, vm, _) {
-        return Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: colors.text.withValues(alpha: 0.05),
-                blurRadius: 15,
-                offset: const Offset(0, 5),
+    if (vm.profile == null) {
+      return const SizedBox();
+    }
+
+    final profile = vm.profile!;
+
+    return RefreshIndicator(
+      color: colors.primary,
+      onRefresh: () => vm.fetchProfile(),
+      child: DefaultTabController(
+        length: 4,
+        child: NestedScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              SliverToBoxAdapter(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 16),
+                    _buildProfileHeader(context, profile, colors),
+                    const SizedBox(height: 24),
+                    _buildActionButtons(context, vm, colors),
+                    const SizedBox(height: 24),
+                  ],
+                ),
               ),
-            ],
-          ),
-          child: Column(
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _SliverAppBarDelegate(
+                  _buildTabBar(context, colors) as TabBar,
+                  bgColor,
+                ),
+              ),
+            ];
+          },
+          body: TabBarView(
             children: [
-              // 🏷️ عنوان البطاقة + زر التعديل
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.accountInfo,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: colors.text,
-                    ),
-                  ),
-                  TextButton.icon(
-                    onPressed: () {
-                      // TODO: فتح صفحة تعديل البيانات
-                    },
-                    icon: const Icon(Icons.edit, size: 16),
-                    label: Text(AppLocalizations.of(context)!.edit),
-                    style: TextButton.styleFrom(
-                      foregroundColor: const Color(0xFF448AFF),
-                      textStyle: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
+              ChangeNotifierProvider(
+                create: (context) => ProviderWorksViewModel(
+                  ProfileRepository(context.read<ApiService>()),
+                  userId: (profile.id != 0) ? profile.id : (userId ?? 0),
+                ),
+                child: const ProviderWorksView(),
               ),
-
-              const Divider(height: 24),
-
-              // 📋 الحقول
-              _buildInfoField(
-                AppLocalizations.of(context)!.fullName,
-                vm.userName,
-                Icons.person,
-                colors,
+              ChangeNotifierProvider(
+                create: (context) => ServicesViewModel(ProfileRepository(context.read<ApiService>())),
+                child: const ServicesView(),
               ),
-              const SizedBox(height: 16),
-              _buildInfoField(
-                AppLocalizations.of(context)!.email,
-                vm.userEmail,
-                Icons.email,
-                colors,
-              ),
-              const SizedBox(height: 16),
-              _buildInfoField(
-                AppLocalizations.of(context)!.phoneNumber,
-                vm.userPhone.isEmpty
-                    ? AppLocalizations.of(context)!.notSpecified
-                    : vm.userPhone,
-                Icons.phone,
-                colors,
-              ),
-              const SizedBox(height: 16),
-              _buildInfoField(
-                AppLocalizations.of(context)!.address,
-                vm.userAddress.isEmpty
-                    ? AppLocalizations.of(context)!.notSpecified
-                    : vm.userAddress,
-                Icons.location_on,
-                colors,
+              const Center(child: Text('التقييمات قريباً')),
+              ChangeNotifierProvider(
+                create: (context) => ContactInfoViewModel(ProfileRepository(context.read<ApiService>())),
+                child: ContactInfoView(profile: profile),
               ),
             ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
-}
 
-/// 🧩 ويدجت لبناء حقل واحد للمعلومات
-Widget _buildInfoField(
-  String label,
-  String value,
-  IconData icon,
-  QSColors colors,
-) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        label,
-        style: TextStyle(
-          color: colors.textSub,
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-        ),
+  AppBar _buildAppBar(BuildContext context, ProfileViewModel vm, dynamic colors, Color bgColor) {
+    return AppBar(
+      backgroundColor: bgColor,
+      elevation: 0,
+      centerTitle: true,
+      title: Text(
+        vm.profile?.name ?? '...',
+        style: TextStyle(color: colors.text, fontWeight: FontWeight.bold, fontSize: 16),
       ),
-      const SizedBox(height: 8),
-      Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: colors.background, // لون خلفية الحقل
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                value,
-                style: TextStyle(
-                  color: colors.text,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            Icon(icon, color: colors.textSub, size: 20),
-          ],
-        ),
+      leading: IconButton(
+        icon: Icon(Icons.more_vert, color: colors.primary),
+        onPressed: () {},
       ),
-    ],
-  );
-}
-
-/// 🤝 بناء بطاقة "كن جزءاً من فريقنا"
-Widget _buildJoinTeamCard(BuildContext context, QSColors colors) {
-  return Container(
-    width: double.infinity,
-    padding: const EdgeInsets.all(20),
-    // إطار منقط
-    decoration: BoxDecoration(
-      color: const Color(0xFFE3F2FD), // خلفية زرقاء فاتحة جداً
-      borderRadius: BorderRadius.circular(20),
-      border: Border.all(
-        color: const Color(0xFF90CAF9),
-        style: BorderStyle
-            .solid, // يمكن استخدام حزمة dotted_border للحصول على حدود منقطة
-        width: 1.5,
-      ),
-    ),
-    child: Column(
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    AppLocalizations.of(context)!.joinOurTeam,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    AppLocalizations.of(context)!.joinTeamDesc,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey[700],
-                      height: 1.5,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 16),
-            // أيقونة مميزة
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFBBDEFB),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const Icon(
-                Icons.verified_user,
-                color: Color(0xFF1976D2),
-                size: 30,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20),
-        // زر الإرسال
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: () {
-              Navigator.pushNamed(context, AppRoutes.beProvider);
-            },
-            icon: const Icon(Icons.person_add, color: Colors.white),
-            label: Text(
-              AppLocalizations.of(context)!.sendProviderRequest,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF448AFF), // لون الزر الأزرق
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 0,
-            ),
-          ),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.arrow_forward, color: colors.text),
+          onPressed: () => Navigator.pop(context),
         ),
       ],
-    ),
-  );
+    );
+  }
+
+  Widget _buildProfileHeader(BuildContext context, ProfileModel profile, dynamic colors) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                width: 85,
+                height: 85,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: colors.primary, width: 3),
+                  image: profile.avatarUrl.isNotEmpty
+                      ? DecorationImage(image: NetworkImage(profile.avatarUrl), fit: BoxFit.cover)
+                      : const DecorationImage(image: AssetImage('assets/images/user_avatar.png'), fit: BoxFit.cover),
+                ),
+              ),
+              _buildStatItem(context, '${profile.yearsExperience}+', AppLocalizations.of(context)!.yearsExperience(profile.yearsExperience).split(' ').last, colors),
+              _buildStatItem(context, '${profile.ratingAvg}', 'التقييم', colors),
+              _buildStatItem(context, '${profile.completedJobs}', 'عمل منجز', colors),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(profile.name, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: colors.text)),
+                const SizedBox(height: 4),
+                Text(profile.jobTitle, style: TextStyle(fontSize: 14, color: colors.primary, fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            profile.bio.isNotEmpty == true ? profile.bio : 'وصف فني محترف...',
+            textAlign: TextAlign.start,
+            style: TextStyle(fontSize: 13, color: colors.textSub, height: 1.6),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(BuildContext context, String value, String label, dynamic colors) {
+    return Column(
+      children: [
+        Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: colors.text)),
+        const SizedBox(height: 4),
+        Text(label, style: TextStyle(fontSize: 12, color: colors.primary)),
+      ],
+    );
+  }
+
+  Widget _buildActionButtons(BuildContext context, ProfileViewModel vm, dynamic colors) {
+    if (vm.profile == null) return const SizedBox.shrink();
+    final profile = vm.profile!;
+
+    // 🛡️ التحقق من صلاحيات العرض:
+
+    // 2. لا تظهر أزرار الطلبات إذا كان هذا بروفايل المستخدم نفسه.
+    return FutureBuilder<Map<String, dynamic>>(
+      future: context.read<TokenStorage>().getUserData(),
+      builder: (context, snapshot) {
+        final currentUserId = snapshot.data?['id'];
+        
+        // إذا كان هذا بروفايلي (UserId متطابق)، لا تظهر الأزرار
+        if (currentUserId == profile.id || userId == null) {
+          return const SizedBox.shrink();
+        }
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider(
+                          create: (context) => CustomRequestViewModel(
+                            RequestRepository(context.read<ApiService>()),
+                            providerId: profile.id,
+                          ),
+                          child: const CustomRequestView(),
+                        ),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  child: const Text('طلب مخصص', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 1,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChangeNotifierProvider(
+                          create: (context) => MeetingRequestViewModel(
+                            RequestRepository(context.read<ApiService>()),
+                            providerId: profile.id,
+                          ),
+                          child: const MeetingRequestView(),
+                        ),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.text.withOpacity(0.05),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  child: Text('طلب حضور', textAlign: TextAlign.center, style: TextStyle(color: colors.text, fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildTabBar(BuildContext context, dynamic colors) {
+    return TabBar(
+      labelColor: colors.primary,
+      unselectedLabelColor: colors.textSub,
+      indicatorColor: colors.primary,
+      indicatorWeight: 3,
+      tabs: [
+        Tab(icon: const Icon(Icons.grid_view_rounded), text: AppLocalizations.of(context)!.previousWorks),
+        const Tab(icon: Icon(Icons.build_rounded), text: 'الخدمات'),
+        Tab(icon: const Icon(Icons.star_rate_rounded), text: AppLocalizations.of(context)!.customerReviews),
+        Tab(icon: const Icon(Icons.contact_phone_rounded), text: AppLocalizations.of(context)!.contactInfo),
+      ],
+    );
+  }
+}
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  final TabBar _tabBar;
+  final Color backgroundColor;
+  _SliverAppBarDelegate(this._tabBar, this.backgroundColor);
+  @override double get minExtent => _tabBar.preferredSize.height;
+  @override double get maxExtent => _tabBar.preferredSize.height;
+  @override Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) => Container(color: backgroundColor, child: _tabBar);
+  @override bool shouldRebuild(_SliverAppBarDelegate oldDelegate) => false;
 }

@@ -318,4 +318,90 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get selectedLocation => 'الموقع المحدد';
+
+  @override
+  String get serviceDetails => 'معلومات الخدمة';
+
+  @override
+  String get providerProfile => 'مقدم الخدمة';
+
+  @override
+  String get aboutProvider => 'نبذة عن المزود';
+
+  @override
+  String get previousWorks => 'معرض الأعمال';
+
+  @override
+  String get serviceDescription => 'وصف الخدمة';
+
+  @override
+  String get serviceFeatures => 'مميزات الخدمة';
+
+  @override
+  String get location => 'الموقع';
+
+  @override
+  String get workingHours => 'أوقات الخدمة';
+
+  @override
+  String get bankAccounts => 'الحسابات البنكية';
+
+  @override
+  String get customerReviews => 'آراء العملاء';
+
+  @override
+  String get totalCost => 'Total Cost';
+
+  @override
+  String get estimated => 'Estimated';
+
+  @override
+  String get viewAll => 'View All';
+
+  @override
+  String get availableNow => 'متاح الآن';
+
+  @override
+  String get newService => 'جديد';
+
+  @override
+  String get perService => 'لكل خدمة';
+
+  @override
+  String yearsExperience(Object count) {
+    return '$count سنوات خبرة';
+  }
+
+  @override
+  String get chatNow => 'مراسلة الآن';
+
+  @override
+  String get copySuccess => 'تم نسخ رقم الحساب بنجاح ✅';
+
+  @override
+  String get openInMaps => 'فتح في الخرائط';
+
+  @override
+  String get visitProfile => 'الملف الشخصي';
+
+  @override
+  String get contactInfo => 'بيانات التواصل';
+
+  @override
+  String get callNow => 'اتصال';
+
+  @override
+  String get copyNumber => 'نسخ';
+
+  @override
+  String get noWorkingHours => 'لم يتم تحديد أوقات عمل لهذه الخدمة بعد.';
+
+  @override
+  String get noBankAccounts => 'لا توجد حسابات بنكية مضافة حالياً لهذا المزود.';
+
+  @override
+  String get noContactInfo => 'لا توجد أرقام تواصل متاحة حالياً لطلب الخدمة.';
+
+  @override
+  String get noPreviousWorks => 'لا توجد أعمال سابقة مضافة حالياً.';
 }

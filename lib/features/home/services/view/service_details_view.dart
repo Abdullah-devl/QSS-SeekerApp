@@ -5,10 +5,16 @@ import 'package:provider/provider.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/features/home/viewmodels/confirm_order_view_model.dart';
 import 'package:seeker/features/home/views/confirm_order_view.dart';
+import 'package:seeker/features/profile/view/profile_view.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../models/service_model.dart';
-import '../viewmodels/service_details_view_model.dart';
+import 'package:seeker/features/home/services/models/service_model.dart';
+import 'package:seeker/features/home/services/viewmodels/service_details_view_model.dart';
+import 'package:seeker/features/profile/requests/repository/request_repository.dart';
+import 'package:seeker/core/network/api_service.dart';
+import 'package:seeker/features/profile/viewmodels/profile_view_model.dart';
+import 'package:seeker/features/profile/repositories/profile_repository.dart';
 
 class ServiceDetailsView extends StatefulWidget {
   final ServiceModel initialService;
@@ -60,9 +66,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                 _buildDivider(colors),
                 _buildDescription(service.description, colors),
                 _buildLocation(colors),
-                _buildWorkingHours(colors),
-                _buildBankAccounts(context, colors),
-                _buildImageGallery(colors),
+                _buildWorkingHours(service, colors),
                 _buildReviews(colors),
               ],
             ),
@@ -90,7 +94,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
       backgroundColor: colors.background,
       elevation: 0,
       centerTitle: true,
-      title: Text('معلومات الخدمة', style: TextStyle(color: colors.text, fontWeight: FontWeight.bold, fontSize: 18)),
+      title: Text(AppLocalizations.of(context)!.serviceDetails, style: TextStyle(color: colors.text, fontWeight: FontWeight.bold, fontSize: 18)),
       leading: IconButton(
         icon: Icon(Icons.arrow_back_ios_new, color: colors.text, size: 20),
         onPressed: () => Navigator.pop(context),
@@ -127,25 +131,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
       ),
       child: imageUrl.isEmpty
           ? Center(child: Icon(Icons.image, size: 50, color: colors.textSub.withOpacity(0.3)))
-          : Stack(
-              children: [
-                Positioned(
-                  bottom: 12,
-                  left: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(color: Colors.black.withOpacity(0.6), borderRadius: BorderRadius.circular(8)),
-                    child: const Row(
-                      children: [
-                        Icon(Icons.photo_library_outlined, color: Colors.white, size: 14),
-                        SizedBox(width: 6),
-                        Text('5 صور', style: TextStyle(color: Colors.white, fontSize: 12)),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          : const SizedBox.shrink(),
     );
   }
 
@@ -163,16 +149,16 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    Text('متاح الآن', style: TextStyle(color: Colors.greenAccent[700], fontWeight: FontWeight.bold, fontSize: 12)),
+                    Text(AppLocalizations.of(context)!.availableNow, style: TextStyle(color: Colors.greenAccent[700], fontWeight: FontWeight.bold, fontSize: 12)),
                     Container(margin: const EdgeInsets.symmetric(horizontal: 8), height: 12, width: 1, color: colors.textSub.withOpacity(0.3)),
-                    Text('120 تقييم', style: TextStyle(color: colors.textSub, fontSize: 12)),
+                    Text('120 ${AppLocalizations.of(context)!.customerReviews}', style: TextStyle(color: colors.textSub, fontSize: 12)),
                     const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(color: Colors.amber.withOpacity(0.1), borderRadius: BorderRadius.circular(6)),
                       child: Row(
                         children: [
-                          Text(service.rating > 0 ? service.rating.toString() : 'جديد', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.amber)),
+                          Text(service.rating > 0 ? service.rating.toString() : AppLocalizations.of(context)!.newService, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.amber)),
                           const SizedBox(width: 4),
                           const Icon(Icons.star, color: Colors.amber, size: 12),
                         ],
@@ -187,8 +173,8 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text('${service.price.toInt()}', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: colors.primary, fontFamily: 'Cairo', height: 1.1)),
-              Text('ر.س', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colors.primary, fontFamily: 'Cairo')),
-              Text('لكل خدمة/ساعة', style: TextStyle(fontSize: 10, color: colors.textSub)),
+              Text(AppLocalizations.of(context)!.sar, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colors.primary, fontFamily: 'Cairo')),
+              Text(AppLocalizations.of(context)!.perService, style: TextStyle(fontSize: 10, color: colors.textSub)),
             ],
           ),
         ],
@@ -215,14 +201,33 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
               children: [
                 Text(service.providerName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: colors.text)),
                 const SizedBox(height: 2),
-                Text('خبير تنظيف • 4 سنوات خبرة', style: TextStyle(color: colors.textSub, fontSize: 11)),
+                Text(AppLocalizations.of(context)!.yearsExperience(4), style: TextStyle(color: colors.textSub, fontSize: 11)),
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: colors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-            child: Icon(Icons.chat_bubble_rounded, color: colors.primary, size: 20),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChangeNotifierProvider(
+                    create: (context) => ProfileViewModel(
+                      ProfileRepository(context.read<ApiService>()),
+                      targetUserId: service.providerId,
+                    ),
+                    child: ProfileView(userId: service.providerId),
+                  ),
+                ),
+              );
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(color: colors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+              child: Text(
+                AppLocalizations.of(context)!.visitProfile,
+                style: TextStyle(color: colors.primary, fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+            ),
           ),
         ],
       ),
@@ -235,31 +240,12 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionTitle('وصف الخدمة', colors),
+          _buildSectionTitle(AppLocalizations.of(context)!.serviceDescription, colors),
           const SizedBox(height: 12),
           Text(
-            description.isNotEmpty ? description : 'نقدم خدمة تنظيف شاملة واحترافية باستخدام أحدث المعدات والمواد الآمنة.',
+            description.isNotEmpty ? description : '...',
             style: TextStyle(color: colors.textSub, height: 1.6, fontSize: 13),
           ),
-          const SizedBox(height: 16),
-          Text('مميزات الخدمة:', style: TextStyle(fontWeight: FontWeight.bold, color: colors.text, fontSize: 13)),
-          const SizedBox(height: 10),
-          _buildFeatureItem('استخدام مواد تعقيم مصرحة وآمنة', colors),
-          _buildFeatureItem('فريق عمل محترف ومدرب', colors),
-          _buildFeatureItem('ضمان الرضا عن الخدمة', colors),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFeatureItem(String text, dynamic colors) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          const Icon(Icons.check_circle, color: Colors.green, size: 16),
-          const SizedBox(width: 8),
-          Text(text, style: TextStyle(color: colors.textSub, fontSize: 12)),
         ],
       ),
     );
@@ -272,7 +258,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionTitle('موقع الخدمة', colors),
+          _buildSectionTitle(AppLocalizations.of(context)!.location, colors),
           const SizedBox(height: 12),
           Container(
             width: double.infinity,
@@ -331,7 +317,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('فتح في الخرائط', style: TextStyle(color: colors.primary, fontWeight: FontWeight.bold, fontSize: 13)),
+                      Text(AppLocalizations.of(context)!.openInMaps, style: TextStyle(color: colors.primary, fontWeight: FontWeight.bold, fontSize: 13)),
                       const SizedBox(width: 4),
                       Icon(Icons.open_in_new, color: colors.primary, size: 14),
                     ],
@@ -345,131 +331,79 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
     );
   }
 
-  Widget _buildWorkingHours(dynamic colors) {
+  Widget _buildWorkingHours(ServiceModel service, dynamic colors) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionTitle('أوقات الخدمة', colors),
+          _buildSectionTitle(AppLocalizations.of(context)!.workingHours, colors),
           const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: colors.text.withOpacity(0.05)),
+          if (service.schedules.isEmpty)
+            _buildEmptyState(AppLocalizations.of(context)!.noWorkingHours, Icons.event_busy, colors)
+          else
+            SizedBox(
+              height: 110,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: service.schedules.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 10),
+                itemBuilder: (context, index) {
+                  final schedule = service.schedules[index];
+                  final isActive = schedule.isActive;
+                  return Container(
+                    width: 95,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: isActive ? colors.primary.withOpacity(0.05) : colors.textSub.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: isActive ? colors.primary.withOpacity(0.2) : colors.textSub.withOpacity(0.1)),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(schedule.day, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isActive ? colors.primary : colors.textSub)),
+                        const SizedBox(height: 8),
+                        if (isActive) ...[
+                          Text(schedule.fromTime, style: TextStyle(fontSize: 10, color: colors.text)),
+                          const Icon(Icons.keyboard_arrow_down_rounded, size: 10, color: Colors.grey),
+                          Text(schedule.toTime, style: TextStyle(fontSize: 10, color: colors.text)),
+                        ] else
+                          Text('مغلق', style: TextStyle(fontSize: 12, color: Colors.redAccent.withOpacity(0.7), fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.access_time_filled, color: colors.primary, size: 20),
-                    const SizedBox(width: 8),
-                    Text('ساعات العمل المتاحة', style: TextStyle(fontWeight: FontWeight.bold, color: colors.text)),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('من الأحد إلى الخميس', style: TextStyle(color: colors.textSub, fontSize: 12)),
-                    Text('08:00 AM - 10:00 PM', style: TextStyle(fontWeight: FontWeight.bold, color: colors.text, fontSize: 12)),
-                  ],
-                ),
-                const Divider(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('الجمعة والسبت', style: TextStyle(color: colors.textSub, fontSize: 12)),
-                    Text('02:00 PM - 11:00 PM', style: TextStyle(fontWeight: FontWeight.bold, color: colors.text, fontSize: 12)),
-                  ],
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
   }
 
-  Widget _buildBankAccounts(BuildContext context, dynamic colors) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildSectionTitle('الحسابات البنكية', colors),
-          const SizedBox(height: 12),
-          _buildBankCard(context, 'مصرف الراجحي', 'أحمد المحمد', 'SA45 8000 0000 6080 1020 3040', colors),
-          const SizedBox(height: 12),
-          _buildBankCard(context, 'البنك الأهلي SNB', 'أحمد المحمد', 'SA20 1000 0000 4455 6677 8899', colors),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildBankCard(BuildContext context, String bankName, String accountName, String iban, dynamic colors) {
+
+  Widget _buildEmptyState(String message, IconData icon, dynamic colors) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: colors.text.withOpacity(0.05)),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(bankName, style: TextStyle(fontWeight: FontWeight.bold, color: colors.text, fontSize: 14)),
-                  Text(accountName, style: TextStyle(color: colors.textSub, fontSize: 11)),
-                ],
-              ),
-              Icon(Icons.account_balance, color: colors.textSub.withOpacity(0.5)),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: colors.background, borderRadius: BorderRadius.circular(12)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('IBAN', style: TextStyle(color: colors.textSub, fontSize: 10)),
-                      Text(iban, style: TextStyle(fontWeight: FontWeight.bold, color: colors.text, fontSize: 12, letterSpacing: 1.2)),
-                    ],
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () async {
-                    await Clipboard.setData(ClipboardData(text: iban));
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text('تم نسخ رقم الحساب بنجاح ✅', style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold)),
-                          backgroundColor: Colors.green.shade600,
-                          behavior: SnackBarBehavior.floating,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          duration: const Duration(seconds: 2),
-                        ),
-                      );
-                    }
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(color: colors.primary.withOpacity(0.1), shape: BoxShape.circle),
-                    child: Icon(Icons.copy, color: colors.primary, size: 16),
-                  ),
-                ),
-              ],
+          Icon(icon, size: 40, color: colors.textSub.withOpacity(0.2)),
+          const SizedBox(height: 12),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: colors.textSub,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -477,43 +411,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
     );
   }
 
-  Widget _buildImageGallery(dynamic colors) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildSectionTitle('معرض الصور', colors),
-              Text('عرض الكل', style: TextStyle(color: colors.primary, fontSize: 12, fontWeight: FontWeight.bold)),
-            ],
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 90,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: 4,
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
-              itemBuilder: (context, index) {
-                return Container(
-                  width: 90,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: colors.text.withOpacity(0.05)),
-                  ),
-                  child: Center(child: Icon(Icons.image, color: colors.textSub.withOpacity(0.3))),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+
 
   Widget _buildReviews(dynamic colors) {
     return Padding(
@@ -521,7 +419,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionTitle('آراء العملاء', colors),
+          _buildSectionTitle(AppLocalizations.of(context)!.customerReviews, colors),
           const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(16),
@@ -564,7 +462,6 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
     );
   }
 
-  /// 🔘 10. الزر السفلي لطلب الخدمة (مُصلح ومربوط بشاشة التأكيد)
   Widget _buildBottomBar(ServiceModel service, dynamic colors, bool isDataLoading) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -580,12 +477,12 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('التكلفة الإجمالية\n(تقديرية)', style: TextStyle(fontSize: 10, color: colors.textSub, height: 1.2)),
+                Text('${AppLocalizations.of(context)!.totalCost}\n${AppLocalizations.of(context)!.estimated}', style: TextStyle(fontSize: 10, color: colors.textSub, height: 1.2)),
                 RichText(
                   text: TextSpan(
                     children: [
                       TextSpan(text: '${service.price.toInt()} ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: colors.text, fontFamily: 'Cairo')),
-                      TextSpan(text: 'ر.س', style: TextStyle(fontSize: 12, color: colors.text, fontFamily: 'Cairo')),
+                      TextSpan(text: AppLocalizations.of(context)!.sar, style: TextStyle(fontSize: 12, color: colors.text, fontFamily: 'Cairo')),
                     ],
                   ),
                 ),
@@ -594,14 +491,15 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
             const SizedBox(width: 16),
             Expanded(
               child: ElevatedButton(
-                // 🚀 نمنع الضغط إذا كانت البيانات لا تزال تحمل من السيرفر
                 onPressed: isDataLoading ? null : () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => ChangeNotifierProvider(
-                        // 🚀 نمرر الخدمة الكاملة (التي جاءت من السيرفر وبها أبناء) لشاشة التأكيد
-                        create: (_) => ConfirmOrderViewModel(mainService: service),
+                        create: (context) => ConfirmOrderViewModel(
+                          mainService: service,
+                          repository: RequestRepository(context.read<ApiService>()),
+                        ),
                         child: const ConfirmOrderView(),
                       ),
                     ),
@@ -615,12 +513,12 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                 ),
                 child: isDataLoading 
                   ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                  : const Row(
+                  : Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('طلب الخدمة', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                        SizedBox(width: 8),
-                        Icon(Icons.arrow_back, color: Colors.white, size: 20),
+                        Text(AppLocalizations.of(context)!.bookNow, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                        const SizedBox(width: 8),
+                        const Icon(Icons.arrow_back, color: Colors.white, size: 20),
                       ],
                     ),
               ),

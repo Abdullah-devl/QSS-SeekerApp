@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
-import '../models/service_model.dart';
+import '../services/models/service_model.dart';
 import '../viewmodels/confirm_order_view_model.dart';
+import '../../beProvider/views/pick_location_view.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 /// 📂 اسم الملف: confirm_order_view.dart
-/// 📝 الوصف: شاشة تأكيد وتخصيص الطلب.
+/// 📝 الوصف: شاشة تأكيد وتخصيص الطلب بتصميم عصري (Premium).
 class ConfirmOrderView extends StatelessWidget {
   const ConfirmOrderView({super.key});
 
@@ -13,8 +15,6 @@ class ConfirmOrderView extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.qsColors;
     final vm = context.watch<ConfirmOrderViewModel>();
-
-    // 🚀 نستخدم mainService القادمة من الـ ViewModel
     final service = vm.mainService;
 
     return Scaffold(
@@ -25,11 +25,7 @@ class ConfirmOrderView extends StatelessWidget {
         centerTitle: true,
         title: Text(
           'تأكيد وتخصيص الطلب',
-          style: TextStyle(
-            color: colors.text,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
+          style: TextStyle(color: colors.text, fontWeight: FontWeight.bold, fontSize: 18),
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, color: colors.text, size: 20),
@@ -37,531 +33,337 @@ class ConfirmOrderView extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 0),
-        child: Padding(
-          padding: const EdgeInsets.all(0.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildServiceSummaryCard(context, service, colors),
-                    const SizedBox(height: 24),
-                    _buildLocationSection(context, colors),
-                    const SizedBox(height: 24),
-                    
-                    // 🚀 قسم التخصيص (الذي يعالج حالة تحميل الخدمات الفرعية من السيرفر)
-                    _buildCustomizationSection(context, vm, colors),
-                    const SizedBox(height: 24),
-                    
-                    _buildNotesSection(context, vm, colors),
-                  ],
-                ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 1️⃣ كرت الخدمة الاحترافي
+                  _buildServiceCard(context, service, colors),
+                  const SizedBox(height: 24),
+
+                   // 2️⃣ مربع بيانات طالب الخدمة
+                  _buildUserInfoSection(context, vm, colors),
+                  const SizedBox(height: 24),
+
+                  // 📍 جديد: قسم اختيار الموقع
+                  _buildLocationSection(context, vm, colors),
+                  const SizedBox(height: 24),
+
+                  // 3️⃣ قسم الخدمات الفرعية (التخصيص)
+                  _buildCustomizationSection(context, vm, colors),
+                  const SizedBox(height: 24),
+
+                  // 4️⃣ قسم الملاحظات
+                  _buildNotesSection(context, vm, colors),
+                ],
               ),
-              const SizedBox(height: 15),
-              _buildBottomCheckoutBar(context, vm, colors),
-            ],
-          ),
+            ),
+            const SizedBox(height: 100), // مساحة للبار السفلي
+          ],
         ),
       ),
+      bottomSheet: _buildBottomCheckoutBar(context, vm, colors),
     );
   }
 
-  // =========================================================================
-  // 🧩 المكونات (Widgets)
-  // =========================================================================
-
-  /// 1️⃣ كرت ملخص الخدمة العلوي
-  Widget _buildServiceSummaryCard(
-    BuildContext context,
-    ServiceModel service,
-    dynamic colors,
-  ) {
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                service.title,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: colors.text,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 8,
-                    backgroundColor: colors.primary.withOpacity(0.1),
-                    child: Icon(Icons.person, size: 10, color: colors.primary),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    service.providerName,
-                    style: TextStyle(fontSize: 12, color: colors.textSub),
-                  ),
-                  const SizedBox(width: 12),
-                  const Icon(Icons.star, color: Colors.amber, size: 12),
-                  const SizedBox(width: 4),
-                  Text(
-                    service.rating > 0 ? service.rating.toString() : 'جديد',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.amber,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  _buildTag('خدمة فورية', Colors.green, colors),
-                  const SizedBox(width: 8),
-                  _buildTag('ضمان ذهبي', Colors.amber, colors),
-                ],
-              ),
-            ],
-          ),
-        ),
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(16),
-            image: service.imageUrl.isNotEmpty
-                ? DecorationImage(
-                    image: NetworkImage(service.imageUrl),
-                    fit: BoxFit.cover,
-                  )
-                : null,
-          ),
-          child: service.imageUrl.isEmpty
-              ? Icon(Icons.image, color: colors.textSub)
-              : null,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTag(String text, Color iconColor, dynamic colors) {
+  /// 🌟 1. كرت الخدمة المطور (صورة، اسم، تقييم، سعر)
+  Widget _buildServiceCard(BuildContext context, ServiceModel service, dynamic colors) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      width: double.infinity,
       decoration: BoxDecoration(
-        color: colors.primary.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(8),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 15, offset: const Offset(0, 5)),
+        ],
       ),
-      child: Text(
-        text,
-        style: TextStyle(
-          color: iconColor,
-          fontSize: 10,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  /// 2️⃣ قسم موقع الخدمة
-  Widget _buildLocationSection(BuildContext context, dynamic colors) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(Icons.location_on, color: colors.primary, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              'موقع الخدمة',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: colors.text,
-              ),
+      child: Column(
+        children: [
+          // صورة الخدمة
+          Container(
+            height: 160,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+              image: service.imageUrl.isNotEmpty
+                  ? DecorationImage(image: NetworkImage(service.imageUrl), fit: BoxFit.cover)
+                  : null,
+              color: colors.primary.withOpacity(0.1),
             ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: colors.text.withOpacity(0.05)),
+            child: service.imageUrl.isEmpty ? Icon(Icons.image, size: 50, color: colors.textSub) : null,
           ),
-          child: Column(
-            children: [
-              // أزرار التبديل (موقعي الحالي / الخريطة)
-              Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: colors.background,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                          color: colors.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.my_location,
-                              color: colors.primary,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'موقعي الحالي',
-                              style: TextStyle(
-                                color: colors.primary,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.map_outlined,
-                              color: colors.textSub,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'الخريطة',
-                              style: TextStyle(
-                                color: colors.textSub,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-              // حقل البحث
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  color: colors.background,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'بحث عن عنوان أو معلم معروف...',
-                    hintStyle: TextStyle(color: colors.textSub, fontSize: 12),
-                    icon: Icon(Icons.search, color: colors.textSub, size: 18),
-                    border: InputBorder.none,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              // العنوان المحفوظ
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: colors.background,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: colors.primary.withOpacity(0.3)),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: colors.primary.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(Icons.home, color: colors.primary, size: 20),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'المنزل',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: colors.text,
-                              fontSize: 14,
-                            ),
-                          ),
-                          Text(
-                            'الرياض، حي الملقا، شارع الأمير محمد بن سعد',
-                            style: TextStyle(
-                              color: colors.textSub,
-                              fontSize: 10,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Icon(Icons.edit, color: colors.primary, size: 18),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              // زر التحديد على الخريطة
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: colors.background,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.location_on, color: colors.primary, size: 16),
-                    const SizedBox(width: 8),
-                    Text(
-                      'تحديد على الخريطة',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: colors.text,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  /// 3️⃣ قسم تخصيص الخدمات (العدادات)
-  Widget _buildCustomizationSection(
-    BuildContext context,
-    ConfirmOrderViewModel vm,
-    dynamic colors,
-  ) {
-    // 🚀 إذا كانت البيانات لا تزال تُحمل من السيرفر، نعرض مؤشر دوران
-    if (vm.errorMessage != null) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24.0),
-        child: Center(
-          child: CircularProgressIndicator(color: colors.primary),
-        ),
-      );
-    }
-
-    // 🚀 إذا اكتمل التحميل ولم توجد خدمات فرعية، لا نعرض القسم
-    if (vm.subServices.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(Icons.tune, color: colors.text, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              'تخصيص الخدمات',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: colors.text,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        ...List.generate(vm.subServices.length, (index) {
-          final subService = vm.subServices[index];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 16),
+          // تفاصيل الخدمة
+          Padding(
+            padding: const EdgeInsets.all(20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      subService.title,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: colors.text,
-                        fontSize: 14,
-                      ),
-                    ),
-                    RichText(
-                      text: TextSpan(
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(service.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: colors.text)),
+                      const SizedBox(height: 8),
+                      Row(
                         children: [
-                          TextSpan(
-                            text: '${subService.price.toInt()} ر.س',
-                            style: TextStyle(
-                              color: colors.primary,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                              fontFamily: 'Cairo',
-                            ),
+                          Icon(Icons.star_rounded, color: Colors.amber, size: 20),
+                          const SizedBox(width: 4),
+                          Text(
+                            service.rating > 0 ? '${service.rating}' : 'جديد',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: colors.text),
                           ),
-                          TextSpan(
-                            text: ' / خدمة',
-                            style: TextStyle(
-                              color: colors.textSub,
-                              fontSize: 10,
-                              fontFamily: 'Cairo',
-                            ),
-                          ),
+                          const SizedBox(width: 12),
+                          Icon(Icons.person_outline, color: colors.primary, size: 16),
+                          const SizedBox(width: 4),
+                          Text(service.providerName, style: TextStyle(fontSize: 12, color: colors.textSub)),
                         ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                // العداد
-                Row(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    GestureDetector(
-                      onTap: () => vm.incrementSubService(index),
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: colors.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(Icons.add, color: colors.primary, size: 16),
-                      ),
+                    Text(
+                      '${service.price.toInt()}',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: colors.primary, fontFamily: 'Cairo'),
                     ),
-                    SizedBox(
-                      width: 40,
-                      child: Center(
-                        child: Text(
-                          '${subService.quantity}',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: colors.text,
-                          ),
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => vm.decrementSubService(index),
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: colors.background,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(
-                          Icons.remove,
-                          color: colors.textSub,
-                          size: 16,
-                        ),
-                      ),
-                    ),
+                    Text('ر.س', style: TextStyle(fontSize: 12, color: colors.primary, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ],
             ),
-          );
-        }),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 👤 2. مربع بيانات العميل (Requester Info)
+  Widget _buildUserInfoSection(BuildContext context, ConfirmOrderViewModel vm, dynamic colors) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: colors.text.withOpacity(0.05)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.person_pin_rounded, color: colors.primary),
+              const SizedBox(width: 10),
+              Text('بيانات طلب الخدمة', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colors.text)),
+            ],
+          ),
+          const SizedBox(height: 20),
+          _buildTextField(vm.userNameController, 'اسم المستلم', Icons.person_outline, colors),
+          const SizedBox(height: 16),
+          _buildTextField(vm.userPhoneController, 'رقم الجوال', Icons.phone_android_rounded, colors, keyboardType: TextInputType.phone),
+        ],
+      ),
+    );
+  }
+
+  /// 📍 3. قسم اختيار الموقع من الخريطة
+  Widget _buildLocationSection(BuildContext context, ConfirmOrderViewModel vm, dynamic colors) {
+    return GestureDetector(
+      onTap: () async {
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const PickLocationView()),
+        );
+
+        if (result != null && result is Map) {
+          final latLng = result['latLng'] as LatLng;
+          final address = result['address'] as String;
+          vm.setLocation(latLng.latitude, latLng.longitude, address);
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: vm.selectedLatitude != null ? colors.primary.withOpacity(0.3) : colors.text.withOpacity(0.05)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.map_rounded, color: colors.primary),
+                const SizedBox(width: 10),
+                Text('موقع تقديم الخدمة', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colors.text)),
+                const Spacer(),
+                if (vm.selectedLatitude != null)
+                  Icon(Icons.check_circle, color: Colors.green, size: 20),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: colors.background,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.location_on_rounded, color: vm.selectedLatitude != null ? Colors.redAccent : colors.textSub, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      vm.selectedAddress ?? 'اضغط لتحديد موقعك على الخريطة',
+                      style: TextStyle(
+                        color: vm.selectedAddress != null ? colors.text : colors.textSub,
+                        fontSize: 14,
+                        fontWeight: vm.selectedAddress != null ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                  Icon(Icons.arrow_forward_ios, color: colors.textSub, size: 14),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(TextEditingController controller, String hint, IconData icon, dynamic colors, {TextInputType? keyboardType}) {
+    return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
+      style: TextStyle(color: colors.text, fontSize: 14),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(color: colors.textSub, fontSize: 13),
+        prefixIcon: Icon(icon, color: colors.primary, size: 20),
+        filled: true,
+        fillColor: colors.background,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+        contentPadding: const EdgeInsets.symmetric(vertical: 16),
+      ),
+    );
+  }
+
+  /// 🛠️ 3. قسم الخدمات الفرعية
+  Widget _buildCustomizationSection(BuildContext context, ConfirmOrderViewModel vm, dynamic colors) {
+    if (vm.subServices.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Row(
+            children: [
+              Icon(Icons.add_circle_outline_rounded, color: colors.text, size: 20),
+              const SizedBox(width: 8),
+              Text('الخدمات الإضافية', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colors.text)),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            children: List.generate(vm.subServices.length, (index) {
+              final sub = vm.subServices[index];
+              return Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: index != vm.subServices.length - 1 ? Border(bottom: BorderSide(color: colors.text.withOpacity(0.05))) : null,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(sub.title, style: TextStyle(fontWeight: FontWeight.bold, color: colors.text, fontSize: 14)),
+                          Text('${sub.price.toInt()} ر.س', style: TextStyle(color: colors.primary, fontSize: 12, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        _buildCounterBtn(Icons.remove, () => vm.decrementSubService(index), colors, isSub: true),
+                        SizedBox(width: 40, child: Center(child: Text('${sub.quantity}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: colors.text)))),
+                        _buildCounterBtn(Icons.add, () => vm.incrementSubService(index), colors),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ),
+        ),
       ],
     );
   }
 
-  /// 4️⃣ قسم الملاحظات الإضافية
-  Widget _buildNotesSection(
-    BuildContext context,
-    ConfirmOrderViewModel vm,
-    dynamic colors,
-  ) {
+  Widget _buildCounterBtn(IconData icon, VoidCallback onTap, dynamic colors, {bool isSub = false}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: isSub ? colors.background : colors.primary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(icon, color: isSub ? colors.textSub : colors.primary, size: 18),
+      ),
+    );
+  }
+
+  /// 📝 4. قسم الملاحظات
+  Widget _buildNotesSection(BuildContext context, ConfirmOrderViewModel vm, dynamic colors) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(Icons.notes, color: colors.text, size: 20),
+            Icon(Icons.edit_note_rounded, color: colors.text, size: 24),
             const SizedBox(width: 8),
-            Text(
-              'ملاحظات إضافية',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: colors.text,
-              ),
-            ),
+            Text('ملاحظات إضافية', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colors.text)),
           ],
         ),
         const SizedBox(height: 12),
         TextField(
           controller: vm.notesController,
-          maxLines: 3,
+          maxLines: 4,
           style: TextStyle(color: colors.text, fontSize: 13),
           decoration: InputDecoration(
-            hintText: 'اكتب أي تعليمات خاصة لمقدم الخدمة هنا...',
+            hintText: 'اكتب هنا أي تفاصيل تريد لمقدم الخدمة معرفتها...',
             hintStyle: TextStyle(color: colors.textSub, fontSize: 12),
             filled: true,
             fillColor: Theme.of(context).cardColor,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide.none,
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
           ),
         ),
       ],
     );
   }
 
-  /// 🔴 5. البطاقة السفلية الثابتة (إجمالي الحساب وزر التأكيد)
-  Widget _buildBottomCheckoutBar(
-    BuildContext context,
-    ConfirmOrderViewModel vm,
-    dynamic colors,
-  ) {
-    int totalItems = vm.subServices
-        .where((a) => a.quantity > 0)
-        .fold(0, (sum, item) => sum + item.quantity);
-
+  /// 🏁 5. بار الدفع السفلي
+  Widget _buildBottomCheckoutBar(BuildContext context, ConfirmOrderViewModel vm, dynamic colors) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -5),
-          ),
-        ],
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, -5))],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -569,70 +371,12 @@ class ConfirmOrderView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'المجموع الفرعي ($totalItems عناصر)',
-                style: TextStyle(color: colors.textSub, fontSize: 12),
-              ),
-              Text(
-                '${vm.subTotal.toStringAsFixed(2)} ر.س',
-                style: TextStyle(
-                  color: colors.textSub,
-                  fontSize: 12,
-                  fontFamily: 'Cairo',
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'ضريبة القيمة المضافة (15%)',
-                style: TextStyle(color: colors.textSub, fontSize: 12),
-              ),
-              Text(
-                '${vm.vatAmount.toStringAsFixed(2)} ر.س',
-                style: TextStyle(
-                  color: colors.textSub,
-                  fontSize: 12,
-                  fontFamily: 'Cairo',
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'الإجمالي النهائي',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: colors.text,
-                  fontSize: 14,
-                ),
-              ),
+              Text('الإجمالي النهائي', style: TextStyle(fontWeight: FontWeight.bold, color: colors.textSub, fontSize: 14)),
               RichText(
                 text: TextSpan(
                   children: [
-                    TextSpan(
-                      text: '${vm.finalTotal.toStringAsFixed(1)} ',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 24,
-                        color: colors.primary,
-                        fontFamily: 'Cairo',
-                      ),
-                    ),
-                    TextSpan(
-                      text: 'ر.س',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: colors.text,
-                        fontFamily: 'Cairo',
-                      ),
-                    ),
+                    TextSpan(text: '${vm.finalTotal.toStringAsFixed(1)} ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26, color: colors.primary, fontFamily: 'Cairo')),
+                    TextSpan(text: 'ر.س', style: TextStyle(fontSize: 14, color: colors.text, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                   ],
                 ),
               ),
@@ -641,48 +385,25 @@ class ConfirmOrderView extends StatelessWidget {
           const SizedBox(height: 20),
           SizedBox(
             width: double.infinity,
-            height: 55,
+            height: 60,
             child: ElevatedButton(
-              onPressed: vm.isLoading
-                  ? null
-                  : () async {
-                      final success = await vm.confirmOrder();
-                      if (success && context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('تم تأكيد الطلب بنجاح! ✅'),
-                          ),
-                        );
-                      }
-                    },
+              onPressed: vm.isLoading ? null : () async {
+                final success = await vm.confirmOrder();
+                if (success && context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم إرسال طلبك بنجاح! 🚀')));
+                  Navigator.pop(context);
+                } else if (vm.errorMessage != null && context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(vm.errorMessage!), backgroundColor: Colors.redAccent));
+                }
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: colors.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                 elevation: 0,
               ),
               child: vm.isLoading
                   ? const CircularProgressIndicator(color: Colors.white)
-                  : const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'تأكيد الطلب',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Icon(
-                          Icons.check_circle_outline,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ],
-                    ),
+                  : const Text('تأكيد وحجز الخدمة', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
             ),
           ),
         ],

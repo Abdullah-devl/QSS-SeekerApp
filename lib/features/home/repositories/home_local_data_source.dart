@@ -1,6 +1,6 @@
 // import 'package:flutter/foundation.dart';
 // import 'package:seeker/features/home/models/category_model.dart';
-// import 'package:seeker/features/home/models/service_model.dart';
+// import 'package:seeker/features/home/services/service_model.dart';
 
 // class HomeLocalDataSource {
 //   final box = Hive.box('homeBox');

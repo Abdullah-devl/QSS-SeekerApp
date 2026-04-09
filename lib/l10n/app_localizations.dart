@@ -269,7 +269,7 @@ abstract class AppLocalizations {
   /// No description provided for @enterFullName.
   ///
   /// In en, this message translates to:
-  /// **'Enter Your Full Name'**
+  /// **'Enter your full name'**
   String get enterFullName;
 
   /// No description provided for @confirmPassword.
@@ -703,6 +703,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Selected Location'**
   String get selectedLocation;
+
+  /// No description provided for @serviceDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Information'**
+  String get serviceDetails;
+
+  /// No description provided for @providerProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Provider'**
+  String get providerProfile;
+
+  /// No description provided for @aboutProvider.
+  ///
+  /// In en, this message translates to:
+  /// **'About Provider'**
+  String get aboutProvider;
+
+  /// No description provided for @previousWorks.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get previousWorks;
+
+  /// No description provided for @serviceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Description'**
+  String get serviceDescription;
+
+  /// No description provided for @serviceFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Features'**
+  String get serviceFeatures;
+
+  /// No description provided for @location.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get location;
+
+  /// No description provided for @workingHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Hours'**
+  String get workingHours;
+
+  /// No description provided for @bankAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Accounts'**
+  String get bankAccounts;
+
+  /// No description provided for @customerReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer Reviews'**
+  String get customerReviews;
+
+  /// No description provided for @totalCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Cost'**
+  String get totalCost;
+
+  /// No description provided for @estimated.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated'**
+  String get estimated;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View All'**
+  String get viewAll;
+
+  /// No description provided for @availableNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Now'**
+  String get availableNow;
+
+  /// No description provided for @newService.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get newService;
+
+  /// No description provided for @perService.
+  ///
+  /// In en, this message translates to:
+  /// **'Per Service'**
+  String get perService;
+
+  /// No description provided for @yearsExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} years experience'**
+  String yearsExperience(Object count);
+
+  /// No description provided for @chatNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat Now'**
+  String get chatNow;
+
+  /// No description provided for @copySuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Account number copied successfully! ✅'**
+  String get copySuccess;
+
+  /// No description provided for @openInMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Maps'**
+  String get openInMaps;
+
+  /// No description provided for @visitProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get visitProfile;
+
+  /// No description provided for @contactInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Info'**
+  String get contactInfo;
+
+  /// No description provided for @callNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get callNow;
+
+  /// No description provided for @copyNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copyNumber;
+
+  /// No description provided for @noWorkingHours.
+  ///
+  /// In en, this message translates to:
+  /// **'No working hours have been set for this service yet.'**
+  String get noWorkingHours;
+
+  /// No description provided for @noBankAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'No bank accounts are currently added for this provider.'**
+  String get noBankAccounts;
+
+  /// No description provided for @noContactInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'No contact numbers are currently available to request service.'**
+  String get noContactInfo;
+
+  /// No description provided for @noPreviousWorks.
+  ///
+  /// In en, this message translates to:
+  /// **'No previous works have been added yet.'**
+  String get noPreviousWorks;
 }
 
 class _AppLocalizationsDelegate

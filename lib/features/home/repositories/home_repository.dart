@@ -3,7 +3,7 @@
 // import 'package:connectivity_plus/connectivity_plus.dart';
 // import 'package:flutter/foundation.dart';
 // import 'package:seeker/features/home/models/category_model.dart';
-// import 'package:seeker/features/home/models/service_model.dart';
+// import 'package:seeker/features/home/services/service_model.dart';
 // import 'package:seeker/features/home/repositories/home_local_data_source.dart';
 // import 'package:seeker/features/home/repositories/home_remote_data_source.dart';
 
@@ -41,9 +41,10 @@ import '../../../../core/network/api_service.dart';
 import '../../../../core/network/api_endpoints.dart';
 import '../models/category_model.dart';
 
-import '../models/service_model.dart';
+import '../services/models/service_model.dart';
 import '../models/category_details_model.dart';
-import '../../../../core/errors/api_error_handler.dart'; // ✅ الاستيراد الجديد
+import 'package:seeker/features/profile/models/profile_model.dart';
+// import '../../../../core/errors/api_error_handler.dart'; // ✅ الاستيراد الجديد
 
 /// 📂 اسم الملف: home_repository.dart
 /// 📝 الوصف: المستودع (Repository) الخاص بالصفحة الرئيسية.
@@ -162,9 +163,9 @@ class HomeRepository {
       ApiEndpoints.categoryDetails(categoryId),
     );
 
-    // print('✅ URL: ${response.requestOptions.uri}');
-    // print('✅ STATUS: ${response.statusCode}');
-    // print('✅ RAW: ${response.data}');
+    print('✅ URL: ${response.requestOptions.uri}');
+    print('✅ STATUS: ${response.statusCode}');
+    print('✅ RAW: ${response.data}');
 
     if (response.statusCode == 200) {
       final data = response.data;
@@ -181,29 +182,57 @@ class HomeRepository {
       'Request failed: ${response.statusCode} - ${response.data}',
     );
   }
-}
 
-// ===========================================================================
-// 🔍 جلب تفاصيل خدمة معينة (مع خدماتها الفرعية)
-// ===========================================================================
-Future<ServiceModel> fetchServiceById(int serviceId) async {
-  try {
-    // 🚀 استدعاء الرابط: GET /services/{id}
-    var _apiService;
-    final Response response = await _apiService.get('/services/$serviceId');
+  // ===========================================================================
+  // 🔍 جلب تفاصيل خدمة معينة (مع خدماتها الفرعية)
+  // ===========================================================================
 
-    if (response.statusCode == 200) {
-      // استخراج البيانات (سواء كانت داخل 'data' أو مباشرة)
-      final data = response.data;
-      final Map<String, dynamic> jsonResponse =
-          (data is Map && data.containsKey('data')) ? data['data'] : data;
+  /// يقوم بجلب تفاصيل خدمة محددة باستخدام معرفها.
+  Future<ServiceModel> fetchServiceById(int serviceId) async {
+    try {
+      final Response response = await _apiService.get('/services/$serviceId');
 
-      // 🪄 المودل الخاص بك (ServiceModel) سيقوم تلقائياً بقراءة الخدمات الفرعية بفضل تعديلنا السابق!
-      return ServiceModel.fromJson(jsonResponse);
-    } else {
-      throw Exception('فشل في تحميل الخدمة');
+      if (response.statusCode == 200) {
+        final data = response.data;
+        final Map<String, dynamic> jsonResponse =
+            (data is Map && data.containsKey('data')) ? data['data'] : data;
+
+        print('✅ RAW SERVICE: ${response.data}');
+
+        return ServiceModel.fromJson(jsonResponse);
+      } else {
+        throw Exception('فشل في تحميل الخدمة');
+      }
+    } catch (e) {
+      throw Exception('خطأ في الاتصال: $e');
     }
-  } catch (e) {
-    throw Exception('خطأ في الاتصال: $e');
+  }
+
+  // ===========================================================================
+  // 👤 جلب ملف المستخدم/المزود (User Profile)
+  // ===========================================================================
+
+  /// يقوم بجلب بيانات الملف الشخصي (النبذة، معرض الأعمال) لمزود الخدمة.
+  Future<ProfileModel> fetchUserProfile(int userId) async {
+    try {
+      final Response response = await _apiService.get(
+        ApiEndpoints.userProfile(userId),
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        final Map<String, dynamic> jsonResponse =
+            (data is Map && data.containsKey('data')) ? data['data'] : data;
+
+        print('✅ RAW PROFILE: $jsonResponse');
+
+        return ProfileModel.fromJson(jsonResponse);
+      } else {
+        throw Exception('فشل في تحميل الملف الشخصي');
+      }
+    } catch (e) {
+      throw Exception('خطأ في الاتصال: $e');
+    }
   }
 }
+

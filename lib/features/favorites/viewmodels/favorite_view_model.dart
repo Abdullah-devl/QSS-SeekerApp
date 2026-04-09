@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:seeker/features/home/models/category_model.dart';
-import 'package:seeker/features/home/models/service_model.dart';
+import 'package:seeker/features/home/services/models/service_model.dart';
 
 class FavoriteViewModel extends ChangeNotifier {
   FavoriteViewModel() {
@@ -69,8 +69,9 @@ class FavoriteViewModel extends ChangeNotifier {
           description: '',
           price: 50.0,
           rating: 4.8,
-          imageUrl: 'https://example.com/ac.jpg', // ضع رابط حقيقي للتجربة
+          imageUrl: 'https://example.com/ac.jpg',
           providerName: 'شركة البركة للخدمات الفنية',
+          providerId: 10, // 👈 Dummy ID for mock data
         ),
         ServiceModel(
           id: 102,
@@ -81,6 +82,7 @@ class FavoriteViewModel extends ChangeNotifier {
           rating: 4.9,
           imageUrl: 'https://example.com/clean.jpg',
           providerName: 'خدمات النظافة الراقية',
+          providerId: 11, // 👈 Dummy ID for mock data
         ),
       ];
     } catch (e) {

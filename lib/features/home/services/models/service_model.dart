@@ -114,43 +114,8 @@
 //         rawImagePath.toString() != 'null') {
 //       finalImage = rawImagePath.startsWith('http')
 //           ? rawImagePath
-//           : 'http://127.0.0.1:8000/storage/$rawImagePath';
-//     }
+import '../../models/service_schedule_model.dart';
 
-//     // 🚀 2. استخراج الخدمات الفرعية (إذا أرسلها لارافيل كـ children أو sub_services)
-//     // سيقوم الكود باستدعاء ServiceModel.fromJson لكل خدمة فرعية بداخلها!
-//     var rawSubServices =
-//         json['children'] ?? json['sub_services'] ?? json['child_services'];
-//     List<ServiceModel> parsedSubServices = [];
-
-//     if (rawSubServices != null && rawSubServices is List) {
-//       parsedSubServices = rawSubServices
-//           .map((e) => ServiceModel.fromJson(e as Map<String, dynamic>))
-//           .toList();
-//     }
-
-//     return ServiceModel(
-//       id: json['id'] ?? 0,
-//       title: json['name'] ?? json['title'] ?? 'بدون عنوان',
-//       description: json['description'] ?? 'لا يوجد وصف',
-//       categoryId: json['category_id'] ?? 0,
-
-//       // الحل السحري للأرقام: تحويل آمن جداً للسعر والتقييم
-//       price: double.tryParse(json['price'].toString()) ?? 0.0,
-//       rating:
-//           double.tryParse((json['rating_avg'] ?? json['rating']).toString()) ??
-//           0.0,
-
-//       imageUrl: finalImage,
-//       providerName:
-//           json['provider_name'] ?? json['provider']?['name'] ?? 'مزود خدمة',
-
-//       // 🚀 إسناد الخدمات الفرعية التي تم استخراجها
-//       subServices: parsedSubServices,
-//     );
-//   }
-// }
-/// 📂 اسم الملف: service_model.dart
 class ServiceModel {
   final int id;
   final String title;
@@ -159,12 +124,11 @@ class ServiceModel {
   final double rating;
   final String imageUrl;
   final String providerName;
+  final int providerId; 
   final int categoryId;
-
-  // 🚀 المتغير الأهم لمعرفة هل هي أساسية أم فرعية
-   int? parentServiceId;
-
- List<ServiceModel> subServices;
+  int? parentServiceId;
+  List<ServiceModel> subServices;
+  final List<ServiceScheduleModel> schedules; // 📅 جدول المواعيد المتاح لهذه الخدمة
 
   ServiceModel({
     required this.id,
@@ -174,9 +138,11 @@ class ServiceModel {
     required this.rating,
     required this.imageUrl,
     required this.providerName,
+    required this.providerId,
     required this.categoryId,
     this.parentServiceId,
     this.subServices = const [],
+    this.schedules = const [],
   });
 
   factory ServiceModel.fromJson(Map<String, dynamic> json) {
@@ -203,6 +169,13 @@ class ServiceModel {
           .toList();
     }
 
+    // 🕒 3. استخراج جدول المواعيد (Schedules)
+    var rawSchedules = json['schedules'] ?? json['service_schedules'] ?? [];
+    List<ServiceScheduleModel> parsedSchedules = [];
+    if (rawSchedules is List) {
+      parsedSchedules = rawSchedules.map((e) => ServiceScheduleModel.fromJson(e)).toList();
+    }
+
     // 🚀 3. قراءة الـ parent_service_id بصرامة (الحل السحري)
     int? pId;
     var rawParent = json['parent_service_id'] ?? json['parent_id'];
@@ -227,7 +200,9 @@ class ServiceModel {
       imageUrl: finalImage,
       providerName:
           json['provider_name'] ?? json['provider']?['name'] ?? 'مزود خدمة',
+      providerId: int.tryParse((json['user_id'] ?? json['provider_id'] ?? json['provider']?['id'] ?? json['user']?['id'] ?? '0').toString()) ?? 0,
       subServices: parsedSubServices,
+      schedules: parsedSchedules, // ✅ تم الإسناد هنا
     );
   }
 }

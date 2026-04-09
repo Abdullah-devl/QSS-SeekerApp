@@ -4,13 +4,15 @@ import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/core/routes/app_routes.dart';
 import 'package:seeker/core/theme/qs_colors.dart'; // Import QSColors definition
 import 'package:seeker/features/home/models/category_model.dart';
-import 'package:seeker/features/home/models/service_model.dart';
+import 'package:seeker/features/home/services/models/service_model.dart';
 import 'package:seeker/features/home/viewmodels/home_view_model.dart';
 import 'package:seeker/features/home/views/home_drawer.dart';
 import 'package:seeker/features/home/widgets/custom_nav_bar.dart'; // Import CustomNavBar
 import 'package:seeker/features/settings/views/settings_view.dart'; // Import SettingsView
 import 'package:seeker/core/network/api_endpoints.dart';
-// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../services/viewmodels/service_details_view_model.dart';
+import '../services/view/service_details_view.dart';
+import '../repositories/home_repository.dart';
 import 'package:seeker/l10n/app_localizations.dart';
 
 class HomeView extends StatefulWidget {
@@ -554,21 +556,35 @@ class _HomeViewState extends State<HomeView> {
   Widget _buildPopularServicesList(List<ServiceModel> services) {
     return Column(
       children: services.map((service) {
-        return Container(
-          margin: const EdgeInsets.only(bottom: 16),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: context.qsColors.text.withValues(alpha: 0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ChangeNotifierProvider(
+                  create: (context) => ServiceDetailsViewModel(
+                    context.read<HomeRepository>(),
+                  ),
+                  child: ServiceDetailsView(initialService: service),
+                ),
               ),
-            ],
-          ),
-          child: Row(
+            );
+          },
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: context.qsColors.text.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
             textDirection: TextDirection.rtl, // لترتيب الصورة يمين والنص يسار
             children: [
               // صورة الخدمة
@@ -711,10 +727,11 @@ class _HomeViewState extends State<HomeView> {
               ),
             ],
           ),
-        );
-      }).toList(),
-    );
-  }
+        ),
+      );
+    }).toList(),
+  );
+}
 
   // ---------------------------------------------------------------------------
   // 🖼️ معالجة صور التصنيفات (Image Handling)

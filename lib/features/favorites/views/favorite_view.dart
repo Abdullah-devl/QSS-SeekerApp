@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/features/favorites/viewmodels/favorite_view_model.dart';
-import 'package:seeker/features/home/models/service_model.dart';
+import 'package:seeker/features/home/services/models/service_model.dart';
+
 class FavoriteView extends StatelessWidget {
   const FavoriteView({super.key});
 

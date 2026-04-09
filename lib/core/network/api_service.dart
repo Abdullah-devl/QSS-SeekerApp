@@ -22,11 +22,11 @@ class ApiService {
           /// 🔗 الرابط الأساسي: يتم جلبه من كلاس ApiEndpoints.
           baseUrl: ApiEndpoints.baseUrl,
 
-          /// ⏳ مدة انتظار الاتصال (Connection Timeout): 15 ثانية.
-          connectTimeout: const Duration(seconds: 15),
+          /// ⏳ مدة انتظار الاتصال (Connection Timeout): 50 ثانية.
+          connectTimeout: const Duration(seconds: 50),
 
-          /// ⏳ مدة انتظار استقبال البيانات (Receive Timeout): 15 ثانية.
-          receiveTimeout: const Duration(seconds: 15),
+          /// ⏳ مدة انتظار استقبال البيانات (Receive Timeout): 50 ثانية.
+          receiveTimeout: const Duration(seconds: 50),
 
           /// 📋 الهيدرز (Headers) الافتراضية لكل الطلبات.
           headers: {
@@ -72,7 +72,13 @@ class ApiService {
 
         // ❌ عند حدوث خطأ (On Error)
         onError: (DioException e, handler) {
-          developer.log('❌ Error: ${e.message}', name: 'ApiService', error: e);
+          // 🚀 محاولة استخراج رسالة الخطأ القادمة من الباكيند (صاحب الباك)
+          String? serverMessage;
+          if (e.response?.data is Map) {
+             serverMessage = e.response?.data['message'] ?? e.response?.data['error'];
+          }
+
+          developer.log('❌ Error: ${serverMessage ?? e.message}', name: 'ApiService', error: e);
 
           // ⚠️ التحقق مما إذا كان الخطأ بسبب انتهاء الصلاحية (401 Unauthorized).
           if (e.response?.statusCode == 401) {
@@ -89,17 +95,7 @@ class ApiService {
               error: e.response?.data,
             );
           }
-          // ⚠️ طباعة تفاصيل أخطاء الصلاحيات (403 Forbidden)
-          if (e.response?.statusCode == 403) {
-            developer.log(
-              '⛔ Forbidden: ${e.response?.data}',
-              name: 'ApiService',
-              error: e.response?.data,
-            );
-          }
-          return handler.next(
-            e,
-          ); // ⚠️ تمرير الخطأ ليتم معالجته في المكان المناسب
+          return handler.next(e); // ⚠️ تمرير الخطأ ليتم معالجته في المكان المناسب
         },
       ),
     );

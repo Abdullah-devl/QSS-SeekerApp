@@ -1,14 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:seeker/core/errors/failure.dart';
-// // تأكد من مسار الـ repository لديك
-// // import '../repositories/home_repository.dart';
-// import '../models/service_model.dart';
-
-// /// 📂 اسم الملف: service_details_view_model.dart
-// class ServiceDetailsViewModel extends ChangeNotifier {
-//   // final HomeRepository _repository; // فك التعليق عند ربط الـ API الحقيقي
-
-//   // ServiceDetailsViewModel(this._repository);
 //   ServiceDetailsViewModel();
 
 //   bool _isLoading = false;
@@ -55,46 +44,60 @@
 //   void toggleFavorite() {
 //     _isFavorite = !_isFavorite;
 //     notifyListeners();
-//     // 💡 إرسال الطلب للـ API
-//     // _repository.toggleFavorite(_service!.id);
-//   }
-// }
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import '../models/service_model.dart';
-// 🚀 استدعاء الريبوزيتوري
-// import '../repositories/home_repository.dart'; 
+import 'package:seeker/features/profile/models/profile_model.dart';
+import '../../repositories/home_repository.dart';
 
 /// 📂 اسم الملف: service_details_view_model.dart
+/// 📝 الوصف: مسؤول عن إدارة حالة صفحة تفاصيل الخدمة.
+/// يقوم بجلب تفاصيل الخدمة وبيانات المزود (النبذة والأعمال) من السيرفر.
 class ServiceDetailsViewModel extends ChangeNotifier {
-  // final HomeRepository _repository;
-  // ServiceDetailsViewModel(this._repository);
+  final HomeRepository _repository;
+
+  ServiceDetailsViewModel(this._repository);
 
   bool _isLoading = false;
   String _errorMessage = '';
   ServiceModel? _service;
+  ProfileModel? _providerProfile; // 👤 ملف المزود
   bool _isFavorite = false;
 
+  // Getters
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
   ServiceModel? get service => _service;
+  ProfileModel? get providerProfile => _providerProfile;
   bool get isFavorite => _isFavorite;
 
-  /// 🚀 جلب بيانات الخدمة التفصيلية من الـ API
+  /// 🚀 جلب بيانات الخدمة وتفاصيل المزود من الـ API
   Future<void> fetchServiceDetails(int serviceId, ServiceModel initialData) async {
-    // 1️⃣ نضع البيانات الأولية فوراً لكي تفتح الشاشة بدون انتظار (Optimistic UI)
-    _service = initialData; 
+    // 1️⃣ تعيين البيانات الأولية (Optimistic UI)
+    _service = initialData;
     _isLoading = true;
+    _errorMessage = '';
     notifyListeners();
 
     try {
-      // 2️⃣ نطلب البيانات الكاملة (والتي بداخلها الخدمات الفرعية) من السيرفر
-      // _service = await _repository.fetchServiceById(serviceId);
+      // 2️⃣ جلب تفاصيل الخدمة الكاملة (للحصول على الخدمات الفرعية)
+      _service = await _repository.fetchServiceById(serviceId);
+      
+      developer.log('🔍 ServiceDetails: Loaded service $serviceId, ProviderId: ${_service?.providerId}', name: 'ServiceDetails');
 
-      // محاكاة للإنترنت (للتجربة) - احذفها بعد ربط الريبوزيتوري
-      await Future.delayed(const Duration(milliseconds: 800)); 
+      // 3️⃣ جلب ملف المزود (باستخدام معرف المزود المستخرج من الخدمة)
+      if (_service != null && _service!.providerId != 0) {
+        developer.log('👤 ServiceDetails: Fetching profile for Provider ID: ${_service!.providerId}', name: 'ServiceDetails');
+        _providerProfile = await _repository.fetchUserProfile(_service!.providerId);
+        developer.log('✅ ServiceDetails: Profile loaded for ${_providerProfile?.name}. Banks: ${_providerProfile?.banks.length}', name: 'ServiceDetails');
+      } else {
+        developer.log('⚠️ ServiceDetails: No ProviderId found or Id is 0 for service $serviceId', name: 'ServiceDetails');
+      }
       
     } catch (e) {
-      _errorMessage = 'تعذر تحديث البيانات، نعرض البيانات المحفوظة مسبقاً.';
+      // لا نعين خطأ فادحاً لأننا نملك البيانات الأولية على الأقل
+      _errorMessage = 'تعذر تحديث بعض البيانات من الخادم.';
+      developer.log('❌ ServiceDetails: ViewModel Error: $e', name: 'ServiceDetails', error: e);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -105,6 +108,6 @@ class ServiceDetailsViewModel extends ChangeNotifier {
   void toggleFavorite() {
     _isFavorite = !_isFavorite;
     notifyListeners();
-    // 💡 إرسال الطلب للـ API مستقبلاً
+    // TODO: ربطها بـ API المفضلة مستقبلاً
   }
 }

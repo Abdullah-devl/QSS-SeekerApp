@@ -196,7 +196,6 @@ class MyApp extends StatelessWidget {
               return CategoryDetailsView(category: category);
             },
             AppRoutes.beProvider: (context) => const BeProviderView(),
-            AppRoutes.verifyEmail: (context) => const VerifyEmailView(),
           },
         );
       },
@@ -213,3 +212,4 @@ class BadCertificateHttpOverrides extends HttpOverrides {
           (X509Certificate cert, String host, int port) => true;
   }
 }
+ 

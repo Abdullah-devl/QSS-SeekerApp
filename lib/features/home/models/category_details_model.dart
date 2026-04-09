@@ -194,8 +194,8 @@
 // }
 
 import 'category_model.dart';
-import 'service_model.dart';
 import 'provider_model.dart';
+import '../services/models/service_model.dart';
 
 /// 📂 اسم الملف: category_details_model.dart
 class CategoryDetailsModel {

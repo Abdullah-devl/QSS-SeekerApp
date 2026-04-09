@@ -64,4 +64,23 @@ class ApiEndpoints {
   static String categoryDetails(int id) => "$baseUrl/categories/$id";
 
   static String get beProvider => "$baseUrl/provider-requests";
+
+  /// 👤 رابط ملف المستخدم (Profile) لجلب بيانات المزود (النبذة والأعمال).
+  static String userProfile(int userId) => "$baseUrl/user-profile/$userId";
+
+  /// 📸 رابط جلب معرض الأعمال السابقة لمستخدم معين.
+  static String previousWorks(int userId) => "$baseUrl/previous-work?user_id=$userId";
+
+  // ===========================================================================
+  // 📝 روابط الطلبات (Request Endpoints)
+  // ===========================================================================
+
+  /// 🛠️ رابط إرسال طلب مخصص.
+  static String get customRequest => "$baseUrl/requests/custom";
+
+  /// 🤝 رابط طلب حضور (لقاء جسدي).
+  static String get meetingRequest => "$baseUrl/requests/meeting";
+
+  /// 📝 رابط إنشاء طلب خدمة عادي.
+  static String get createRequest => "$baseUrl/requests";
 }

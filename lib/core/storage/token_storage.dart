@@ -13,6 +13,7 @@ class TokenStorage {
   static const String _userRoleKey = 'user_role';
   static const String _userPhoneKey = 'user_phone';
   static const String _userAddressKey = 'user_address';
+  static const String _userIdKey = 'user_id';
   static const String _languageKey = 'app_language';
 
   // ===========================================================================
@@ -69,6 +70,7 @@ class TokenStorage {
 
   /// 💾 حفظ بيانات المستخدم الأساسية (الاسم والدور).
   Future<void> saveUserData({
+    required int id,
     required String name,
     required String email,
     required String role,
@@ -76,6 +78,7 @@ class TokenStorage {
     String? address,
   }) async {
     final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_userIdKey, id);
     await prefs.setString(_userNameKey, name);
     await prefs.setString(_userEmailKey, email);
     await prefs.setString(_userRoleKey, role);
@@ -84,9 +87,10 @@ class TokenStorage {
   }
 
   /// 📤 استرجاع بيانات المستخدم (الاسم والدور) كـ Map.
-  Future<Map<String, String?>> getUserData() async {
+  Future<Map<String, dynamic>> getUserData() async {
     final prefs = await SharedPreferences.getInstance();
     return {
+      'id': prefs.getInt(_userIdKey),
       'name': prefs.getString(_userNameKey),
       'email': prefs.getString(_userEmailKey),
       'role': prefs.getString(_userRoleKey),
@@ -104,6 +108,7 @@ class TokenStorage {
     await prefs.remove(_userRoleKey);
     await prefs.remove(_userPhoneKey);
     await prefs.remove(_userAddressKey);
+    await prefs.remove(_userIdKey);
     // ومسح التوكن أيضاً للتأكد
     await prefs.remove(_tokenKey);
     // ومسح وضع الزائر

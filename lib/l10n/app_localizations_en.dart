@@ -96,7 +96,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Register now in QuickServe and start using our premium services';
 
   @override
-  String get enterFullName => 'Enter Your Full Name';
+  String get enterFullName => 'Enter your full name';
 
   @override
   String get confirmPassword => 'Confirm Password';
@@ -318,4 +318,93 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectedLocation => 'Selected Location';
+
+  @override
+  String get serviceDetails => 'Service Information';
+
+  @override
+  String get providerProfile => 'Service Provider';
+
+  @override
+  String get aboutProvider => 'About Provider';
+
+  @override
+  String get previousWorks => 'Gallery';
+
+  @override
+  String get serviceDescription => 'Service Description';
+
+  @override
+  String get serviceFeatures => 'Service Features';
+
+  @override
+  String get location => 'Location';
+
+  @override
+  String get workingHours => 'Service Hours';
+
+  @override
+  String get bankAccounts => 'Bank Accounts';
+
+  @override
+  String get customerReviews => 'Customer Reviews';
+
+  @override
+  String get totalCost => 'Total Cost';
+
+  @override
+  String get estimated => 'Estimated';
+
+  @override
+  String get viewAll => 'View All';
+
+  @override
+  String get availableNow => 'Available Now';
+
+  @override
+  String get newService => 'New';
+
+  @override
+  String get perService => 'Per Service';
+
+  @override
+  String yearsExperience(Object count) {
+    return '$count years experience';
+  }
+
+  @override
+  String get chatNow => 'Chat Now';
+
+  @override
+  String get copySuccess => 'Account number copied successfully! ✅';
+
+  @override
+  String get openInMaps => 'Open in Maps';
+
+  @override
+  String get visitProfile => 'Profile';
+
+  @override
+  String get contactInfo => 'Contact Info';
+
+  @override
+  String get callNow => 'Call';
+
+  @override
+  String get copyNumber => 'Copy';
+
+  @override
+  String get noWorkingHours =>
+      'No working hours have been set for this service yet.';
+
+  @override
+  String get noBankAccounts =>
+      'No bank accounts are currently added for this provider.';
+
+  @override
+  String get noContactInfo =>
+      'No contact numbers are currently available to request service.';
+
+  @override
+  String get noPreviousWorks => 'No previous works have been added yet.';
 }

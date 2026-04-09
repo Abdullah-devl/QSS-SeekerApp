@@ -120,6 +120,7 @@ class AuthRepository {
         if (user.isVerified && user.token != null) {
           await _tokenStorage.saveToken(user.token!);
           await _tokenStorage.saveUserData(
+            id: user.id,
             name: user.name,
             email: user.email,
             role:

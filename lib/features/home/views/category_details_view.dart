@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
-import 'package:seeker/features/home/viewmodels/service_details_view_model.dart';
-import 'package:seeker/features/home/views/service_details_view.dart';
+import 'package:seeker/features/home/services/viewmodels/service_details_view_model.dart';
+import 'package:seeker/features/home/services/view/service_details_view.dart';
 import '../models/category_model.dart';
-import '../models/service_model.dart';
+import '../services/models/service_model.dart';
+import '../repositories/home_repository.dart';
 import '../viewmodels/category_details_view_model.dart';
 
 /// 📂 اسم الملف: category_details_view.dart
@@ -256,7 +257,9 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
               context,
               MaterialPageRoute(
                 builder: (context) => ChangeNotifierProvider(
-                  create: (_) => ServiceDetailsViewModel(),
+                  create: (context) => ServiceDetailsViewModel(
+                    context.read<HomeRepository>(),
+                  ),
                   child: ServiceDetailsView(initialService: service),
                 ),
               ),

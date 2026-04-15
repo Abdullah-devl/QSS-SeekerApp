@@ -48,7 +48,15 @@ import 'package:seeker/features/favorites/viewmodels/favorite_view_model.dart';
 // Orders Feature
 import 'package:seeker/features/orders/Repository/orders_repository.dart';
 import 'package:seeker/features/orders/ViewModels/orders_viewmodel.dart';
-// import 'package:seeker/features/orders/Views/orders_view.dart';
+// Payment Feature
+import 'package:seeker/features/payment/repositories/payment_repository.dart';
+import 'package:seeker/features/payment/viewmodels/payment_viewmodel.dart';
+// import 'package:seeker/features/payment/views/payment_view.dart';
+
+// Search Feature
+import 'package:seeker/features/search/repositories/search_repository.dart';
+import 'package:seeker/features/search/viewmodels/search_viewmodel.dart';
+import 'package:seeker/features/search/views/search_view.dart';
 
 import 'dart:io';
 
@@ -117,6 +125,16 @@ void main() async {
           update: (_, apiService, __) => OrdersRepository(apiService),
         ),
 
+        // 💳 PaymentRepository
+        ProxyProvider<ApiService, PaymentRepository>(
+          update: (_, apiService, __) => PaymentRepository(apiService),
+        ),
+
+        // 🔍 SearchRepository
+        ProxyProvider<ApiService, SearchRepository>(
+          update: (_, apiService, __) => SearchRepository(apiService),
+        ),
+
         // ----------------------------------------------------------
         // 3️⃣ طبقة إدارة الحالة (ViewModels Layer)
         // ----------------------------------------------------------
@@ -180,6 +198,18 @@ void main() async {
         ChangeNotifierProvider<OrdersViewModel>(
           create: (context) =>
               OrdersViewModel(context.read<OrdersRepository>()),
+        ),
+
+        // 💳 Payment ViewModel
+        ChangeNotifierProvider<PaymentViewModel>(
+          create: (context) =>
+              PaymentViewModel(context.read<PaymentRepository>()),
+        ),
+
+        // 🔍 Search ViewModel
+        ChangeNotifierProvider<SearchViewModel>(
+          create: (context) =>
+              SearchViewModel(context.read<SearchRepository>()),
         ),
       ],
       child: const MyApp(),

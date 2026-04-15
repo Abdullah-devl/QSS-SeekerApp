@@ -57,6 +57,9 @@ class ApiEndpoints {
   /// ⭐ رابط جلب الخدمات الشائعة (Popular Services).
   static String get popularServices => "$baseUrl/popular-services";
 
+  /// 🔍 رابط البحث المتقدم عن الخدمات.
+  static String get searchServices => "$baseUrl/services/search";
+
   /// 📂 رابط جلب تفاصيل التصنيف (خدمات، تصنيفات فرعية، موصى بهم).
   /// [id] هو معرف التصنيف.
   // static String categoryDetails(int id) => "$baseUrl/categories/$id";
@@ -113,4 +116,9 @@ class ApiEndpoints {
 
   /// 🚨 رابط إرسال شكوى جديدة.
   static String get requestComplaints => "$baseUrl/request-complaints";
+
+  /// 💰 روابط الدفع والسداد.
+  static String get pointsBalance => "$baseUrl/points/balance";
+  static String payByPoints(String id) => "$baseUrl/requests/$id/payByPoints";
+  static String get requestBonds => "$baseUrl/request-bonds";
 }

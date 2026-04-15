@@ -114,9 +114,18 @@ class ProfileView extends StatelessWidget {
       backgroundColor: bgColor,
       elevation: 0,
       centerTitle: true,
-      title: Text(
-        vm.profile?.name ?? '...',
-        style: TextStyle(color: colors.text, fontWeight: FontWeight.bold, fontSize: 16),
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            vm.profile?.name ?? '...',
+            style: TextStyle(color: colors.text, fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          if (vm.profile?.verificationProvider == true) ...[
+            const SizedBox(width: 4),
+            const Icon(Icons.verified, color: Colors.blue, size: 16),
+          ],
+        ],
       ),
       leading: IconButton(
         icon: Icon(Icons.more_vert, color: colors.primary),
@@ -162,7 +171,15 @@ class ProfileView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(profile.name, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: colors.text)),
+                Row(
+                  children: [
+                    Text(profile.name, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: colors.text)),
+                    if (profile.verificationProvider) ...[
+                      const SizedBox(width: 6),
+                      const Icon(Icons.verified, color: Colors.blue, size: 22),
+                    ],
+                  ],
+                ),
                 const SizedBox(height: 4),
                 Text(profile.jobTitle, style: TextStyle(fontSize: 14, color: colors.primary, fontWeight: FontWeight.bold)),
               ],

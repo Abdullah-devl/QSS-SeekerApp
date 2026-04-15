@@ -1,6 +1,7 @@
 // مسار الملف: lib/features/orders/models/order_model.dart
 
 import '../../profile/models/bank_model.dart';
+import '../../../core/network/api_endpoints.dart';
 
 enum OrderStatus { newOrder, inProgress, completed, cancelled }
 
@@ -31,18 +32,27 @@ class OrderBond {
   final String id;
   final String bondNumber;
   final String imagePath;
+  final double amount; // 💰 مبلغ السند
 
   OrderBond({
     required this.id,
     required this.bondNumber,
     required this.imagePath,
+    required this.amount,
   });
 
   factory OrderBond.fromJson(Map<String, dynamic> json) {
+    String image = json['image_path'] ?? '';
+    // إضافة الرابط الأساسي إذا كان المسار نسبياً
+    if (image.isNotEmpty && !image.startsWith('http')) {
+      image = "${ApiEndpoints.storageBaseUrl}$image";
+    }
+
     return OrderBond(
       id: json['id']?.toString() ?? '',
       bondNumber: json['bond_number']?.toString() ?? '---',
-      imagePath: json['image_path'] ?? '',
+      imagePath: image,
+      amount: double.tryParse(json['amount']?.toString() ?? '0') ?? 0.0,
     );
   }
 }

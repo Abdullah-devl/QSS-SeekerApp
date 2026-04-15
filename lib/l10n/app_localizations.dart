@@ -1285,6 +1285,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Other'**
   String get type_other;
+
+  /// No description provided for @payment_page_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Payment'**
+  String get payment_page_title;
+
+  /// No description provided for @service_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Price'**
+  String get service_price;
+
+  /// No description provided for @available_points.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Points Balance'**
+  String get available_points;
+
+  /// No description provided for @pay_by_points.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay via Points (Wallet)'**
+  String get pay_by_points;
+
+  /// No description provided for @pay_by_bond.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay via Bank Transfer (Bond)'**
+  String get pay_by_bond;
+
+  /// No description provided for @confirm_points_payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Points Payment'**
+  String get confirm_points_payment;
+
+  /// No description provided for @confirm_points_payment_msg.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to pay for the service using your points?'**
+  String get confirm_points_payment_msg;
+
+  /// No description provided for @transferred_points_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Points to Use'**
+  String get transferred_points_label;
+
+  /// No description provided for @upload_receipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Receipt Image'**
+  String get upload_receipt;
+
+  /// No description provided for @amount_to_pay.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount to Pay'**
+  String get amount_to_pay;
+
+  /// No description provided for @points_payment_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment via points successful ✅'**
+  String get points_payment_success;
+
+  /// No description provided for @bond_payment_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Bond uploaded successfully and pending review ✅'**
+  String get bond_payment_success;
+
+  /// No description provided for @points_payment_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error paying via points'**
+  String get points_payment_error;
+
+  /// No description provided for @bond_payment_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error uploading bond'**
+  String get bond_payment_error;
+
+  /// No description provided for @no_points_balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient points balance'**
+  String get no_points_balance;
+
+  /// No description provided for @change_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Image'**
+  String get change_image;
+
+  /// No description provided for @select_image.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Image'**
+  String get select_image;
+
+  /// No description provided for @payment_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm & Pay'**
+  String get payment_confirm;
+
+  /// No description provided for @must_complete_payment.
+  ///
+  /// In en, this message translates to:
+  /// **'You must complete the payment first'**
+  String get must_complete_payment;
+
+  /// No description provided for @search_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced Search'**
+  String get search_title;
+
+  /// No description provided for @filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get filters;
+
+  /// No description provided for @price_range.
+  ///
+  /// In en, this message translates to:
+  /// **'Price Range'**
+  String get price_range;
+
+  /// No description provided for @min_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Min Price'**
+  String get min_price;
+
+  /// No description provided for @max_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Price'**
+  String get max_price;
+
+  /// No description provided for @category.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get category;
+
+  /// No description provided for @apply_filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply Filters'**
+  String get apply_filters;
+
+  /// No description provided for @reset_filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reset_filters;
+
+  /// No description provided for @no_results.
+  ///
+  /// In en, this message translates to:
+  /// **'Sorry, no results match your search'**
+  String get no_results;
+
+  /// No description provided for @no_results_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Try different keywords or change the filters'**
+  String get no_results_desc;
+
+  /// No description provided for @available_now.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Now'**
+  String get available_now;
+
+  /// No description provided for @unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently Unavailable'**
+  String get unavailable;
 }
 
 class _AppLocalizationsDelegate

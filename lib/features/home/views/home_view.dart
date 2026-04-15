@@ -8,6 +8,8 @@ import 'package:seeker/features/home/services/models/service_model.dart';
 import 'package:seeker/features/home/viewmodels/home_view_model.dart';
 import 'package:seeker/features/home/views/home_drawer.dart';
 import 'package:seeker/features/home/widgets/custom_nav_bar.dart'; // Import CustomNavBar
+import 'package:seeker/features/search/viewmodels/search_viewmodel.dart';
+import 'package:seeker/features/search/views/search_view.dart';
 import 'package:seeker/features/settings/views/settings_view.dart'; // Import SettingsView
 import 'package:seeker/core/network/api_endpoints.dart';
 import '../services/viewmodels/service_details_view_model.dart';
@@ -63,10 +65,7 @@ class _HomeViewState extends State<HomeView> {
             currentScreen = const OrdersView();
             break;
           case 2:
-            currentScreen = _buildPlaceholderPage(
-              context,
-              AppLocalizations.of(context)!.search,
-            );
+            currentScreen = const SearchView();
             break;
           case 3:
             currentScreen = const FavoriteView();
@@ -357,6 +356,16 @@ class _HomeViewState extends State<HomeView> {
       ),
       child: TextField(
         textAlign: TextAlign.right,
+        onSubmitted: (value) {
+          if (value.trim().isNotEmpty) {
+            // 1. تعيين النص في البحث
+            context.read<SearchViewModel>().setQuery(value);
+            // 2. الانتقال لتبويب البحث
+            context.read<HomeViewModel>().setIndex(2);
+            // 3. تشغيل البحث
+            context.read<SearchViewModel>().performSearch();
+          }
+        },
         decoration: InputDecoration(
           hintText: AppLocalizations.of(context)!.searchHint,
           hintStyle: TextStyle(
@@ -364,13 +373,22 @@ class _HomeViewState extends State<HomeView> {
             fontSize: 14,
           ),
           // زر الفلترة (يسار)
-          prefixIcon: Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: context.qsColors.secondary,
-              borderRadius: BorderRadius.circular(10),
+          prefixIcon: InkWell(
+            onTap: () {
+              // 1. تفعيل طلب فتح الفلاتر
+              context.read<SearchViewModel>().triggerFilters();
+              // 2. الانتقال لتبويب البحث مباشرة
+              context.read<HomeViewModel>().setIndex(2);
+            },
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: context.qsColors.secondary,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(Icons.tune, color: context.qsColors.text, size: 20),
             ),
-            child: Icon(Icons.tune, color: context.qsColors.text, size: 20),
           ),
           // أيقونة البحث (يمين)
           suffixIcon: Icon(Icons.search, color: context.qsColors.text),

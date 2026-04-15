@@ -485,7 +485,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String distance_away(Object distance) {
-    return 'يبعد عنك $distance كم';
+    return 'على بعد $distance كم';
   }
 
   @override
@@ -624,4 +624,98 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get type_other => 'أخرى';
+
+  @override
+  String get payment_page_title => 'إكمال عملية الدفع';
+
+  @override
+  String get service_price => 'سعر الخدمة';
+
+  @override
+  String get available_points => 'رصيد النقاط المتاح';
+
+  @override
+  String get pay_by_points => 'سداد عبر النقاط (الرصيد)';
+
+  @override
+  String get pay_by_bond => 'سداد عبر تحويل بنكي (سند)';
+
+  @override
+  String get confirm_points_payment => 'تأكيد الدفع بالنقاط';
+
+  @override
+  String get confirm_points_payment_msg =>
+      'هل أنت متأكد من رغبتك في سداد قيمة الخدمة باستخدام نقاطك؟';
+
+  @override
+  String get transferred_points_label => 'النقاط المستخدمة';
+
+  @override
+  String get upload_receipt => 'إرفاق صورة الإيصال';
+
+  @override
+  String get amount_to_pay => 'المبلغ المراد سداده';
+
+  @override
+  String get points_payment_success => 'تم السداد بالنقاط بنجاح ✅';
+
+  @override
+  String get bond_payment_success => 'تم رفع السند بنجاح وبانتظار المراجعة ✅';
+
+  @override
+  String get points_payment_error => 'خطأ في السداد بالنقاط';
+
+  @override
+  String get bond_payment_error => 'خطأ في رفع السند';
+
+  @override
+  String get no_points_balance => 'رصيدك غير كافٍ للدفع بالنقاط';
+
+  @override
+  String get change_image => 'تغيير الصورة';
+
+  @override
+  String get select_image => 'اختيار صورة';
+
+  @override
+  String get payment_confirm => 'تأكيد وعملية الدفع';
+
+  @override
+  String get must_complete_payment => 'عليك اكمال المبلغ أولاً';
+
+  @override
+  String get search_title => 'البحث المتقدم';
+
+  @override
+  String get filters => 'الفلاتر';
+
+  @override
+  String get price_range => 'نطاق السعر';
+
+  @override
+  String get min_price => 'أدنى سعر';
+
+  @override
+  String get max_price => 'أقصى سعر';
+
+  @override
+  String get category => 'القسم';
+
+  @override
+  String get apply_filters => 'تطبيق الفلاتر';
+
+  @override
+  String get reset_filters => 'إعادة تعيين';
+
+  @override
+  String get no_results => 'عذراً، لا توجد نتائج تطابق بحثك';
+
+  @override
+  String get no_results_desc => 'جرب استخدام كلمات بحث مختلفة أو تغيير الفلاتر';
+
+  @override
+  String get available_now => 'متاح الآن';
+
+  @override
+  String get unavailable => 'غير متاح حالياً';
 }

@@ -29,14 +29,17 @@ class RequestRepository {
       };
 
       // 📝 سجل طلب مخصص مفصل للتشخيص
-      developer.log('🚀 Sending Custom Request Data: $requestBody', name: 'RequestRepository');
+      developer.log('🚀 [CustomRequest] Sending to: ${ApiEndpoints.customRequest}', name: 'RequestRepository');
+      developer.log('📦 [CustomRequest] Payload: $requestBody', name: 'RequestRepository');
 
       final response = await _apiService.post(
         ApiEndpoints.customRequest,
         data: requestBody,
       );
 
-      developer.log('✅ Custom Request Response: ${response.data}======', name: 'RequestRepository');
+      developer.log('✅ [CustomRequest] Response: ${response.data}', name: 'RequestRepository');
+      developer.log('📊 [CustomRequest] Status Code: ${response.statusCode}', name: 'RequestRepository');
+      
       return response.statusCode == 200 || response.statusCode == 201;
 
     } on DioException catch (e) {

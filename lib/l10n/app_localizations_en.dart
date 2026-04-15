@@ -629,4 +629,99 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get type_other => 'Other';
+
+  @override
+  String get payment_page_title => 'Complete Payment';
+
+  @override
+  String get service_price => 'Service Price';
+
+  @override
+  String get available_points => 'Available Points Balance';
+
+  @override
+  String get pay_by_points => 'Pay via Points (Wallet)';
+
+  @override
+  String get pay_by_bond => 'Pay via Bank Transfer (Bond)';
+
+  @override
+  String get confirm_points_payment => 'Confirm Points Payment';
+
+  @override
+  String get confirm_points_payment_msg =>
+      'Are you sure you want to pay for the service using your points?';
+
+  @override
+  String get transferred_points_label => 'Points to Use';
+
+  @override
+  String get upload_receipt => 'Upload Receipt Image';
+
+  @override
+  String get amount_to_pay => 'Amount to Pay';
+
+  @override
+  String get points_payment_success => 'Payment via points successful ✅';
+
+  @override
+  String get bond_payment_success =>
+      'Bond uploaded successfully and pending review ✅';
+
+  @override
+  String get points_payment_error => 'Error paying via points';
+
+  @override
+  String get bond_payment_error => 'Error uploading bond';
+
+  @override
+  String get no_points_balance => 'Insufficient points balance';
+
+  @override
+  String get change_image => 'Change Image';
+
+  @override
+  String get select_image => 'Select Image';
+
+  @override
+  String get payment_confirm => 'Confirm & Pay';
+
+  @override
+  String get must_complete_payment => 'You must complete the payment first';
+
+  @override
+  String get search_title => 'Advanced Search';
+
+  @override
+  String get filters => 'Filters';
+
+  @override
+  String get price_range => 'Price Range';
+
+  @override
+  String get min_price => 'Min Price';
+
+  @override
+  String get max_price => 'Max Price';
+
+  @override
+  String get category => 'Category';
+
+  @override
+  String get apply_filters => 'Apply Filters';
+
+  @override
+  String get reset_filters => 'Reset';
+
+  @override
+  String get no_results => 'Sorry, no results match your search';
+
+  @override
+  String get no_results_desc => 'Try different keywords or change the filters';
+
+  @override
+  String get available_now => 'Available Now';
+
+  @override
+  String get unavailable => 'Currently Unavailable';
 }

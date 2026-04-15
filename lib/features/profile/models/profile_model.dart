@@ -2,6 +2,7 @@
 import 'package:seeker/core/network/api_endpoints.dart';
 import 'phone_model.dart';
 import 'bank_model.dart';
+import 'dart:developer' as developer;
 
 /// 📂 اسم الملف: profile_model.dart
 /// 📝 الوصف: نموذج بيانات الملف الشخصي (Profile) متوافق مع استجابة الباك إند.
@@ -60,61 +61,64 @@ class ProfileModel {
   });
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
-    // 🚀 جلب بيانات المستخدم الأساسية (الاسم، الإيميل، إلخ)
-    final userJson = json['user'] ?? json;
+    // 🚀 جلب البيانات بناءً على هيكل السيرفر الملاحظ في السجلات
+    // السيرفر يرسل: { "profile": { "user": { ... }, "profile_phones": [...], ... } }
+    final profileData = json['profile'] ?? json;
+    final userJson = profileData['user'] ?? json['user'] ?? profileData;
     
-    // 🎨 جلب بيانات البروفايل (النبذة، المسمى الوظيفي، الصورة)
-    final profileData = json['profile'] ?? (json.containsKey('job_title') || json.containsKey('bio') ? json : userJson);
-
     // 🔍 البحث عن الاسم في كل الأماكن الممكنة
     String findName() {
       return userJson['name'] ?? 
-             json['name'] ?? 
              profileData['name'] ?? 
+             json['name'] ?? 
              userJson['full_name'] ?? 
-             json['full_name'] ?? 
              'مستخدم غير معروف';
     }
 
     // 🔍 البحث عن الصورة في كل الأماكن الممكنة
     String findAvatar() {
       final val = profileData['image_url'] ?? 
+                  profileData['image_path'] ?? 
                   profileData['avatar'] ?? 
-                  json['image_url'] ?? 
-                  json['avatar'] ?? 
                   userJson['image_url'] ?? 
                   userJson['avatar'] ?? '';
-      if (val == null || val.toString().isEmpty) return '';
+      if (val == null || val.toString().isEmpty || val.toString() == 'null') return '';
       final url = val.toString();
       return url.startsWith('http') ? url : '${ApiEndpoints.domain}$url';
     }
 
+    // 🔍 البحث عن المعرف (ID) - الأولوية لمعرف المستخدم الفعلي
+    final int parsedId = int.tryParse((
+      userJson['id'] ?? 
+      profileData['user_id'] ?? 
+      json['user_id'] ?? 
+      profileData['id'] ?? 
+      json['id'] ?? 
+      '0'
+    ).toString()) ?? 0;
+
+    developer.log('🔍 [ProfileModel.fromJson] Parsed ID: $parsedId, Name: ${findName()}', name: 'ProfileModel');
+
     return ProfileModel(
-      id: userJson['id'] ?? json['user_id'] ?? userJson['user_id'] ?? json['id'] ?? 0,
+      id: parsedId,
       name: findName(),
       email: userJson['email'] ?? json['email'] ?? '',
-      role: userJson['role'] ?? json['role'] ?? 'seeker',
+      role: userJson['role'] ?? json['role'] ?? 'provider',
       ratingAvg:
-          double.tryParse(userJson['rating_avg']?.toString() ?? json['rating_avg']?.toString() ?? '0') ?? 0.0,
+          double.tryParse(userJson['rating_avg']?.toString() ?? profileData['rating_avg']?.toString() ?? '0') ?? 0.0,
       noCommission:
-          userJson['no_commission'] == 1 || userJson['no_commission'] == true || json['no_commission'] == 1,
+          userJson['no_commission'] == 1 || userJson['no_commission'] == true || profileData['no_commission'] == 1,
       commission:
-          double.tryParse(userJson['commission']?.toString() ?? json['commission']?.toString() ?? '0') ?? 0.0,
+          double.tryParse(userJson['commission']?.toString() ?? profileData['commission']?.toString() ?? '0') ?? 0.0,
       seekerPolicy:
-          userJson['seeker_policy'] == 1 || userJson['seeker_policy'] == true,
+          userJson['seeker_policy'] == 1 || userJson['seeker_policy'] == true || profileData['seeker_policy'] == 1,
       providerPolicy:
-          userJson['provider_policy'] == 1 ||
-          userJson['provider_policy'] == true,
+          userJson['provider_policy'] == 1 || userJson['provider_policy'] == true,
       verificationProvider:
-          userJson['verification_provider'] == 1 ||
-          userJson['verification_provider'] == true ||
-          userJson['is_verified'] == 1 ||
-          userJson['is_verified'] == true ||
-          json['is_verified'] == 1,
+          userJson['verification_provider'] == 1 || userJson['verification_provider'] == true || userJson['is_verified'] == 1,
       providerVerifiedUntil: () {
         final dateStr = (userJson['provider_verified_until']?.toString() ?? 
-                         userJson['verified_until']?.toString() ?? 
-                         json['verified_until']?.toString() ?? '');
+                         userJson['verified_until']?.toString() ?? '');
         if (dateStr.isEmpty || dateStr.contains('0000-00-00')) return null;
         return DateTime.tryParse(dateStr);
       }(),
@@ -123,29 +127,33 @@ class ProfileModel {
       paidPoints:
           double.tryParse(userJson['paid_points']?.toString() ?? '0') ?? 0.0,
 
-      // 🎨 بيانات البروفايل من 'profileData' مع بدائل للمفاتيح
-      jobTitle: profileData['job_title'] ?? profileData['profession'] ?? userJson['job_title'] ?? 'فني محترف',
-      bio: profileData['bio'] ?? profileData['description'] ?? userJson['bio'] ?? '',
+      jobTitle: profileData['job_title'] ?? userJson['job_title'] ?? 'فني محترف',
+      bio: profileData['bio'] ?? userJson['bio'] ?? '',
       avatarUrl: findAvatar(),
-      completedJobs: profileData['completed_jobs'] ?? json['completed_jobs'] ?? 0,
-      yearsExperience: profileData['years_experience'] ?? json['years_experience'] ?? 0,
-      worksImages: profileData['works'] != null
-          ? (profileData['works'] as List).map((work) {
+      completedJobs: profileData['completed_jobs'] ?? 0,
+      yearsExperience: profileData['years_experience'] ?? 0,
+      worksImages: (profileData['previous_works'] ?? profileData['works']) != null
+          ? (profileData['previous_works'] ?? profileData['works'] as List).map((work) {
               if (work is String) return work;
-              if (work is Map && work['image_url'] != null) {
-                final url = work['image_url'].toString();
+              if (work is Map && (work['image_url'] != null || work['image_path'] != null)) {
+                final url = (work['image_url'] ?? work['image_path']).toString();
                 return url.startsWith('http') ? url : '${ApiEndpoints.domain}$url';
               }
               return '';
-            }).where((url) => url.isNotEmpty).toList().cast<String>()
+            }).where((url) => url != null && url.toString().isNotEmpty).toList().cast<String>()
           : [],
-      isAvailable: profileData['is_available'] == 1 || profileData['is_available'] == true || json['is_available'] == 1,
-      // 📞 بيانات التواصل من الـ JSON (ندعم المعالجة للأرقام والبنوك)
-      phones: json['phones'] != null
-          ? (json['phones'] as List).map((p) => PhoneModel.fromJson(Map<String, dynamic>.from(p))).toList()
+      isAvailable: profileData['is_available'] == 1 || profileData['is_available'] == true,
+      phones: (profileData['profile_phones'] ?? profileData['phones'] ?? json['phones']) != null
+          ? (profileData['profile_phones'] ?? profileData['phones'] ?? json['phones'] as List)
+              .map((p) => PhoneModel.fromJson(Map<String, dynamic>.from(p)))
+              .toList()
+              .cast<PhoneModel>()
           : [],
-      banks: json['banks'] != null
-          ? (json['banks'] as List).map((b) => BankModel.fromJson(Map<String, dynamic>.from(b))).toList()
+      banks: (userJson['banks'] ?? json['banks']) != null
+          ? (userJson['banks'] ?? json['banks'] as List)
+              .map((b) => BankModel.fromJson(Map<String, dynamic>.from(b)))
+              .toList()
+              .cast<BankModel>()
           : [],
     );
   }

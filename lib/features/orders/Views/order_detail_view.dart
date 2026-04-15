@@ -6,6 +6,7 @@ import '../../../core/localization/app_localizations.dart';
 import '../Models/order_model.dart';
 import '../ViewModels/orders_viewmodel.dart';
 import '../../../core/network/api_endpoints.dart';
+import '../../payment/views/payment_view.dart';
 
 class OrderDetailView extends StatefulWidget {
   final OrderModel order;
@@ -159,14 +160,14 @@ class _OrderDetailViewState extends State<OrderDetailView> {
 
   Widget _buildReceiptsList(OrderModel order) {
     return SizedBox(
-      height: 120,
+      height: 140, // زيادة الارتفاع قليلًا للمبلغ
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: order.bonds.length,
         itemBuilder: (context, index) {
           final bond = order.bonds[index];
           return Container(
-            width: 100,
+            width: 120, // زيادة العرض
             margin: const EdgeInsets.only(left: 12),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -195,15 +196,27 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Text(
-                    bond.bondNumber,
-                    style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  padding: const EdgeInsets.all(4),
+                  child: Column(
+                    children: [
+                      Text(
+                        bond.bondNumber,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        '${bond.amount.toInt()} ${context.tr('currency_sar')}',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF1CB0F6),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -381,10 +394,10 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                 onPressed: viewModel.isLoading
                     ? null
                     : () {
-                        // سيتم ربط عملية الدفع هنا لاحقاً
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(context.tr('payment_redirect_msg')),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PaymentView(order: order),
                           ),
                         );
                       },
@@ -1283,7 +1296,37 @@ class _OrderDetailViewState extends State<OrderDetailView> {
           ),
           onPressed: viewModel.isLoading
               ? null
-              : () => _showConfirmationDialog(context, viewModel, order),
+              : () {
+                  if (order.status == 'accepted_partial_paid') {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        title: Row(
+                          children: [
+                            const Icon(Icons.warning_amber_rounded, color: Colors.orange),
+                            const SizedBox(width: 8),
+                            Text(context.tr('alert')),
+                          ],
+                        ),
+                        content: Text(
+                          context.tr('must_complete_payment'),
+                          style: const TextStyle(fontFamily: 'Cairo'),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(context.tr('ok')),
+                          ),
+                        ],
+                      ),
+                    );
+                    return;
+                  }
+                  _showConfirmationDialog(context, viewModel, order);
+                },
           icon: viewModel.isLoading
               ? const SizedBox(
                   width: 20,

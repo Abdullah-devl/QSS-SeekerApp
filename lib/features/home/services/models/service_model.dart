@@ -128,6 +128,8 @@ class ServiceModel {
   final int categoryId;
   int? parentServiceId;
   bool isFavorite; // ❤️ حالة المفضلة
+  final double? distance; // 📍 المسافة بالكيلومترات
+  final bool isAvailableNow; // 🟢 متاح الآن
   List<ServiceModel> subServices;
   final List<ServiceScheduleModel> schedules; // 📅 جدول المواعيد المتاح لهذه الخدمة
 
@@ -143,6 +145,8 @@ class ServiceModel {
     required this.categoryId,
     this.parentServiceId,
     this.isFavorite = false,
+    this.distance,
+    this.isAvailableNow = true,
     this.subServices = const [],
     this.schedules = const [],
   });
@@ -204,6 +208,10 @@ class ServiceModel {
       providerName:
           json['provider_name'] ?? json['provider']?['name'] ?? 'مزود خدمة',
       providerId: int.tryParse((json['user_id'] ?? json['provider_id'] ?? json['provider']?['id'] ?? json['user']?['id'] ?? '0').toString()) ?? 0,
+      
+      distance: double.tryParse(json['distance']?.toString() ?? ''),
+      isAvailableNow: json['is_available_now'] != false, // افتراضياً متاح إلا إذا ذكر العكس
+
       subServices: parsedSubServices,
       schedules: parsedSchedules, // ✅ تم الإسناد هنا
     );

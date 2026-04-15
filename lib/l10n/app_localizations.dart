@@ -871,6 +871,420 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No previous works have been added yet.'**
   String get noPreviousWorks;
+
+  /// No description provided for @incoming_orders.
+  ///
+  /// In en, this message translates to:
+  /// **'Incoming Orders'**
+  String get incoming_orders;
+
+  /// No description provided for @order_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Details'**
+  String get order_details;
+
+  /// No description provided for @order_sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Sent'**
+  String get order_sent;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @new_order.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get new_order;
+
+  /// No description provided for @in_progress.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get in_progress;
+
+  /// No description provided for @completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completed;
+
+  /// No description provided for @rejected_orders.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected/Canceled'**
+  String get rejected_orders;
+
+  /// No description provided for @error_loading_orders.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading orders'**
+  String get error_loading_orders;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @no_orders_yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No orders yet'**
+  String get no_orders_yet;
+
+  /// No description provided for @total_price_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Price'**
+  String get total_price_label;
+
+  /// No description provided for @currency_sar.
+  ///
+  /// In en, this message translates to:
+  /// **'SAR'**
+  String get currency_sar;
+
+  /// No description provided for @details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get details;
+
+  /// No description provided for @cancel_order.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Order'**
+  String get cancel_order;
+
+  /// No description provided for @accepted_initial.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted (Initial)'**
+  String get accepted_initial;
+
+  /// No description provided for @status_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get status_pending;
+
+  /// No description provided for @order_bonds.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Bonds'**
+  String get order_bonds;
+
+  /// No description provided for @paid_amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid Amount'**
+  String get paid_amount;
+
+  /// No description provided for @remaining_amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining Amount'**
+  String get remaining_amount;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
+  /// No description provided for @send_amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Amount'**
+  String get send_amount;
+
+  /// No description provided for @accept_first.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept Order First'**
+  String get accept_first;
+
+  /// No description provided for @description_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Description'**
+  String get description_label;
+
+  /// No description provided for @service_details_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Details'**
+  String get service_details_title;
+
+  /// No description provided for @location_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get location_label;
+
+  /// No description provided for @distance_away.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} km away'**
+  String distance_away(Object distance);
+
+  /// No description provided for @total_order_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Order Price'**
+  String get total_order_price;
+
+  /// No description provided for @order_accepted_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Order accepted successfully'**
+  String get order_accepted_success;
+
+  /// No description provided for @accept_order.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept Order'**
+  String get accept_order;
+
+  /// No description provided for @canceled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get canceled;
+
+  /// No description provided for @currently_paid_percent.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid %'**
+  String get currently_paid_percent;
+
+  /// No description provided for @required_partial_percentage_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Required to start: {percentage}%'**
+  String required_partial_percentage_label(Object percentage);
+
+  /// No description provided for @order_cancelled_msg.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Cancelled'**
+  String get order_cancelled_msg;
+
+  /// No description provided for @order_rejected_msg.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Rejected'**
+  String get order_rejected_msg;
+
+  /// No description provided for @payment_redirect_msg.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll be redirected to payment gateway soon'**
+  String get payment_redirect_msg;
+
+  /// No description provided for @pay_service_costs.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay Service Costs'**
+  String get pay_service_costs;
+
+  /// No description provided for @enter_correct_amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a correct amount'**
+  String get enter_correct_amount;
+
+  /// No description provided for @amount_updated_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount updated successfully'**
+  String get amount_updated_success;
+
+  /// No description provided for @provider_bank_accounts_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider Bank Accounts:'**
+  String get provider_bank_accounts_label;
+
+  /// No description provided for @iban_copied_success.
+  ///
+  /// In en, this message translates to:
+  /// **'IBAN copied successfully'**
+  String get iban_copied_success;
+
+  /// No description provided for @order_cancelled_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Order cancelled successfully'**
+  String get order_cancelled_success;
+
+  /// No description provided for @platform_commission.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform Commission Due'**
+  String get platform_commission;
+
+  /// No description provided for @total_order_value_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Total order value: {price} SAR'**
+  String total_order_value_label(Object price);
+
+  /// No description provided for @commission_percentage_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission: {percentage}%'**
+  String commission_percentage_label(Object percentage);
+
+  /// No description provided for @complete_order.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Order'**
+  String get complete_order;
+
+  /// No description provided for @confirm_completion_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Completion'**
+  String get confirm_completion_title;
+
+  /// No description provided for @confirm_completion_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to complete the order? The status will be changed to completed.'**
+  String get confirm_completion_message;
+
+  /// No description provided for @rate_service_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate Service'**
+  String get rate_service_title;
+
+  /// No description provided for @rate_service_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Please rate your experience with the provider and write your comment.'**
+  String get rate_service_message;
+
+  /// No description provided for @rating_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get rating_label;
+
+  /// No description provided for @comment_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment'**
+  String get comment_label;
+
+  /// No description provided for @comment_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your comment here...'**
+  String get comment_hint;
+
+  /// No description provided for @submit_review.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Rating'**
+  String get submit_review;
+
+  /// No description provided for @review_submitted_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Review submitted successfully, thank you!'**
+  String get review_submitted_success;
+
+  /// No description provided for @review_submitted_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error submitting review, please try again.'**
+  String get review_submitted_error;
+
+  /// No description provided for @order_completed_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Order completed successfully ✅'**
+  String get order_completed_success;
+
+  /// No description provided for @send_complaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Complaint'**
+  String get send_complaint;
+
+  /// No description provided for @complaint_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint Title'**
+  String get complaint_title;
+
+  /// No description provided for @complaint_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint Type'**
+  String get complaint_type;
+
+  /// No description provided for @complaint_content.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint Content'**
+  String get complaint_content;
+
+  /// No description provided for @complaint_submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Complaint'**
+  String get complaint_submit;
+
+  /// No description provided for @complaint_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint submitted successfully. Our team will review it.'**
+  String get complaint_success;
+
+  /// No description provided for @complaint_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error submitting complaint. Please try again later.'**
+  String get complaint_error;
+
+  /// No description provided for @type_delay.
+  ///
+  /// In en, this message translates to:
+  /// **'Delay in Appointment'**
+  String get type_delay;
+
+  /// No description provided for @type_quality.
+  ///
+  /// In en, this message translates to:
+  /// **'Low Service Quality'**
+  String get type_quality;
+
+  /// No description provided for @type_behavior.
+  ///
+  /// In en, this message translates to:
+  /// **'Inappropriate Provider Behavior'**
+  String get type_behavior;
+
+  /// No description provided for @type_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Price Discrepancy'**
+  String get type_price;
+
+  /// No description provided for @type_other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get type_other;
 }
 
 class _AppLocalizationsDelegate

@@ -1,5 +1,4 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart';
+
 
 /// � اسم الملف: api_endpoints.dart
 /// 📝 الوصف: يحتوي هذا الملف على جميع روابط الـ API المستخدمة في التطبيق.
@@ -83,4 +82,35 @@ class ApiEndpoints {
 
   /// 📝 رابط إنشاء طلب خدمة عادي.
   static String get createRequest => "$baseUrl/requests";
+
+  /// 📜 رابط جلب الطلبات (عام أو للمزود).
+  static String get getOrders => "$baseUrl/requests";
+
+  /// 👤 رابط جلب طلبات طالب الخدمة (Seeker Specific).
+  static String get getSeekerOrders => "$baseUrl/requests/seeker";
+
+  /// 🔍 رابط جلب تفاصيل طلب معين.
+  static String getOrderDetail(String id) => "$baseUrl/requests/$id";
+
+  /// 🔄 رابط تحديث حالة الطلب.
+  static String updateStatus(String id) => "$baseUrl/requests/$id/status";
+
+  /// 💰 رابط إضافة مبلغ مدفوع للطلب.
+  static String addAmount(String id) => "$baseUrl/requests/$id/addAmountToMoneyPaid";
+
+  // ===========================================================================
+  // ⭐ روابط المفضلة (Favorites Endpoints)
+  // ===========================================================================
+
+  /// 📜 رابط جلب قائمة المفضلة.
+  static String get favorites => "$baseUrl/favorites";
+
+  /// ❤️ رابط إضافة/حذف من المفضلة.
+  static String get toggleFavorite => "$baseUrl/favorites/toggle";
+
+  /// ⭐ رابط إضافة تقييم جديد.
+  static String get reviews => "$baseUrl/reviews";
+
+  /// 🚨 رابط إرسال شكوى جديدة.
+  static String get requestComplaints => "$baseUrl/request-complaints";
 }

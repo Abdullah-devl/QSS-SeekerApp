@@ -407,4 +407,226 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noPreviousWorks => 'No previous works have been added yet.';
+
+  @override
+  String get incoming_orders => 'Incoming Orders';
+
+  @override
+  String get order_details => 'Order Details';
+
+  @override
+  String get order_sent => 'Order Sent';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get new_order => 'New';
+
+  @override
+  String get in_progress => 'In Progress';
+
+  @override
+  String get completed => 'Completed';
+
+  @override
+  String get rejected_orders => 'Rejected/Canceled';
+
+  @override
+  String get error_loading_orders => 'Error loading orders';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get no_orders_yet => 'No orders yet';
+
+  @override
+  String get total_price_label => 'Total Price';
+
+  @override
+  String get currency_sar => 'SAR';
+
+  @override
+  String get details => 'Details';
+
+  @override
+  String get cancel_order => 'Cancel Order';
+
+  @override
+  String get accepted_initial => 'Accepted (Initial)';
+
+  @override
+  String get status_pending => 'Pending';
+
+  @override
+  String get order_bonds => 'Order Bonds';
+
+  @override
+  String get paid_amount => 'Paid Amount';
+
+  @override
+  String get remaining_amount => 'Remaining Amount';
+
+  @override
+  String get loading => 'Loading...';
+
+  @override
+  String get send_amount => 'Send Amount';
+
+  @override
+  String get accept_first => 'Accept Order First';
+
+  @override
+  String get description_label => 'Request Description';
+
+  @override
+  String get service_details_title => 'Service Details';
+
+  @override
+  String get location_label => 'Location';
+
+  @override
+  String distance_away(Object distance) {
+    return '$distance km away';
+  }
+
+  @override
+  String get total_order_price => 'Total Order Price';
+
+  @override
+  String get order_accepted_success => 'Order accepted successfully';
+
+  @override
+  String get accept_order => 'Accept Order';
+
+  @override
+  String get canceled => 'Cancelled';
+
+  @override
+  String get currently_paid_percent => 'Paid %';
+
+  @override
+  String required_partial_percentage_label(Object percentage) {
+    return 'Required to start: $percentage%';
+  }
+
+  @override
+  String get order_cancelled_msg => 'Order Cancelled';
+
+  @override
+  String get order_rejected_msg => 'Order Rejected';
+
+  @override
+  String get payment_redirect_msg =>
+      'You\'ll be redirected to payment gateway soon';
+
+  @override
+  String get pay_service_costs => 'Pay Service Costs';
+
+  @override
+  String get enter_correct_amount => 'Please enter a correct amount';
+
+  @override
+  String get amount_updated_success => 'Amount updated successfully';
+
+  @override
+  String get provider_bank_accounts_label => 'Provider Bank Accounts:';
+
+  @override
+  String get iban_copied_success => 'IBAN copied successfully';
+
+  @override
+  String get order_cancelled_success => 'Order cancelled successfully';
+
+  @override
+  String get platform_commission => 'Platform Commission Due';
+
+  @override
+  String total_order_value_label(Object price) {
+    return 'Total order value: $price SAR';
+  }
+
+  @override
+  String commission_percentage_label(Object percentage) {
+    return 'Commission: $percentage%';
+  }
+
+  @override
+  String get complete_order => 'Complete Order';
+
+  @override
+  String get confirm_completion_title => 'Confirm Completion';
+
+  @override
+  String get confirm_completion_message =>
+      'Are you sure you want to complete the order? The status will be changed to completed.';
+
+  @override
+  String get rate_service_title => 'Rate Service';
+
+  @override
+  String get rate_service_message =>
+      'Please rate your experience with the provider and write your comment.';
+
+  @override
+  String get rating_label => 'Rating';
+
+  @override
+  String get comment_label => 'Comment';
+
+  @override
+  String get comment_hint => 'Write your comment here...';
+
+  @override
+  String get submit_review => 'Submit Rating';
+
+  @override
+  String get review_submitted_success =>
+      'Review submitted successfully, thank you!';
+
+  @override
+  String get review_submitted_error =>
+      'Error submitting review, please try again.';
+
+  @override
+  String get order_completed_success => 'Order completed successfully ✅';
+
+  @override
+  String get send_complaint => 'Send Complaint';
+
+  @override
+  String get complaint_title => 'Complaint Title';
+
+  @override
+  String get complaint_type => 'Complaint Type';
+
+  @override
+  String get complaint_content => 'Complaint Content';
+
+  @override
+  String get complaint_submit => 'Submit Complaint';
+
+  @override
+  String get complaint_success =>
+      'Complaint submitted successfully. Our team will review it.';
+
+  @override
+  String get complaint_error =>
+      'Error submitting complaint. Please try again later.';
+
+  @override
+  String get type_delay => 'Delay in Appointment';
+
+  @override
+  String get type_quality => 'Low Service Quality';
+
+  @override
+  String get type_behavior => 'Inappropriate Provider Behavior';
+
+  @override
+  String get type_price => 'Price Discrepancy';
+
+  @override
+  String get type_other => 'Other';
 }

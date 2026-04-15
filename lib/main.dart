@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 // --- Imports --- (استيراد الملفات اللازمة)
 import 'package:seeker/core/routes/app_routes.dart';
@@ -39,8 +39,16 @@ import 'package:seeker/features/home/viewmodels/home_view_model.dart';
 // Be Provider Feature
 import 'package:seeker/features/beProvider/repositories/be_provider_repository.dart'; // ✅ تمت الإضافة
 import 'package:seeker/features/beProvider/viewmodels/be_provider_view_model.dart'; // ✅ تمت الإضافة
-import 'package:seeker/features/beProvider/views/be_provider_view.dart'; // ✅ تمت الإضافة
-// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:seeker/features/beProvider/views/be_provider_view.dart';
+// Favorites Feature
+import 'package:seeker/features/favorites/data_sources/favorite_remote_data_source.dart';
+import 'package:seeker/features/favorites/repositories/favorite_repository.dart';
+import 'package:seeker/features/favorites/viewmodels/favorite_view_model.dart';
+// import 'package:seeker/features/favorites/views/favorite_view.dart';
+// Orders Feature
+import 'package:seeker/features/orders/Repository/orders_repository.dart';
+import 'package:seeker/features/orders/ViewModels/orders_viewmodel.dart';
+// import 'package:seeker/features/orders/Views/orders_view.dart';
 
 import 'dart:io';
 
@@ -50,10 +58,14 @@ import 'package:seeker/l10n/app_localizations.dart';
 /// 📝 الوصف: نقطة انطلاق التطبيق (Entry Point).
 /// يقوم بتهيئة الاعتمادات (Dependency Injection) باستخدام Provider، وإعداد الثيم، واللغة، والمسارات (Routes).
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // 📦 تهيئة Hive للتخزين المحلي
+  await Hive.initFlutter();
+  
   HttpOverrides.global =
-      BadCertificateHttpOverrides(); // ⚠️ هام: لتجاوز مشكلة شهادات SSL أثناء التطوير
+      BadCertificateHttpOverrides(); 
 
   runApp(
     MultiProvider(
@@ -90,6 +102,19 @@ void main() {
         // BeProviderRepository يعتمد على ApiService فقط
         ProxyProvider<ApiService, BeProviderRepository>(
           update: (_, apiService, __) => BeProviderRepository(apiService),
+        ),
+
+        // FavoriteRepository
+        ProxyProvider<ApiService, FavoriteRemoteDataSource>(
+          update: (_, apiService, __) => FavoriteRemoteDataSource(apiService),
+        ),
+        ProxyProvider<FavoriteRemoteDataSource, FavoriteRepository>(
+          update: (_, dataSource, __) => FavoriteRepository(dataSource),
+        ),
+
+        // OrdersRepository
+        ProxyProvider<ApiService, OrdersRepository>(
+          update: (_, apiService, __) => OrdersRepository(apiService),
         ),
 
         // ----------------------------------------------------------
@@ -139,10 +164,23 @@ void main() {
         ),
         //
         ChangeNotifierProvider<VerifyEmailViewModel>(
-  create: (context) => VerifyEmailViewModel(
-     authRepository: context.read<AuthRepository>(),
-  ),
-),
+          create: (context) => VerifyEmailViewModel(
+            authRepository: context.read<AuthRepository>(),
+          ),
+        ),
+
+        // Favorite ViewModel
+        ChangeNotifierProvider<FavoriteViewModel>(
+          create: (context) => FavoriteViewModel(
+            context.read<FavoriteRepository>(),
+          ),
+        ),
+
+        // Orders ViewModel
+        ChangeNotifierProvider<OrdersViewModel>(
+          create: (context) =>
+              OrdersViewModel(context.read<OrdersRepository>()),
+        ),
       ],
       child: const MyApp(),
     ),

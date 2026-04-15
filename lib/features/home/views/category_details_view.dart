@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/features/home/services/viewmodels/service_details_view_model.dart';
 import 'package:seeker/features/home/services/view/service_details_view.dart';
+import 'package:seeker/features/favorites/viewmodels/favorite_view_model.dart';
+import 'package:seeker/core/widgets/service_card.dart';
 import '../models/category_model.dart';
 import '../services/models/service_model.dart';
 import '../repositories/home_repository.dart';
@@ -91,8 +93,7 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
                 if (data.services.isNotEmpty) ...[
                   _buildSectionTitle('الخدمات المتاحة', colors),
                   const SizedBox(height: 12),
-                  // 🚀 مررنا الـ ViewModel (vm) هنا لكي تستخدمه الدالة
-                  _buildServicesList(data.services, colors, vm),
+                  _buildServicesList(data.services, colors),
                 ] else ...[
                   Center(
                     child: Padding(
@@ -133,6 +134,7 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
       height: 100,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
+        reverse: true, // RTL support
         itemCount: categories.length,
         separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
@@ -149,7 +151,9 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 cat.iconPath.isNotEmpty
-                    ? Image.network(cat.iconPath, width: 30, height: 30)
+                    ? (cat.iconPath.startsWith('http') 
+                        ? Image.network(cat.iconPath, width: 30, height: 30)
+                        : Image.asset(cat.iconPath, width: 30, height: 30))
                     : Icon(Icons.category, color: colors.primary, size: 30),
                 const SizedBox(height: 6),
                 Text(
@@ -177,6 +181,7 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
       height: 160,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
+        reverse: true, // RTL support
         itemCount: providers.length,
         separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
@@ -185,11 +190,11 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
             width: 140,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Theme.of(context).cardColor, // 🎨 يتكيف مع الثيم
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: colors.text.withOpacity(0.05), // 🎨 ظل ديناميكي
+                  color: colors.text.withOpacity(0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -199,7 +204,7 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
               children: [
                 CircleAvatar(
                   radius: 30,
-                  backgroundColor: colors.textSub.withOpacity(0.1), // 🎨
+                  backgroundColor: colors.textSub.withOpacity(0.1),
                   backgroundImage: provider.imageUrl.isNotEmpty
                       ? NetworkImage(provider.imageUrl)
                       : null,
@@ -243,15 +248,15 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
     );
   }
 
-  /// 🛠️ قائمة الخدمات (Vertical) بتصميم الكرت المطابق للصورة (تدعم المفضلة MVVM)
+  /// 🛠️ قائمة الخدمات (Vertical) باستخدام ServiceCard
   Widget _buildServicesList(
     List<ServiceModel> services,
     dynamic colors,
-    CategoryDetailsViewModel vm, // 🚀 استقبال الـ ViewModel
   ) {
     return Column(
       children: services.map((service) {
-        return GestureDetector(
+        return ServiceCard(
+          service: service,
           onTap: () {
             Navigator.push(
               context,
@@ -265,249 +270,9 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
               ),
             );
           },
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor, // 🎨 يتكيف مع الثيم
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: colors.text.withOpacity(0.04), // 🎨 ظل ديناميكي
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                // 🔵 الجزء العلوي: الصورة + التفاصيل
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // 1️⃣ الصورة
-                    Stack(
-                      children: [
-                        Container(
-                          width: 85,
-                          height: 85,
-                          decoration: BoxDecoration(
-                            color: colors.primary.withOpacity(0.05), // 🎨
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: service.imageUrl.isNotEmpty
-                                ? Image.network(
-                                    service.imageUrl,
-                                    fit: BoxFit.cover,
-                                  )
-                                : Icon(
-                                    Icons.cleaning_services,
-                                    color: colors.primary.withOpacity(0.5),
-                                  ),
-                          ),
-                        ),
-                        // بادج التقييم
-                        Positioned(
-                          top: 4,
-                          right: 4,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 4,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).cardColor, // 🎨
-                              borderRadius: BorderRadius.circular(6),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 2,
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              children: [
-                                Text(
-                                  service.rating > 0
-                                      ? service.rating.toString()
-                                      : 'جديد',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: colors.text, // 🎨
-                                  ),
-                                ),
-                                const SizedBox(width: 2),
-                                const Icon(
-                                  Icons.star,
-                                  color: Colors.amber,
-                                  size: 10,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(width: 12),
-
-                    // 2️⃣ التفاصيل
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // التاق والقلب التفاعلي
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: colors.primary.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(
-                                  widget.category.name,
-                                  style: TextStyle(
-                                    color: colors.primary,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              // 💖 أيقونة المفضلة المرتبطة بالـ ViewModel
-                              GestureDetector(
-                                onTap: () {
-                                  vm.toggleFavorite(service.id);
-                                },
-                                child: Icon(
-                                  vm.isFavorite(service.id)
-                                      ? Icons.favorite
-                                      : Icons.favorite_border,
-                                  color: vm.isFavorite(service.id)
-                                      ? Colors.redAccent
-                                      : colors.textSub.withOpacity(0.5), // 🎨
-                                  size: 20,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-
-                          // العنوان والمزود
-                          Text(
-                            service.title,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              color: colors.text, // 🎨
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            service.providerName,
-                            style: TextStyle(
-                              color: colors.textSub,
-                              fontSize: 11,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 8),
-
-                          // السعر والحالة
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.access_time_rounded,
-                                    size: 12,
-                                    color: colors.textSub,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'متاح الآن',
-                                    style: TextStyle(
-                                      color: colors.textSub,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              RichText(
-                                text: TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: '${service.price.toInt()} ر.س',
-                                      style: TextStyle(
-                                        color: colors.primary,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 13,
-                                        fontFamily: 'Cairo',
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: ' / خدمة',
-                                      style: TextStyle(
-                                        color: colors.textSub,
-                                        fontSize: 9,
-                                        fontFamily: 'Cairo',
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-
-                // 🔴 الجزء السفلي: زر حجز موعد
-                const SizedBox(height: 12),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: colors.textSub.withOpacity(
-                      0.05,
-                    ), // 🎨 خلفية الزر تتكيف
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'حجز موعد',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                          color: colors.text, // 🎨
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Icon(
-                        Icons.arrow_back,
-                        size: 16,
-                        color: colors.text,
-                      ), // 🎨
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+          onFavoriteToggle: () {
+            context.read<FavoriteViewModel>().toggleFavorite(service);
+          },
         );
       }).toList(),
     );

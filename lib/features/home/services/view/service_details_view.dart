@@ -11,6 +11,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:seeker/features/home/services/models/service_model.dart';
 import 'package:seeker/features/home/services/viewmodels/service_details_view_model.dart';
+import 'package:seeker/features/favorites/viewmodels/favorite_view_model.dart';
 import 'package:seeker/features/profile/requests/repository/request_repository.dart';
 import 'package:seeker/core/network/api_service.dart';
 import 'package:seeker/features/profile/viewmodels/profile_view_model.dart';
@@ -88,7 +89,11 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
 
   PreferredSizeWidget _buildAppBar(BuildContext context, dynamic colors) {
     final vm = context.watch<ServiceDetailsViewModel>();
+    final favVm = context.watch<FavoriteViewModel>(); // نراقب حالة المفضلة عالمياً
     final service = vm.service; 
+
+    // تحديد إذا كانت الخدمة الحالية مفضلة عبر الاستعلام من القائمة العالمية (لضمان المزامنة مع الباك اند)
+    final bool isFavorite = service != null ? favVm.isServiceFavorite(service.id) : false;
 
     return AppBar(
       backgroundColor: colors.background,
@@ -100,13 +105,16 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
         onPressed: () => Navigator.pop(context),
       ),
       actions: [
-        IconButton(
-          icon: Icon(
-            vm.isFavorite ? Icons.favorite : Icons.favorite_border,
-            color: vm.isFavorite ? Colors.redAccent : colors.text,
+        if (service != null)
+          IconButton(
+            icon: Icon(
+              isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: isFavorite ? Colors.redAccent : colors.text,
+            ),
+            onPressed: () {
+              favVm.toggleFavorite(service);
+            },
           ),
-          onPressed: vm.toggleFavorite,
-        ),
         IconButton(
           icon: Icon(Icons.share_outlined, color: colors.text),
           onPressed: () {

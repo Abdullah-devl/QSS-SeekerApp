@@ -127,6 +127,7 @@ class ServiceModel {
   final int providerId; 
   final int categoryId;
   int? parentServiceId;
+  bool isFavorite; // ❤️ حالة المفضلة
   List<ServiceModel> subServices;
   final List<ServiceScheduleModel> schedules; // 📅 جدول المواعيد المتاح لهذه الخدمة
 
@@ -141,6 +142,7 @@ class ServiceModel {
     required this.providerId,
     required this.categoryId,
     this.parentServiceId,
+    this.isFavorite = false,
     this.subServices = const [],
     this.schedules = const [],
   });
@@ -176,7 +178,7 @@ class ServiceModel {
       parsedSchedules = rawSchedules.map((e) => ServiceScheduleModel.fromJson(e)).toList();
     }
 
-    // 🚀 3. قراءة الـ parent_service_id بصرامة (الحل السحري)
+    // 🚀 4. قراءة الـ parent_service_id بصرامة (الحل السحري)
     int? pId;
     var rawParent = json['parent_service_id'] ?? json['parent_id'];
     if (rawParent != null &&
@@ -192,6 +194,7 @@ class ServiceModel {
       categoryId: int.tryParse(json['category_id'].toString()) ?? 0,
 
       parentServiceId: pId, // إسناد القيمة الصارمة
+      isFavorite: json['is_favorite'] == true || json['is_favorite'] == 1, // قراءة حالة المفضلة
 
       price: double.tryParse(json['price'].toString()) ?? 0.0,
       rating:

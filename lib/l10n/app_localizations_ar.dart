@@ -350,13 +350,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get customerReviews => 'آراء العملاء';
 
   @override
-  String get totalCost => 'Total Cost';
+  String get totalCost => 'إجمالي التكلفة';
 
   @override
-  String get estimated => 'Estimated';
+  String get estimated => 'تقريبي';
 
   @override
-  String get viewAll => 'View All';
+  String get viewAll => 'عرض الكل';
 
   @override
   String get availableNow => 'متاح الآن';
@@ -404,4 +404,224 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noPreviousWorks => 'لا توجد أعمال سابقة مضافة حالياً.';
+
+  @override
+  String get incoming_orders => 'طلبات واردة';
+
+  @override
+  String get order_details => 'تفاصيل الطلب';
+
+  @override
+  String get order_sent => 'تم إرسال الطلب';
+
+  @override
+  String get all => 'الكل';
+
+  @override
+  String get new_order => 'جديد';
+
+  @override
+  String get in_progress => 'قيد التنفيذ';
+
+  @override
+  String get completed => 'مكتمل';
+
+  @override
+  String get rejected_orders => 'مرفوض/ملغي';
+
+  @override
+  String get error_loading_orders => 'خطأ في تحميل الطلبات';
+
+  @override
+  String get retry => 'إعادة المحاولة';
+
+  @override
+  String get no_orders_yet => 'لا توجد طلبات بعد';
+
+  @override
+  String get total_price_label => 'السعر الإجمالي';
+
+  @override
+  String get currency_sar => 'ر.س';
+
+  @override
+  String get details => 'التفاصيل';
+
+  @override
+  String get cancel_order => 'إلغاء الطلب';
+
+  @override
+  String get accepted_initial => 'مقبول مبدئياً';
+
+  @override
+  String get status_pending => 'قيد الانتظار';
+
+  @override
+  String get order_bonds => 'سندات الطلب';
+
+  @override
+  String get paid_amount => 'المبلغ المدفوع';
+
+  @override
+  String get remaining_amount => 'المبلغ المتبقي';
+
+  @override
+  String get loading => 'جاري التحميل...';
+
+  @override
+  String get send_amount => 'إرسال المبلغ';
+
+  @override
+  String get accept_first => 'اقبل الطلب أولاً';
+
+  @override
+  String get description_label => 'وصف الطلب';
+
+  @override
+  String get service_details_title => 'تفاصيل الخدمة';
+
+  @override
+  String get location_label => 'الموقع';
+
+  @override
+  String distance_away(Object distance) {
+    return 'يبعد عنك $distance كم';
+  }
+
+  @override
+  String get total_order_price => 'إجمالي سعر الطلب';
+
+  @override
+  String get order_accepted_success => 'تم قبول الطلب بنجاح';
+
+  @override
+  String get accept_order => 'قبول الطلب';
+
+  @override
+  String get canceled => 'ملغي';
+
+  @override
+  String get currently_paid_percent => 'المدفوع حالياً';
+
+  @override
+  String required_partial_percentage_label(Object percentage) {
+    return 'النسبة المطلوبة للبدء: $percentage%';
+  }
+
+  @override
+  String get order_cancelled_msg => 'تم إلغاء الطلب';
+
+  @override
+  String get order_rejected_msg => 'تم رفض الطلب';
+
+  @override
+  String get payment_redirect_msg => 'سيتم توجيهك لبوابة الدفع قريباً';
+
+  @override
+  String get pay_service_costs => 'دفع تكاليف الخدمة';
+
+  @override
+  String get enter_correct_amount => 'الرجاء إدخال مبلغ صحيح';
+
+  @override
+  String get amount_updated_success => 'تم تحديث المبلغ بنجاح';
+
+  @override
+  String get provider_bank_accounts_label => 'الحسابات البنكية للمزود:';
+
+  @override
+  String get iban_copied_success => 'تم نسخ رقم الآيبان';
+
+  @override
+  String get order_cancelled_success => 'تم إلغاء الطلب بنجاح';
+
+  @override
+  String get platform_commission => 'عمولة المنصة المستحقة';
+
+  @override
+  String total_order_value_label(Object price) {
+    return 'إجمالي قيمة الطلب: $price ر.س';
+  }
+
+  @override
+  String commission_percentage_label(Object percentage) {
+    return 'نسبة العمولة: $percentage%';
+  }
+
+  @override
+  String get complete_order => 'إكمال الطلب';
+
+  @override
+  String get confirm_completion_title => 'تأكيد إكمال الطلب';
+
+  @override
+  String get confirm_completion_message =>
+      'هل أنت متأكد من إكمال الطلب؟ سيتم تحويل حالة الطلب إلى مكتمل.';
+
+  @override
+  String get rate_service_title => 'تقييم الخدمة';
+
+  @override
+  String get rate_service_message =>
+      'يرجى تقييم تجربة الخدمة مع المزود وكتابة تعليقك';
+
+  @override
+  String get rating_label => 'التقييم';
+
+  @override
+  String get comment_label => 'التعليق';
+
+  @override
+  String get comment_hint => 'اكتب تعليقك هنا...';
+
+  @override
+  String get submit_review => 'إرسال التقييم';
+
+  @override
+  String get review_submitted_success => 'تم إرسال التقييم بنجاح، شكراً لك!';
+
+  @override
+  String get review_submitted_error =>
+      'حدث خطأ أثناء إرسال التقييم، يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get order_completed_success => 'تم إكمال الطلب بنجاح ✅';
+
+  @override
+  String get send_complaint => 'إرسال شكوى';
+
+  @override
+  String get complaint_title => 'عنوان الشكوى';
+
+  @override
+  String get complaint_type => 'نوع الشكوى';
+
+  @override
+  String get complaint_content => 'محتوى الشكوى';
+
+  @override
+  String get complaint_submit => 'إرسال الشكوى';
+
+  @override
+  String get complaint_success =>
+      'تم إرسال شكواك بنجاح، سيقوم فريق العمل بمراجعتها.';
+
+  @override
+  String get complaint_error =>
+      'حدث خطأ أثناء إرسال الشكوى، يرجى المحاولة لاحقاً.';
+
+  @override
+  String get type_delay => 'تأخير في الموعد';
+
+  @override
+  String get type_quality => 'جودة الخدمة منخفضة';
+
+  @override
+  String get type_behavior => 'سلوك غير لائق من المزود';
+
+  @override
+  String get type_price => 'اختلاف في السعر المتفق عليه';
+
+  @override
+  String get type_other => 'أخرى';
 }

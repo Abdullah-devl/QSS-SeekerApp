@@ -103,11 +103,4 @@ class ServiceDetailsViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
-
-  /// 💖 تغيير حالة المفضلة
-  void toggleFavorite() {
-    _isFavorite = !_isFavorite;
-    notifyListeners();
-    // TODO: ربطها بـ API المفضلة مستقبلاً
-  }
-}
+}

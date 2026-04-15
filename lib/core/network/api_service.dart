@@ -52,21 +52,26 @@ class ApiService {
             );
           }
 
-          // 🚀 طباعة الرابط الذي يتم إرسال الطلب إليه.
+          // 🚀 طباعة الرابط والبيانات المرسلة.
           developer.log(
-            '🚀 Sending request to: ${options.uri}',
+            '🚀 Sending [${options.method}] request to: ${options.uri}',
             name: 'ApiService',
           );
+          if (options.data != null) {
+            developer.log('📦 Request Data: ${options.data}', name: 'ApiService');
+          }
           return handler.next(options); // ✅ متابعة إرسال الطلب
         },
 
         // 📥 عند استقبال الرد (On Response)
         onResponse: (response, handler) {
-          // ✅ طباعة تأكيد وصول الرد بنجاح.
+          // ✅ طباعة تأكيد وصول الرد والبيانات المستلمة.
           developer.log(
-            '✅ Response received from: ${response.requestOptions.uri}',
+            '✅ Response received from: ${response.requestOptions.uri} [${response.statusCode}]',
             name: 'ApiService',
           );
+          developer.log('📥 Response Body: ${response.data}', name: 'ApiService');
+          
           return handler.next(response); // ✅ تمرير الرد للكود الذي طلبه
         },
 
@@ -78,21 +83,21 @@ class ApiService {
              serverMessage = e.response?.data['message'] ?? e.response?.data['error'];
           }
 
-          developer.log('❌ Error: ${serverMessage ?? e.message}', name: 'ApiService', error: e);
+          developer.log(
+            '❌ Error on URL: ${e.requestOptions.uri}\n📩 Server Message: ${serverMessage ?? e.message}', 
+            name: 'ApiService', 
+            error: e
+          );
+          
+          if (e.response?.data != null) {
+             developer.log('📥 Error Body: ${e.response?.data}', name: 'ApiService');
+          }
 
           // ⚠️ التحقق مما إذا كان الخطأ بسبب انتهاء الصلاحية (401 Unauthorized).
           if (e.response?.statusCode == 401) {
             developer.log(
               '⚠️ Unauthorized! Token might be expired.',
               name: 'ApiService',
-            );
-          }
-          // ⚠️ طباعة تفاصيل أخطاء التحقق (422 Validation Error)
-          if (e.response?.statusCode == 422) {
-            developer.log(
-              '⚠️ Validation Error: ${e.response?.data}',
-              name: 'ApiService',
-              error: e.response?.data,
             );
           }
           return handler.next(e); // ⚠️ تمرير الخطأ ليتم معالجته في المكان المناسب
@@ -147,6 +152,16 @@ class ApiService {
   Future<Response> put(String endpoint, {dynamic data}) async {
     try {
       final response = await _dio.put(endpoint, data: data);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// 🔹 دالة PATCH: لتحديث بيانات جزئية.
+  Future<Response> patch(String endpoint, {dynamic data}) async {
+    try {
+      final response = await _dio.patch(endpoint, data: data);
       return response;
     } catch (e) {
       rethrow;

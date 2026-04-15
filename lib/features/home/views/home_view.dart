@@ -11,9 +11,14 @@ import 'package:seeker/features/home/widgets/custom_nav_bar.dart'; // Import Cus
 import 'package:seeker/features/settings/views/settings_view.dart'; // Import SettingsView
 import 'package:seeker/core/network/api_endpoints.dart';
 import '../services/viewmodels/service_details_view_model.dart';
+
 import '../services/view/service_details_view.dart';
-import '../repositories/home_repository.dart';
+import 'package:seeker/features/home/repositories/home_repository.dart';
+import 'package:seeker/features/favorites/views/favorite_view.dart';
+import 'package:seeker/features/favorites/viewmodels/favorite_view_model.dart';
+import 'package:seeker/core/widgets/service_card.dart';
 import 'package:seeker/l10n/app_localizations.dart';
+import 'package:seeker/features/orders/Views/orders_view.dart';
 
 class HomeView extends StatefulWidget {
   final String title;
@@ -55,10 +60,7 @@ class _HomeViewState extends State<HomeView> {
             currentScreen = _buildHomeContent(colors);
             break;
           case 1:
-            currentScreen = _buildPlaceholderPage(
-              context,
-              AppLocalizations.of(context)!.myOrders,
-            );
+            currentScreen = const OrdersView();
             break;
           case 2:
             currentScreen = _buildPlaceholderPage(
@@ -67,10 +69,7 @@ class _HomeViewState extends State<HomeView> {
             );
             break;
           case 3:
-            currentScreen = _buildPlaceholderPage(
-              context,
-              AppLocalizations.of(context)!.favorites,
-            );
+            currentScreen = const FavoriteView();
             break;
           case 4:
             currentScreen = SettingsView(
@@ -556,7 +555,8 @@ class _HomeViewState extends State<HomeView> {
   Widget _buildPopularServicesList(List<ServiceModel> services) {
     return Column(
       children: services.map((service) {
-        return GestureDetector(
+        return ServiceCard(
+          service: service,
           onTap: () {
             Navigator.push(
               context,
@@ -570,168 +570,13 @@ class _HomeViewState extends State<HomeView> {
               ),
             );
           },
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 16),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: context.qsColors.text.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Row(
-            textDirection: TextDirection.rtl, // لترتيب الصورة يمين والنص يسار
-            children: [
-              // صورة الخدمة
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  service.imageUrl,
-                  width: 80,
-                  height: 80,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    width: 80,
-                    height: 80,
-                    color: Colors.grey[300],
-                    child: const Icon(Icons.image_not_supported),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-
-              // تفاصيل الخدمة
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // التقييم (يسار)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[100],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.star,
-                                color: Colors.amber,
-                                size: 14,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                service.rating.toString(),
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        // العنوان (يمين)
-                        Expanded(
-                          child: Text(
-                            service.title,
-                            textAlign: TextAlign.right,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      service.description, // وصف الخدمة
-                      textAlign: TextAlign.right,
-                      style: TextStyle(color: Colors.grey[500], fontSize: 12),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 8),
-
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // زر حجز سريع
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: context.qsColors.primary.withValues(
-                              alpha: 0.1,
-                            ), // أزرق فاتح جداً
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            AppLocalizations.of(context)!.book,
-                            style: TextStyle(
-                              color: context.qsColors.primary,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-
-                        // السعر
-                        RichText(
-                          text: TextSpan(
-                            style: TextStyle(
-                              color: context.qsColors.primary,
-                              fontFamily: 'Cairo',
-                            ),
-                            children: [
-                              TextSpan(
-                                text: '${service.price} ',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                              TextSpan(
-                                text: AppLocalizations.of(context)!.sar,
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              TextSpan(
-                                text: AppLocalizations.of(context)!.perHour,
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }).toList(),
-  );
-}
+          onFavoriteToggle: () {
+            context.read<FavoriteViewModel>().toggleFavorite(service);
+          },
+        );
+      }).toList(),
+    );
+  }
 
   // ---------------------------------------------------------------------------
   // 🖼️ معالجة صور التصنيفات (Image Handling)

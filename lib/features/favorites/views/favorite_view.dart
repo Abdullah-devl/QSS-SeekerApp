@@ -8,22 +8,25 @@ import 'package:seeker/features/home/services/viewmodels/service_details_view_mo
 import 'package:seeker/features/home/services/view/service_details_view.dart';
 import 'package:seeker/features/home/repositories/home_repository.dart';
 
+import 'package:seeker/l10n/app_localizations.dart';
+
 class FavoriteView extends StatelessWidget {
   const FavoriteView({super.key});
 
   @override
   Widget build(BuildContext context) {
     final colors = context.qsColors;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA), // لون رمادي فاتح مريح للخلفية
+      backgroundColor: colors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F9FA),
+        backgroundColor: colors.background,
         elevation: 0,
         centerTitle: true,
-        title: const Text(
-          'المفضلة',
-          style: TextStyle(
+        title: Text(
+          l10n.favorites,
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 22,
           ),
@@ -51,7 +54,7 @@ class FavoriteView extends StatelessWidget {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => vm.refreshFavorites(),
-                    child: const Text('إعادة المحاولة'),
+                    child: Text(l10n.retry),
                   ),
                 ],
               ),
@@ -70,7 +73,7 @@ class FavoriteView extends StatelessWidget {
                 child: vm.filteredFavorites.isEmpty
                     ? Center(
                         child: Text(
-                          'لا توجد خدمات في المفضلة هنا',
+                          l10n.no_results,
                           style: TextStyle(color: colors.textSub),
                         ),
                       )
@@ -78,7 +81,7 @@ class FavoriteView extends StatelessWidget {
                         color: colors.primary,
                         onRefresh: () => vm.refreshFavorites(),
                         child: ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 100),
                           itemCount: vm.filteredFavorites.length,
                           itemBuilder: (context, index) {
                             final service = vm.filteredFavorites[index];
@@ -121,22 +124,25 @@ class FavoriteView extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        reverse: true, // RTL support
+        // تم إزالة reverse: true لجعل الاتجاه يعتمد على لوكال الجهاز تلقائياً
         itemCount: vm.filterCategories.length,
         separatorBuilder: (_, __) => const SizedBox(width: 24),
         itemBuilder: (context, index) {
           final category = vm.filterCategories[index];
           final isSelected = vm.selectedCategoryId == category.id;
+          final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
-          // تحويل النص إلى أيقونة
-          IconData getIcon(String name) {
-            switch (name) {
-              case 'grid_view': return Icons.grid_view_rounded;
-              case 'build_outlined': return Icons.build_outlined;
-              case 'cleaning_services_outlined': return Icons.cleaning_services_outlined;
-              case 'local_shipping_outlined': return Icons.local_shipping_outlined;
-              default: return Icons.category_outlined;
-            }
+          // تحويل المسار أو الاسم إلى أيقونة مناسبة
+          IconData getIcon(String? iconPath, String name) {
+            final normalized = (iconPath ?? name).toLowerCase();
+            if (normalized.contains('grid') || normalized.contains('الكل') || normalized == 'all' || name == vm.filterCategories.first.name) return Icons.grid_view_rounded;
+            if (normalized.contains('build') || normalized.contains('صيانة')) return Icons.build_outlined;
+            if (normalized.contains('clean') || normalized.contains('تنظيف')) return Icons.cleaning_services_outlined;
+            if (normalized.contains('ship') || normalized.contains('نقل')) return Icons.local_shipping_outlined;
+            if (normalized.contains('electric') || normalized.contains('كهربا')) return Icons.electrical_services_rounded;
+            if (normalized.contains('plumb') || normalized.contains('سباكة')) return Icons.plumbing_rounded;
+            if (normalized.contains('paint') || normalized.contains('دهان')) return Icons.format_paint_rounded;
+            return Icons.category_outlined;
           }
 
           return GestureDetector(
@@ -148,19 +154,19 @@ class FavoriteView extends StatelessWidget {
                   width: 55,
                   height: 55,
                   decoration: BoxDecoration(
-                    color: isSelected ? colors.primary : Colors.white,
+                    color: isSelected ? colors.primary : Theme.of(context).cardColor,
                     shape: BoxShape.circle,
                     boxShadow: [
                       if (!isSelected)
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
+                          color: colors.text.withValues(alpha: 0.04),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
                     ],
                   ),
                   child: Icon(
-                    getIcon(category.iconPath),
+                    getIcon(category.iconPath, category.name),
                     color: isSelected ? Colors.white : colors.textSub,
                     size: 24,
                   ),

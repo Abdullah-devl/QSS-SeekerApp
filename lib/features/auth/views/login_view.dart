@@ -87,8 +87,8 @@ class LoginView extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
-                            // نستخدم لون السطح (Card Color) أو الأبيض في الوضع النهاري
-                            color: isDark ? Colors.grey[900] : Colors.white,
+                            // نستخدم لون السطح (Card Color) من الثيم
+                            color: Theme.of(context).cardColor,
                             borderRadius: BorderRadius.circular(24),
                             // ظل خفيف لإعطاء عمق للبطاقة
                             boxShadow: [
@@ -137,7 +137,7 @@ class LoginView extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                  // العنوان (يمين)
+                                  // العنوان (يمين/البداية)
                                   _buildLabel(
                                     context,
                                     AppLocalizations.of(context)!.password,
@@ -182,21 +182,20 @@ class LoginView extends StatelessWidget {
                                           strokeWidth: 2,
                                         ),
                                       )
-                                    : const Row(
+                                    : Row(
                                         // نص الزر والأيقونة
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Icon(
+                                          const Icon(
                                             Icons.login_rounded,
                                             size: 20,
                                             color: Colors.white,
                                           ),
-                                          SizedBox(width: 8),
+                                          const SizedBox(width: 8),
                                           Text(
-                                            // AppLocalizations.of(context)!.login,
-                                            "Login",
-                                            style: TextStyle(
+                                            AppLocalizations.of(context)!.login,
+                                            style: const TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.bold,
                                               color: Colors.white,
@@ -320,7 +319,9 @@ class LoginView extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               Icon(
-                                Icons.arrow_forward,
+                                Directionality.of(context) == TextDirection.rtl
+                                    ? Icons.arrow_back
+                                    : Icons.arrow_forward,
                                 size: 18,
                                 color: colors.textSub,
                               ),
@@ -343,9 +344,7 @@ class LoginView extends StatelessWidget {
             left: 20,
             child: FloatingActionButton(
               onPressed: context.read<ThemeProvider>().toggleTheme,
-              backgroundColor: isDark
-                  ? const Color.fromARGB(255, 102, 101, 101)
-                  : Colors.white,
+              backgroundColor: isDark ? colors.secondary : colors.background,
               elevation: 4,
               child: Icon(
                 isDark ? Icons.light_mode : Icons.nightlight_round,
@@ -357,9 +356,15 @@ class LoginView extends StatelessWidget {
           // زر الرجوع في الأعلى (اختياري، يظهر فقط إذا كان هناك صفحة سابقة)
           Positioned(
             top: 50,
-            right: 20, // يمين لأن التطبيق عربي
+            right: Directionality.of(context) == TextDirection.rtl ? 20 : null,
+            left: Directionality.of(context) == TextDirection.ltr ? 20 : null,
             child: IconButton(
-              icon: Icon(Icons.arrow_forward_ios, color: colors.text),
+              icon: Icon(
+                Directionality.of(context) == TextDirection.rtl
+                    ? Icons.arrow_forward_ios
+                    : Icons.arrow_back_ios,
+                color: colors.text,
+              ),
               onPressed: () => Navigator.pop(context),
             ),
           ),
@@ -375,7 +380,7 @@ class LoginView extends StatelessWidget {
   /// 🏷️ دالة لبناء عنوان الحقل (Label) بشكل موحد.
   Widget _buildLabel(BuildContext context, String text) {
     return Align(
-      alignment: Alignment.centerRight, // محاذاة لليمين
+      alignment: AlignmentDirectional.centerEnd, // محاذاة متجاوبة مع الاتجاه
       child: Text(
         text,
         style: TextStyle(
@@ -403,7 +408,7 @@ class LoginView extends StatelessWidget {
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 12),
         // الخلفية تتغير حسب الثيم
-        backgroundColor: isDark ? Colors.grey[900] : Colors.white,
+        backgroundColor: Theme.of(context).cardColor,
         side: BorderSide(color: colors.textSub.withValues(alpha: 0.2)),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
@@ -413,8 +418,8 @@ class LoginView extends StatelessWidget {
           Icon(
             icon,
             color: isGoogle
-                ? Colors
-                      .red // تلوين أيقونة جوجل بالأحمر
+                ? colors
+                      .error // تلوين أيقونة جوجل بلون الخطأ للهوية
                 : colors.text,
             size: 28,
           ),

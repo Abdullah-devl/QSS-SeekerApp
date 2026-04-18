@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:seeker/core/utils/qs_alerts.dart'; // ✅ تمت الإضافة
 import 'dart:developer' as developer;
 import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -58,11 +59,18 @@ class ContactInfoView extends StatelessWidget {
   }
 
   Widget _buildPhoneCard(BuildContext context, dynamic phone, dynamic colors) {
+    // 🌍 تجهيز الرقم الكامل (كود الدولة + الرقم) لضمان نجاح الاتصال والواتساب
+    final String countryCode = phone.countryCode ?? '';
+    final String localPhone = phone.phone ?? '';
+    // الرقم الكامل المختصر (بدون مسافات) للروابط والنسخ
+    final String completePhone = '$countryCode$localPhone'.replaceAll(' ', '');
+    // الرقم للتنسيق الجمالي في العرض
+    final String displayPhone = '$countryCode $localPhone';
+
     // تحديد الأيقونة واللون بناءً على النوع
     final bool isWhatsApp = phone.type == 'whatsapp' || phone.type == 'both';
     final bool isCall =
         phone.type == 'phone' || phone.type == 'both' || phone.type == 'mobile';
-    final String fullPhone = phone.phone ?? '';
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -90,7 +98,7 @@ class ContactInfoView extends StatelessWidget {
               size: 22,
             ),
           ),
-          const SizedBox(width: 3),
+          const SizedBox(width: 8),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,24 +106,24 @@ class ContactInfoView extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      '${phone.countryCode ?? ''} $fullPhone',
+                      displayPhone,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 11,
+                        fontSize: 14, // تم تكبير الخط قليلاً للوضوح
                         letterSpacing: 1.1,
                       ),
                     ),
-                    // const SizedBox(width: 2),
+                    const SizedBox(width: 8),
                     IconButton(
                       icon: Icon(
                         Icons.copy_rounded,
-                        size: 14,
+                        size: 16,
                         color: colors.textSub,
                       ),
                       constraints: const BoxConstraints(),
                       padding: EdgeInsets.zero,
                       onPressed: () =>
-                          _copyToClipboard(context, fullPhone, colors),
+                          _copyToClipboard(context, completePhone, colors),
                     ),
                   ],
                 ),
@@ -135,13 +143,13 @@ class ContactInfoView extends StatelessWidget {
                 _buildCompactActionButton(
                   icon: Icons.message_rounded,
                   color: Colors.green,
-                  onTap: () => _launchURL('https://wa.me/$fullPhone'),
+                  onTap: () => _launchURL('https://wa.me/$completePhone'),
                 ),
               if (isCall)
                 _buildCompactActionButton(
                   icon: Icons.call_rounded,
                   color: colors.primary,
-                  onTap: () => _launchURL('tel:$fullPhone'),
+                  onTap: () => _launchURL('tel:$completePhone'),
                 ),
             ],
           ),
@@ -172,15 +180,7 @@ class ContactInfoView extends StatelessWidget {
 
   void _copyToClipboard(BuildContext context, String text, dynamic colors) {
     Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('تم نسخ الرقم بنجاح'),
-        backgroundColor: colors.primary,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 1),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
+    QSAlerts.showSuccess(context, 'تم نسخ الرقم بنجاح');
   }
 
   void _launchURL(String url) async {
@@ -293,16 +293,7 @@ class ContactInfoView extends StatelessWidget {
                         ),
                         onPressed: () {
                           Clipboard.setData(ClipboardData(text: bank.iban));
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('تم نسخ رقم الحساب بنجاح'),
-                              backgroundColor: colors.primary,
-                              behavior: SnackBarBehavior.floating,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          );
+                          QSAlerts.showSuccess(context, 'تم نسخ رقم الحساب بنجاح');
                         },
                       ),
                     ],

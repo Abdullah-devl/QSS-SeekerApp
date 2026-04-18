@@ -19,6 +19,9 @@ class OrdersViewModel extends ChangeNotifier {
   List<OrderModel> _allOrders = [];
   List<OrderModel> get allOrders => _allOrders;
 
+  /// 📊 عدد الطلبات الجديدة (Pending) لغرض العداد في القائمة الجانبية
+  int get newOrdersCount => _allOrders.where((o) => o.status == 'pending').length;
+
   // 🚀 تعريف التبويبات (أضفنا المرفوض والملغي)
   final List<String> tabs = [
     'all',

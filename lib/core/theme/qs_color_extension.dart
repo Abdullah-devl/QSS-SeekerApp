@@ -23,6 +23,10 @@ extension QSColorExt on BuildContext {
             primary: CustomColor.darkPrimary,
             secondary: CustomColor.darkSecondary,
             accent: CustomColor.darkAccent,
+            error: CustomColor.darkError,
+            success: CustomColor.darkSuccess,
+            warning: CustomColor.darkWarning,
+            info: CustomColor.darkInfo,
           )
         : const QSColors(
             text: CustomColor.lightText,
@@ -31,6 +35,10 @@ extension QSColorExt on BuildContext {
             primary: CustomColor.lightPrimary,
             secondary: CustomColor.lightSecondary,
             accent: CustomColor.lightAccent,
+            error: CustomColor.error,
+            success: CustomColor.success,
+            warning: CustomColor.warning,
+            info: CustomColor.info,
           );
   }
 }

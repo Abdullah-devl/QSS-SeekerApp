@@ -81,7 +81,7 @@ class WelcomeView extends StatelessWidget {
                   child: Icon(
                     Icons.home_repair_service_rounded,
                     size: 60,
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -137,16 +137,16 @@ class WelcomeView extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.arrow_back,
-                      color: context.qsColors.text,
+                      color: Colors.white,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       l10n.login,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: context.qsColors.text,
+                        color: Colors.white,
                       ),
                     ),
                   ],
@@ -161,11 +161,12 @@ class WelcomeView extends StatelessWidget {
                   context.read<WelcomeViewModel>().register(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: context.qsColors.background,
+                  backgroundColor: colors.background,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
+                  side: BorderSide(color: colors.primary, width: 1.5),
                   elevation: 0,
                 ),
                 child: Row(
@@ -173,7 +174,7 @@ class WelcomeView extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.person_add_alt_1,
-                      color: context.qsColors.text,
+                      color: colors.primary,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -182,7 +183,7 @@ class WelcomeView extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: context.qsColors.text,
+                        color: colors.primary,
                       ),
                     ),
                   ],

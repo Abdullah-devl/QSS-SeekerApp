@@ -17,7 +17,7 @@ class SettingsViewModel extends ChangeNotifier {
   bool _notificationsEnabled = true;
   Locale _locale = const Locale('ar'); // اللغة الافتراضية
 
-  String _userName = 'زائر';
+  String _userName = 'guest';
   String _userEmail = 'visitor@example.com';
   String _userPhone = '';
   String _userAddress = '';
@@ -37,7 +37,7 @@ class SettingsViewModel extends ChangeNotifier {
   /// 🔄 تحميل بيانات المستخدم من التخزين المحلي
   Future<void> loadUserData() async {
     final data = await _tokenStorage.getUserData();
-    _userName = data['name'] ?? 'زائر';
+    _userName = data['name'] ?? 'guest';
     _userEmail = data['email'] ?? 'visitor@example.com';
     _userPhone = data['phone'] ?? '';
     _userAddress = data['address'] ?? '';

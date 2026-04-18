@@ -38,9 +38,10 @@ class _OrdersBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final viewModel = Provider.of<OrdersViewModel>(context);
+    final colors = context.qsColors;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: colors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -48,37 +49,28 @@ class _OrdersBody extends StatelessWidget {
         title: Text(
           context.tr('myOrders'),
           style: TextStyle(
-            color: context.qsColors.text,
+            color: colors.text,
             fontWeight: FontWeight.bold,
             fontSize: 22,
           ),
         ),
-        // actions: [
-        //   IconButton(
-        //     icon: Icon(Icons.arrow_forward_ios, color: context.qsColors.text),
-        //     onPressed: () => Navigator.pop(context),
-        //   ),
-        // ],
-        // leading: IconButton(
-        //   icon: Icon(Icons.filter_list_rounded, color: context.qsColors.text),
-        //   onPressed: () {},
-        // ),
       ),
       body: Column(
         children: [
           _buildTabs(context, viewModel),
-          const Divider(height: 1, thickness: 1, color: Color(0xFFEEEEEE)),
+          Divider(height: 1, thickness: 1, color: colors.textSub.withOpacity(0.1)),
           Expanded(
             child: viewModel.isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? Center(child: CircularProgressIndicator(color: colors.primary))
                 : viewModel.errorMessage != null
                 ? _buildErrorWidget(context, viewModel)
                 : RefreshIndicator(
+                    color: colors.primary,
                     onRefresh: () => viewModel.fetchOrders(),
                     child: viewModel.filteredOrders.isEmpty
                         ? _buildEmptyState(context)
                         : ListView.builder(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
+                            padding: const EdgeInsets.only(top: 8, bottom: 100),
                             itemCount: viewModel.filteredOrders.length,
                             itemBuilder: (context, index) {
                               return _OrderCardWidget(
@@ -94,20 +86,22 @@ class _OrdersBody extends StatelessWidget {
   }
 
   Widget _buildErrorWidget(BuildContext context, OrdersViewModel viewModel) {
+    final colors = context.qsColors;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline, size: 60, color: Colors.red),
+          Icon(Icons.error_outline, size: 60, color: colors.error),
           const SizedBox(height: 16),
           Text(
             context.tr('error_loading_orders'),
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colors.text),
           ),
           const SizedBox(height: 8),
           ElevatedButton(
             onPressed: () => viewModel.fetchOrders(),
-            child: Text(context.tr('retry')),
+            style: ElevatedButton.styleFrom(backgroundColor: colors.primary),
+            child: Text(context.tr('retry'), style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -115,6 +109,7 @@ class _OrdersBody extends StatelessWidget {
   }
 
   Widget _buildEmptyState(BuildContext context) {
+    final colors = context.qsColors;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -122,12 +117,12 @@ class _OrdersBody extends StatelessWidget {
           Icon(
             Icons.inventory_2_outlined,
             size: 80,
-            color: Colors.grey.shade300,
+            color: colors.textSub.withOpacity(0.2),
           ),
           const SizedBox(height: 16),
           Text(
             context.tr('no_orders_yet'),
-            style: TextStyle(fontSize: 18, color: Colors.grey.shade500),
+            style: TextStyle(fontSize: 18, color: colors.textSub, fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -135,6 +130,7 @@ class _OrdersBody extends StatelessWidget {
   }
 
   Widget _buildTabs(BuildContext context, OrdersViewModel viewModel) {
+    final colors = context.qsColors;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -147,16 +143,16 @@ class _OrdersBody extends StatelessWidget {
               margin: const EdgeInsets.only(left: 8),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
               decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFF1CB0F6) : Colors.white,
+                color: isSelected ? colors.primary : colors.background,
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: isSelected ? Colors.transparent : Colors.grey.shade300,
+                  color: isSelected ? Colors.transparent : colors.textSub.withOpacity(0.2),
                 ),
               ),
               child: Text(
                 context.tr(viewModel.tabs[index]),
                 style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.grey.shade600,
+                  color: isSelected ? Colors.white : colors.textSub,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   fontSize: 14,
                 ),
@@ -175,14 +171,15 @@ class _OrderCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.qsColors;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: colors.text.withOpacity(0.06),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -195,7 +192,7 @@ class _OrderCardWidget extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             decoration: BoxDecoration(
-              color: _getStatusColor(order.status).withOpacity(0.08),
+              color: _getStatusColor(context, order.status).withOpacity(0.08),
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(24),
               ),
@@ -209,14 +206,13 @@ class _OrderCardWidget extends StatelessWidget {
                     Icon(
                       Icons.watch_later_outlined,
                       size: 16,
-                      color: _getStatusColor(order.status),
+                      color: _getStatusColor(context, order.status),
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      order
-                          .timeAgo, // Displaying only the hour:minute as updated in the model
+                      order.timeAgo,
                       style: TextStyle(
-                        color: _getStatusColor(order.status),
+                        color: _getStatusColor(context, order.status),
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         fontFamily: 'Roboto',
@@ -241,14 +237,14 @@ class _OrderCardWidget extends StatelessWidget {
                       children: [
                         CircleAvatar(
                           radius: 32,
-                          backgroundColor: Colors.grey.shade50,
+                          backgroundColor: colors.background,
                           backgroundImage: order.providerImage.isNotEmpty
                               ? NetworkImage(order.providerImage)
                               : null,
                           child: order.providerImage.isEmpty
                               ? Icon(
                                   Icons.person_outline,
-                                  color: Colors.grey.shade400,
+                                  color: colors.textSub.withOpacity(0.5),
                                   size: 36,
                                 )
                               : null,
@@ -259,13 +255,13 @@ class _OrderCardWidget extends StatelessWidget {
                             left: 0,
                             child: Container(
                               padding: const EdgeInsets.all(2),
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
+                              decoration: BoxDecoration(
+                                color: colors.background,
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.verified,
-                                color: Color(0xFF1CB0F6),
+                                color: colors.primary,
                                 size: 20,
                               ),
                             ),
@@ -279,9 +275,10 @@ class _OrderCardWidget extends StatelessWidget {
                         children: [
                           Text(
                             order.providerName,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w800,
+                              color: colors.text,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -291,14 +288,14 @@ class _OrderCardWidget extends StatelessWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
+                              color: colors.textSub.withOpacity(0.08),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
                               order.serviceName,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: Colors.grey.shade700,
+                                color: colors.textSub,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -320,7 +317,7 @@ class _OrderCardWidget extends StatelessWidget {
                           Icon(
                             Icons.location_on_outlined,
                             size: 18,
-                            color: Colors.grey.shade400,
+                            color: colors.textSub.withOpacity(0.5),
                           ),
                           const SizedBox(width: 6),
                           Expanded(
@@ -329,7 +326,7 @@ class _OrderCardWidget extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                color: Colors.grey.shade600,
+                                color: colors.textSub,
                                 fontSize: 13,
                               ),
                             ),
@@ -344,7 +341,7 @@ class _OrderCardWidget extends StatelessWidget {
                           context.tr('total_price_label'),
                           style: TextStyle(
                             fontSize: 11,
-                            color: Colors.grey.shade400,
+                            color: colors.textSub.withOpacity(0.5),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -353,8 +350,8 @@ class _OrderCardWidget extends StatelessWidget {
                             children: [
                               TextSpan(
                                 text: '${order.price.toInt()}',
-                                style: const TextStyle(
-                                  color: Color(0xFF2D3436),
+                                style: TextStyle(
+                                  color: colors.text,
                                   fontSize: 26,
                                   fontWeight: FontWeight.w900,
                                   fontFamily: 'Roboto',
@@ -362,8 +359,8 @@ class _OrderCardWidget extends StatelessWidget {
                               ),
                               TextSpan(
                                 text: ' ${context.tr('currency_sar')}',
-                                style: const TextStyle(
-                                  color: Color(0xFF1CB0F6),
+                                style: TextStyle(
+                                  color: colors.primary,
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -377,7 +374,7 @@ class _OrderCardWidget extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 24),
-                const Divider(height: 1),
+                Divider(height: 1, color: colors.textSub.withOpacity(0.1)),
                 const SizedBox(height: 24),
 
                 // 4. Action Buttons
@@ -387,10 +384,10 @@ class _OrderCardWidget extends StatelessWidget {
                       child: TextButton(
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          backgroundColor: Colors.grey.shade50,
+                          backgroundColor: colors.textSub.withOpacity(0.05),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
-                            side: BorderSide(color: Colors.grey.shade200),
+                            side: BorderSide(color: colors.textSub.withOpacity(0.1)),
                           ),
                         ),
                         onPressed: () {
@@ -404,8 +401,8 @@ class _OrderCardWidget extends StatelessWidget {
                         },
                         child: Text(
                           context.tr('details'),
-                          style: const TextStyle(
-                            color: Color(0xFF2D3436),
+                          style: TextStyle(
+                            color: colors.text,
                             fontWeight: FontWeight.w700,
                             fontSize: 15,
                           ),
@@ -413,14 +410,13 @@ class _OrderCardWidget extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 14),
-                    const SizedBox(width: 14),
                     if (order.status != 'canceled' &&
                         order.status != 'cancelled' &&
                         order.status != 'completed')
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFFF4757),
+                            backgroundColor: colors.error,
                             foregroundColor: Colors.white,
                             elevation: 0,
                             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -448,28 +444,28 @@ class _OrderCardWidget extends StatelessWidget {
     );
   }
 
-  Color _getStatusColor(String status) {
+  Color _getStatusColor(BuildContext context, String status) {
     switch (status.toLowerCase()) {
       case 'pending':
       case 'new':
       case 'new_order':
-        return const Color(0xFF1CB0F6); // Blue
+        return context.qsColors.primary;
       case 'accepted':
       case 'in_progress':
       case 'accepted_initial':
       case 'accepted_partial_paid':
-        return const Color(0xFFFFA502); // Orange
+        return context.qsColors.warning;
       case 'completed':
       case 'finished':
-        return const Color(0xFF2ECC71); // Green
+        return context.qsColors.success;
       case 'canceled':
       case 'cancelled':
       case 'rejected':
-        return const Color(0xFFFF4757); // Red
+        return context.qsColors.error;
       case 'suspended':
-        return const Color(0xFF90A4AE); // Grey
+        return context.qsColors.textSub;
       default:
-        return const Color(0xFF1CB0F6);
+        return context.qsColors.primary;
     }
   }
 
@@ -505,7 +501,7 @@ class _OrderCardWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: _getStatusColor(status),
+        color: _getStatusColor(context, status),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(

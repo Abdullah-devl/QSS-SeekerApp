@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:seeker/core/routes/app_routes.dart';
+import 'package:seeker/core/utils/qs_alerts.dart';
 import '../repositories/auth_repository.dart';
 
 /// 📂 اسم الملف: login_view_model.dart
@@ -27,9 +28,7 @@ class LoginViewModel extends ChangeNotifier {
     // 1. التحقق البسيط من أن الحقول ليست فارغة
     if (emailController.text.trim().isEmpty ||
         passwordController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('الرجاء تعبئة جميع الحقول')));
+      QSAlerts.showWarning(context, 'الرجاء تعبئة جميع الحقول');
       return;
     }
 
@@ -51,12 +50,7 @@ class LoginViewModel extends ChangeNotifier {
           Navigator.pushReplacementNamed(context, AppRoutes.home);
         } else {
           // ⚠️ الحساب غير مفعل -> الذهاب لصفحة التفعيل
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('الرجاء تفعيل حسابك أولاً'),
-              backgroundColor: Colors.orange,
-            ),
-          );
+          QSAlerts.showWarning(context, 'الرجاء تفعيل حسابك أولاً');
           Navigator.pushNamed(
             context,
             AppRoutes.verifyEmail,
@@ -67,12 +61,7 @@ class LoginViewModel extends ChangeNotifier {
     } catch (e) {
       // 5. في حال الفشل، عرض رسالة الخطأ للمستخدم
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.red,
-          ),
-        );
+        QSAlerts.showError(context, e.toString().replaceAll('Exception: ', ''));
       }
     } finally {
       // 6. إيقاف حالة التحميل في جميع الأحوال (نجاح أو فشل)
@@ -93,9 +82,7 @@ class LoginViewModel extends ChangeNotifier {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('حدث خطأ: $e')));
+        QSAlerts.showError(context, 'حدث خطأ: $e');
       }
     } finally {
       _isLoading = false;

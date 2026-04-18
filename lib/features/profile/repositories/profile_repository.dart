@@ -190,7 +190,7 @@ class ProfileRepository {
       final response = await _apiService.post(ApiEndpoints.profilePhones, data: {
         'phone': phone,
         'country_code': countryCode,
-        'type': type ?? 'phone',
+        'type': type ?? 'mobile', // تم التعديل من phone إلى mobile
       });
 
       if (response.statusCode != 200 && response.statusCode != 201) {
@@ -213,7 +213,7 @@ class ProfileRepository {
       final response = await _apiService.put(ApiEndpoints.profilePhone(phoneId), data: {
         'phone': phone,
         'country_code': countryCode,
-        'type': type ?? 'phone',
+        'type': type ?? 'mobile', // تم التعديل من phone إلى mobile
       });
 
       if (response.statusCode != 200) {

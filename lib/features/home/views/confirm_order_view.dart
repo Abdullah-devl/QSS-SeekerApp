@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:seeker/core/routes/app_routes.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
+import 'package:seeker/core/utils/qs_alerts.dart';
 import '../services/models/service_model.dart';
 import '../viewmodels/confirm_order_view_model.dart';
 import '../../beProvider/views/pick_location_view.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 /// 📂 اسم الملف: confirm_order_view.dart
@@ -24,11 +27,17 @@ class ConfirmOrderView extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          'تأكيد وتخصيص الطلب',
+          context.tr('confirm_customize_order'),
           style: TextStyle(color: colors.text, fontWeight: FontWeight.bold, fontSize: 18),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: colors.text, size: 20),
+          icon: Icon(
+            Directionality.of(context) == TextDirection.rtl
+                ? Icons.arrow_forward_ios
+                : Icons.arrow_back_ios_new,
+            color: colors.text,
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -77,7 +86,7 @@ class ConfirmOrderView extends StatelessWidget {
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 15, offset: const Offset(0, 5)),
+          BoxShadow(color: colors.text.withValues(alpha: 0.03), blurRadius: 15, offset: const Offset(0, 5)),
         ],
       ),
       child: Column(
@@ -91,7 +100,7 @@ class ConfirmOrderView extends StatelessWidget {
               image: service.imageUrl.isNotEmpty
                   ? DecorationImage(image: NetworkImage(service.imageUrl), fit: BoxFit.cover)
                   : null,
-              color: colors.primary.withOpacity(0.1),
+              color: colors.primary.withValues(alpha: 0.1),
             ),
             child: service.imageUrl.isEmpty ? Icon(Icons.image, size: 50, color: colors.textSub) : null,
           ),
@@ -109,10 +118,10 @@ class ConfirmOrderView extends StatelessWidget {
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          Icon(Icons.star_rounded, color: Colors.amber, size: 20),
+                          Icon(Icons.star_rounded, color: colors.warning, size: 20),
                           const SizedBox(width: 4),
                           Text(
-                            service.rating > 0 ? '${service.rating}' : 'جديد',
+                            service.rating > 0 ? '${service.rating}' : context.tr('new_service_label'),
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: colors.text),
                           ),
                           const SizedBox(width: 12),
@@ -131,7 +140,7 @@ class ConfirmOrderView extends StatelessWidget {
                       '${service.price.toInt()}',
                       style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: colors.primary, fontFamily: 'Cairo'),
                     ),
-                    Text('ر.س', style: TextStyle(fontSize: 12, color: colors.primary, fontWeight: FontWeight.bold)),
+                    Text(context.tr('currency_sar'), style: TextStyle(fontSize: 12, color: colors.primary, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ],
@@ -149,7 +158,7 @@ class ConfirmOrderView extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colors.text.withOpacity(0.05)),
+        border: Border.all(color: colors.text.withValues(alpha: 0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,13 +167,13 @@ class ConfirmOrderView extends StatelessWidget {
             children: [
               Icon(Icons.person_pin_rounded, color: colors.primary),
               const SizedBox(width: 10),
-              Text('بيانات طلب الخدمة', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colors.text)),
+              Text(context.tr('request_details_title'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colors.text)),
             ],
           ),
           const SizedBox(height: 20),
-          _buildTextField(vm.userNameController, 'اسم المستلم', Icons.person_outline, colors),
+          _buildTextField(vm.userNameController, context.tr('receiver_name'), Icons.person_outline, colors),
           const SizedBox(height: 16),
-          _buildTextField(vm.userPhoneController, 'رقم الجوال', Icons.phone_android_rounded, colors, keyboardType: TextInputType.phone),
+          _buildTextField(vm.userPhoneController, context.tr('phoneNumber'), Icons.phone_android_rounded, colors, keyboardType: TextInputType.phone),
         ],
       ),
     );
@@ -190,7 +199,7 @@ class ConfirmOrderView extends StatelessWidget {
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: vm.selectedLatitude != null ? colors.primary.withOpacity(0.3) : colors.text.withOpacity(0.05)),
+          border: Border.all(color: vm.selectedLatitude != null ? colors.primary.withValues(alpha: 0.3) : colors.text.withValues(alpha: 0.05)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,10 +208,10 @@ class ConfirmOrderView extends StatelessWidget {
               children: [
                 Icon(Icons.map_rounded, color: colors.primary),
                 const SizedBox(width: 10),
-                Text('موقع تقديم الخدمة', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colors.text)),
+                Text(context.tr('service_location_title'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colors.text)),
                 const Spacer(),
                 if (vm.selectedLatitude != null)
-                  Icon(Icons.check_circle, color: Colors.green, size: 20),
+                  Icon(Icons.check_circle, color: colors.success, size: 20),
               ],
             ),
             const SizedBox(height: 16),
@@ -210,16 +219,16 @@ class ConfirmOrderView extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: colors.background,
+                color: colors.primary.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.location_on_rounded, color: vm.selectedLatitude != null ? Colors.redAccent : colors.textSub, size: 20),
+                  Icon(Icons.location_on_rounded, color: vm.selectedLatitude != null ? colors.error : colors.textSub, size: 20),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      vm.selectedAddress ?? 'اضغط لتحديد موقعك على الخريطة',
+                      vm.selectedAddress ?? context.tr('click_to_pick_location'),
                       style: TextStyle(
                         color: vm.selectedAddress != null ? colors.text : colors.textSub,
                         fontSize: 14,
@@ -227,7 +236,13 @@ class ConfirmOrderView extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Icon(Icons.arrow_forward_ios, color: colors.textSub, size: 14),
+                  Icon(
+                    Directionality.of(context) == TextDirection.rtl
+                        ? Icons.arrow_back_ios
+                        : Icons.arrow_forward_ios,
+                    color: colors.textSub,
+                    size: 14,
+                  ),
                 ],
               ),
             ),
@@ -247,7 +262,7 @@ class ConfirmOrderView extends StatelessWidget {
         hintStyle: TextStyle(color: colors.textSub, fontSize: 13),
         prefixIcon: Icon(icon, color: colors.primary, size: 20),
         filled: true,
-        fillColor: colors.background,
+        fillColor: colors.primary.withValues(alpha: 0.05),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
         contentPadding: const EdgeInsets.symmetric(vertical: 16),
       ),
@@ -267,7 +282,7 @@ class ConfirmOrderView extends StatelessWidget {
             children: [
               Icon(Icons.add_circle_outline_rounded, color: colors.text, size: 20),
               const SizedBox(width: 8),
-              Text('الخدمات الإضافية', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colors.text)),
+              Text(context.tr('additional_services'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colors.text)),
             ],
           ),
         ),
@@ -283,7 +298,7 @@ class ConfirmOrderView extends StatelessWidget {
               return Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  border: index != vm.subServices.length - 1 ? Border(bottom: BorderSide(color: colors.text.withOpacity(0.05))) : null,
+                  border: index != vm.subServices.length - 1 ? Border(bottom: BorderSide(color: colors.text.withValues(alpha: 0.05))) : null,
                 ),
                 child: Row(
                   children: [
@@ -292,7 +307,7 @@ class ConfirmOrderView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(sub.title, style: TextStyle(fontWeight: FontWeight.bold, color: colors.text, fontSize: 14)),
-                          Text('${sub.price.toInt()} ر.س', style: TextStyle(color: colors.primary, fontSize: 12, fontWeight: FontWeight.bold)),
+                          Text('${sub.price.toInt()} ${context.tr('currency_sar')}', style: TextStyle(color: colors.primary, fontSize: 12, fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),
@@ -319,7 +334,7 @@ class ConfirmOrderView extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: isSub ? colors.background : colors.primary.withOpacity(0.1),
+          color: isSub ? colors.background : colors.primary.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(icon, color: isSub ? colors.textSub : colors.primary, size: 18),
@@ -336,7 +351,7 @@ class ConfirmOrderView extends StatelessWidget {
           children: [
             Icon(Icons.edit_note_rounded, color: colors.text, size: 24),
             const SizedBox(width: 8),
-            Text('ملاحظات إضافية', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colors.text)),
+            Text(context.tr('additional_notes'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colors.text)),
           ],
         ),
         const SizedBox(height: 12),
@@ -345,7 +360,7 @@ class ConfirmOrderView extends StatelessWidget {
           maxLines: 4,
           style: TextStyle(color: colors.text, fontSize: 13),
           decoration: InputDecoration(
-            hintText: 'اكتب هنا أي تفاصيل تريد لمقدم الخدمة معرفتها...',
+            hintText: context.tr('notes_hint'),
             hintStyle: TextStyle(color: colors.textSub, fontSize: 12),
             filled: true,
             fillColor: Theme.of(context).cardColor,
@@ -363,7 +378,7 @@ class ConfirmOrderView extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, -5))],
+        boxShadow: [BoxShadow(color: colors.text.withValues(alpha: 0.05), blurRadius: 20, offset: const Offset(0, -5))],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -371,12 +386,12 @@ class ConfirmOrderView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('الإجمالي النهائي', style: TextStyle(fontWeight: FontWeight.bold, color: colors.textSub, fontSize: 14)),
+              Text(context.tr('final_total'), style: TextStyle(fontWeight: FontWeight.bold, color: colors.textSub, fontSize: 14)),
               RichText(
                 text: TextSpan(
                   children: [
                     TextSpan(text: '${vm.finalTotal.toStringAsFixed(1)} ', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26, color: colors.primary, fontFamily: 'Cairo')),
-                    TextSpan(text: 'ر.س', style: TextStyle(fontSize: 14, color: colors.text, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
+                    TextSpan(text: context.tr('currency_sar'), style: TextStyle(fontSize: 14, color: colors.text, fontWeight: FontWeight.bold, fontFamily: 'Cairo')),
                   ],
                 ),
               ),
@@ -389,11 +404,15 @@ class ConfirmOrderView extends StatelessWidget {
             child: ElevatedButton(
               onPressed: vm.isLoading ? null : () async {
                 final success = await vm.confirmOrder();
-                if (success && context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('تم إرسال طلبك بنجاح! 🚀')));
-                  Navigator.pop(context);
-                } else if (vm.errorMessage != null && context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(vm.errorMessage!), backgroundColor: Colors.redAccent));
+                if (success) {
+                  QSAlerts.showSuccess(context, context.tr('order_sent_success'));
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    AppRoutes.home,
+                    (route) => false,
+                  );
+                } else {
+                  QSAlerts.showError(context, vm.errorMessage ?? context.tr('order_sent_error'));
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -403,7 +422,7 @@ class ConfirmOrderView extends StatelessWidget {
               ),
               child: vm.isLoading
                   ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text('تأكيد وحجز الخدمة', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                  : Text(context.tr('confirm_and_book'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
             ),
           ),
         ],

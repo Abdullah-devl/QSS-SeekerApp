@@ -38,7 +38,7 @@ class RegisterView extends StatelessWidget {
                       // زر الوضع الليلي (يسار الشاشة)
                       Container(
                         decoration: BoxDecoration(
-                          color: isDark ? Colors.grey[800] : Colors.white,
+                          color: Theme.of(context).cardColor,
                           shape: BoxShape.circle,
                         ),
                         child: IconButton(
@@ -50,14 +50,19 @@ class RegisterView extends StatelessWidget {
                         ),
                       ),
 
-                      // زر الرجوع (يمين الشاشة)
+                      // زر الرجوع (متجاوب مع الاتجاه)
                       Container(
                         decoration: BoxDecoration(
-                          color: isDark ? Colors.grey[800] : Colors.white,
+                          color: Theme.of(context).cardColor,
                           shape: BoxShape.circle,
                         ),
                         child: IconButton(
-                          icon: Icon(Icons.arrow_forward, color: colors.text),
+                          icon: Icon(
+                            Directionality.of(context) == TextDirection.rtl
+                                ? Icons.arrow_forward
+                                : Icons.arrow_back,
+                            color: colors.text,
+                          ),
                           onPressed: () => Navigator.pop(context),
                         ),
                       ),
@@ -71,13 +76,13 @@ class RegisterView extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFD8EAF6), // لون خلفية سماوي فاتح
+                        color: colors.primary.withValues(alpha: 0.1), // لون خلفية سماوي فاتح متجاوب
                         borderRadius: BorderRadius.circular(24),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.person_add_alt_1_rounded,
                         size: 40,
-                        color: Color(0xFF2B7CD6), // لون أزرق
+                        color: colors.primary, // لون متجاوب
                       ),
                     ),
                   ),
@@ -112,7 +117,7 @@ class RegisterView extends StatelessWidget {
                     hintText: AppLocalizations.of(context)!.enterFullName,
                     controller: viewModel.nameController,
                     icon: Icons.person,
-                    fillColor: isDark ? Colors.grey[900] : Colors.white,
+                    fillColor: Theme.of(context).cardColor,
                   ),
                   const SizedBox(height: 16),
 
@@ -123,7 +128,7 @@ class RegisterView extends StatelessWidget {
                     hintText: 'example@email.com',
                     controller: viewModel.emailController,
                     icon: Icons.email_outlined,
-                    fillColor: isDark ? Colors.grey[900] : Colors.white,
+                    fillColor: Theme.of(context).cardColor,
                   ),
                   const SizedBox(height: 16),
 
@@ -135,7 +140,7 @@ class RegisterView extends StatelessWidget {
                     controller: viewModel.passwordController,
                     icon: Icons.lock_outline,
                     isPassword: true,
-                    fillColor: isDark ? Colors.grey[900] : Colors.white,
+                    fillColor: Theme.of(context).cardColor,
                   ),
                   const SizedBox(height: 16),
 
@@ -150,7 +155,7 @@ class RegisterView extends StatelessWidget {
                     controller: viewModel.confirmPasswordController,
                     icon: Icons.lock_outline,
                     isPassword: true,
-                    fillColor: isDark ? Colors.grey[900] : Colors.white,
+                    fillColor: Theme.of(context).cardColor,
                   ),
 
                   const SizedBox(height: 20),
@@ -165,7 +170,7 @@ class RegisterView extends StatelessWidget {
                           onTap: () =>
                               viewModel.toggleAgreement(!viewModel.isAgreed),
                           child: RichText(
-                            textAlign: TextAlign.right,
+                            textAlign: TextAlign.start,
                             text: TextSpan(
                               style: TextStyle(
                                 fontSize: 13,
@@ -180,10 +185,8 @@ class RegisterView extends StatelessWidget {
                                   text: AppLocalizations.of(
                                     context,
                                   )!.termsAndPrivacy,
-                                  style: const TextStyle(
-                                    color: Color(
-                                      0xFF2B7CD6,
-                                    ), // لون الرابط الأزرق
+                                  style: TextStyle(
+                                    color: colors.primary, // لون الرابط المتجاوب
                                     fontWeight: FontWeight.bold,
                                   ),
                                   // عند الضغط على النص يتم فتح صفحة الشروط
@@ -198,7 +201,7 @@ class RegisterView extends StatelessWidget {
                       ),
                       Checkbox(
                         value: viewModel.isAgreed,
-                        activeColor: const Color(0xFF2B7CD6),
+                        activeColor: colors.primary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5),
                         ),
@@ -219,16 +222,14 @@ class RegisterView extends StatelessWidget {
                         ? () => viewModel.register(context)
                         : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3B82F6), // الأزرق
+                      backgroundColor: colors.primary, // اللون المتجاوب
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
                       elevation: 4,
-                      disabledBackgroundColor: const Color(
-                        0xFF3B82F6,
-                      ).withValues(alpha: 0.5),
+                      disabledBackgroundColor: colors.primary.withValues(alpha: 0.5),
                     ),
                     child: viewModel.isLoading
                         ? const SizedBox(
@@ -239,15 +240,19 @@ class RegisterView extends StatelessWidget {
                               strokeWidth: 2,
                             ),
                           )
-                        : const Row(
+                        : Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.arrow_back, size: 20), // سهم لليسار
-                              SizedBox(width: 8),
+                              Icon(
+                                Directionality.of(context) == TextDirection.rtl
+                                    ? Icons.arrow_back
+                                    : Icons.arrow_forward,
+                                size: 20,
+                              ), // سهم لليسار
+                              const SizedBox(width: 8),
                               Text(
-                                // AppLocalizations.of(context)!.signUp,
-                                "Sign Up",
-                                style: TextStyle(
+                                AppLocalizations.of(context)!.signUp,
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -311,7 +316,7 @@ class RegisterView extends StatelessWidget {
                         child: Text(
                           AppLocalizations.of(context)!.login,
                           style: TextStyle(
-                            color: Color(0xFF3B82F6),
+                            color: colors.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -342,7 +347,7 @@ class RegisterView extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Text(
         text,
-        textAlign: TextAlign.right,
+        textAlign: TextAlign.start,
         style: TextStyle(
           fontSize: 14,
           color: context.qsColors.text,
@@ -367,9 +372,9 @@ class RegisterView extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: isDark ? Colors.grey[800] : Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+          border: Border.all(color: context.qsColors.textSub.withValues(alpha: 0.2)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -385,7 +390,7 @@ class RegisterView extends StatelessWidget {
             Icon(
               icon,
               size: 24,
-              color: isApple ? Colors.black : Colors.red, // لون مؤقت
+              color: isApple ? context.qsColors.text : context.qsColors.error,
             ),
           ],
         ),

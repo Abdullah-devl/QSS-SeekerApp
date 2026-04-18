@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../core/localization/app_localizations.dart';
-import '../../../core/widgets/service_card.dart';
-import '../../home/viewmodels/home_view_model.dart';
-import '../../home/services/view/service_details_view.dart';
-import '../../home/services/viewmodels/service_details_view_model.dart';
-import '../../home/repositories/home_repository.dart';
-import '../viewmodels/search_viewmodel.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
+import 'package:seeker/core/widgets/service_card.dart';
+import 'package:seeker/features/home/viewmodels/home_view_model.dart';
+import 'package:seeker/features/home/services/view/service_details_view.dart';
+import 'package:seeker/features/home/services/viewmodels/service_details_view_model.dart';
+import 'package:seeker/features/home/repositories/home_repository.dart';
+import 'package:seeker/features/search/viewmodels/search_viewmodel.dart';
+import 'package:seeker/core/theme/qs_color_extension.dart';
 
 /// 📂 اسم الملف: search_view.dart
 /// 📝 الوصف: واجهة البحث المتقدم والفلترة.
@@ -45,20 +46,21 @@ class _SearchViewState extends State<SearchView> {
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF6F9FB),
+    final colors = context.qsColors;
+    return Scaffold(
+        backgroundColor: colors.background,
         appBar: AppBar(
-          title: Text(context.tr('search_title')),
+          title: Text(
+            context.tr('search_title'),
+            style: TextStyle(color: colors.text, fontWeight: FontWeight.bold),
+          ),
           centerTitle: true,
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
+          backgroundColor: Colors.transparent,
           elevation: 0,
           actions: [
             IconButton(
               onPressed: () => _showFilterBottomSheet(context),
-              icon: const Icon(Icons.tune_rounded, color: Color(0xFF1CB0F6)),
+              icon: Icon(Icons.tune_rounded, color: colors.primary),
             ),
           ],
         ),
@@ -72,11 +74,18 @@ class _SearchViewState extends State<SearchView> {
               child: Consumer<SearchViewModel>(
                 builder: (context, viewModel, child) {
                   if (viewModel.isLoading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return Center(
+                      child: CircularProgressIndicator(color: colors.primary),
+                    );
                   }
 
                   if (viewModel.errorMessage != null) {
-                    return Center(child: Text(viewModel.errorMessage!));
+                    return Center(
+                      child: Text(
+                        viewModel.errorMessage!,
+                        style: TextStyle(color: colors.error),
+                      ),
+                    );
                   }
 
                   if (viewModel.results.isEmpty && viewModel.query.isNotEmpty) {
@@ -84,7 +93,7 @@ class _SearchViewState extends State<SearchView> {
                   }
 
                   return ListView.builder(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 100),
                     itemCount: viewModel.results.length,
                     itemBuilder: (context, index) {
                       final service = viewModel.results[index];
@@ -98,7 +107,8 @@ class _SearchViewState extends State<SearchView> {
                                 create: (context) => ServiceDetailsViewModel(
                                   context.read<HomeRepository>(),
                                 ),
-                                child: ServiceDetailsView(initialService: service),
+                                child:
+                                    ServiceDetailsView(initialService: service),
                               ),
                             ),
                           );
@@ -111,26 +121,37 @@ class _SearchViewState extends State<SearchView> {
             ),
           ],
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildSearchInput(BuildContext context) {
+    final colors = context.qsColors;
     return Container(
       padding: const EdgeInsets.all(16),
-      color: Colors.white,
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        boxShadow: [
+          BoxShadow(
+            color: colors.text.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: TextField(
         controller: _searchController,
+        style: TextStyle(color: colors.text),
         onSubmitted: (value) {
           context.read<SearchViewModel>().setQuery(value);
           context.read<SearchViewModel>().performSearch();
         },
         decoration: InputDecoration(
           hintText: context.tr('searchHint'),
-          prefixIcon: const Icon(Icons.search, color: Colors.grey),
+          hintStyle: TextStyle(color: colors.textSub.withValues(alpha: 0.5)),
+          prefixIcon: Icon(Icons.search, color: colors.textSub),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.clear),
+                  icon: Icon(Icons.clear, color: colors.textSub),
                   onPressed: () {
                     _searchController.clear();
                     context.read<SearchViewModel>().resetFilters();
@@ -138,7 +159,7 @@ class _SearchViewState extends State<SearchView> {
                 )
               : null,
           filled: true,
-          fillColor: const Color(0xFFF1F5F9),
+          fillColor: colors.background,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
             borderSide: BorderSide.none,
@@ -149,20 +170,25 @@ class _SearchViewState extends State<SearchView> {
   }
 
   Widget _buildEmptyState(BuildContext context) {
+    final colors = context.qsColors;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.search_off_rounded, size: 80, color: Colors.grey),
+          Icon(Icons.search_off_rounded, size: 80, color: colors.textSub.withValues(alpha: 0.3)),
           const SizedBox(height: 16),
           Text(
             context.tr('no_results'),
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: colors.text,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             context.tr('no_results_desc'),
-            style: const TextStyle(color: Colors.grey),
+            style: TextStyle(color: colors.textSub),
           ),
         ],
       ),
@@ -172,10 +198,12 @@ class _SearchViewState extends State<SearchView> {
   void _showFilterBottomSheet(BuildContext context) {
     final viewModel = context.read<SearchViewModel>();
     final categories = context.read<HomeViewModel>().categories;
+    final colors = context.qsColors;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: colors.background,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       ),
@@ -193,31 +221,59 @@ class _SearchViewState extends State<SearchView> {
                     children: [
                       Text(
                         context.tr('filters'),
-                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: colors.text,
+                        ),
                       ),
                       TextButton(
                         onPressed: () {
                           viewModel.resetFilters();
                           Navigator.pop(context);
                         },
-                        child: Text(context.tr('reset_filters')),
+                        child: Text(
+                          context.tr('reset_filters'),
+                          style: TextStyle(color: colors.primary),
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // القسم
-                  Text(context.tr('category'), style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text(
+                    context.tr('category'),
+                    style: TextStyle(fontWeight: FontWeight.bold, color: colors.text),
+                  ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<int>(
+                    dropdownColor: colors.background,
+                    style: TextStyle(color: colors.text),
                     value: viewModel.selectedCategoryId,
                     items: [
-                      DropdownMenuItem(value: null, child: Text(context.tr('seeAll'))),
-                      ...categories.map((c) => DropdownMenuItem(value: c.id, child: Text(c.name))),
+                      DropdownMenuItem(
+                        value: null,
+                        child: Text(
+                          context.tr('seeAll'),
+                          style: TextStyle(color: colors.text),
+                        ),
+                      ),
+                      ...categories.map(
+                        (c) => DropdownMenuItem(
+                          value: c.id,
+                          child: Text(c.name, style: TextStyle(color: colors.text)),
+                        ),
+                      ),
                     ],
                     onChanged: (val) => viewModel.setCategory(val),
                     decoration: InputDecoration(
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      filled: true,
+                      fillColor: Theme.of(context).cardColor,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: colors.textSub.withValues(alpha: 0.1)),
+                      ),
                     ),
                   ),
 
@@ -227,10 +283,13 @@ class _SearchViewState extends State<SearchView> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(context.tr('price_range'), style: const TextStyle(fontWeight: FontWeight.bold)),
                       Text(
-                        '${viewModel.minPrice?.toInt() ?? 0} - ${(viewModel.maxPrice == null || viewModel.maxPrice == 100000) ? 'بدون حد أقصى' : viewModel.maxPrice?.toInt().toString()} ${context.tr('currency_sar')}',
-                        style: const TextStyle(color: Color(0xFF1CB0F6), fontWeight: FontWeight.bold),
+                        context.tr('price_range'),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: colors.text),
+                      ),
+                      Text(
+                        '${viewModel.minPrice?.toInt() ?? 0} - ${(viewModel.maxPrice == null || viewModel.maxPrice == 100000) ? context.tr('no_max_limit') : viewModel.maxPrice?.toInt().toString()} ${context.tr('currency_sar')}',
+                        style: TextStyle(color: colors.primary, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -243,11 +302,13 @@ class _SearchViewState extends State<SearchView> {
                     min: 0,
                     max: 100000,
                     divisions: 200,
-                    activeColor: const Color(0xFF1CB0F6),
-                    inactiveColor: const Color(0xFF1CB0F6).withOpacity(0.2),
+                    activeColor: colors.primary,
+                    inactiveColor: colors.primary.withValues(alpha: 0.2),
                     labels: RangeLabels(
                       '${viewModel.minPrice?.toInt() ?? 0}',
-                      viewModel.maxPrice == 100000 ? 'بدون حد أقصى' : '${viewModel.maxPrice?.toInt() ?? 100000}',
+                      viewModel.maxPrice == 100000
+                          ? context.tr('no_max_limit')
+                          : '${viewModel.maxPrice?.toInt() ?? 100000}',
                     ),
                     onChanged: (RangeValues values) {
                       setModalState(() {
@@ -264,11 +325,16 @@ class _SearchViewState extends State<SearchView> {
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1CB0F6),
+                      backgroundColor: colors.primary,
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    child: Text(context.tr('apply_filters'), style: const TextStyle(color: Colors.white)),
+                    child: Text(
+                      context.tr('apply_filters'),
+                      style: TextStyle(color: colors.background, fontWeight: FontWeight.bold),
+                    ),
                   ),
                   const SizedBox(height: 16),
                 ],

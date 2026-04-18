@@ -31,9 +31,9 @@ class HomeViewModel extends ChangeNotifier {
   String _errorMessage = '';
 
   // بيانات المستخدم والموقع
-  String _userName = 'زائر';
-  String _role = 'زائر';
-  String _currentAddress = 'اليمن التعيس';
+  String _userName = 'Guest';
+  String _role = 'guest';
+  String _currentAddress = 'Yemen';
   bool _isLocationLoading = false;
 
   // Getters للوصول للمتغيرات من الواجهة
@@ -79,8 +79,8 @@ class HomeViewModel extends ChangeNotifier {
         _userName = userData['name']!;
         _role = userData['role']!;
       } else {
-        _userName = 'زائر';
-        _role = 'زائر';
+        _userName = 'Guest';
+        _role = 'guest';
       }
 
       // 2. جلب التصنيفات والخدمات من السيرفر بالتوازي لتقليل وقت الانتظار
@@ -112,7 +112,7 @@ class HomeViewModel extends ChangeNotifier {
       // 1. التحقق من تفعيل خدمة الموقع (GPS)
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        return 'خدمة الموقع غير مفعلة، يرجى تفعيل GPS';
+        return 'locationServiceDisabled';
       }
 
       // 2. التحقق من الصلاحيات وطلبها إذا لزم الأمر
@@ -120,12 +120,12 @@ class HomeViewModel extends ChangeNotifier {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          return 'تم رفض إذن الوصول للموقع';
+          return 'locationPermissionDenied';
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        return 'إذن الموقع مرفوض بشكل دائم، يرجى تفعيله من الإعدادات';
+        return 'locationPermissionForeverDenied';
       }
 
       // 3. جلب الإحداثيات الحالية
@@ -151,11 +151,11 @@ class HomeViewModel extends ChangeNotifier {
 
           // منطق عرض الاسم الأنسب
           if (city.isEmpty) city = area;
-          if (city.isEmpty) city = 'موقع غير معروف';
+          if (city.isEmpty) city = 'unknownLocation';
 
           _currentAddress = city;
         } else {
-          _currentAddress = 'موقع غير معروف';
+          _currentAddress = 'unknownLocation';
         }
       } catch (e) {
         // في حال فشل تحويل الإحداثيات لاسم، نعرض الإحداثيات كنص
@@ -166,7 +166,7 @@ class HomeViewModel extends ChangeNotifier {
       return null; // نجاح (لا يوجد خطأ لعرضه)
     } catch (e) {
       debugPrint('Location Error: $e');
-      return 'فشل تحديد الموقع: $e';
+      return 'locationUpdateFailed';
     } finally {
       _isLocationLoading = false;
       notifyListeners();

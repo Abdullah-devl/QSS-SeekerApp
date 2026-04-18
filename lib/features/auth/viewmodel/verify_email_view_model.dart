@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:seeker/core/utils/qs_alerts.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../repositories/auth_repository.dart';
 
@@ -37,9 +38,7 @@ class VerifyEmailViewModel extends ChangeNotifier {
 
     // 1. التحقق من أن الكود مكون من 6 أرقام
     if (otp.length != 6) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('يرجى إدخال الكود كاملاً')));
+      QSAlerts.showWarning(context, 'يرجى إدخال الكود كاملاً');
       return;
     }
 
@@ -53,12 +52,7 @@ class VerifyEmailViewModel extends ChangeNotifier {
 
       // 4. في حال النجاح، التوجيه للصفحة التالية (الرئيسية أو تسجيل الدخول)
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('تم تفعيل الحساب بنجاح!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        QSAlerts.showSuccess(context, 'تم تفعيل الحساب بنجاح!');
         // التوجيه لصفحة تسجيل الدخول بعد التفعيل
         Navigator.pushNamedAndRemoveUntil(
           context,
@@ -69,12 +63,7 @@ class VerifyEmailViewModel extends ChangeNotifier {
     } catch (e) {
       // 5. معالجة الأخطاء
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.red,
-          ),
-        );
+        QSAlerts.showError(context, e.toString().replaceAll('Exception: ', ''));
       }
     } finally {
       _isLoading = false;
@@ -116,12 +105,7 @@ class VerifyEmailViewModel extends ChangeNotifier {
 
     if (_isTimerRunning) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('يرجى الانتظار ${_start} ثانية قبل إعادة الإرسال'),
-            backgroundColor: Colors.orange,
-          ),
-        );
+        QSAlerts.showWarning(context, 'يرجى الانتظار ${_start} ثانية قبل إعادة الإرسال');
       }
       return;
     }
@@ -133,23 +117,13 @@ class VerifyEmailViewModel extends ChangeNotifier {
       await authRepository.resendVerificationCode(email);
 
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('تم إعادة إرسال كود التفعيل بنجاح'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        QSAlerts.showSuccess(context, 'تم إعادة إرسال كود التفعيل بنجاح');
       }
       // بدء المؤقت عند النجاح
       startTimer();
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.red,
-          ),
-        );
+        QSAlerts.showError(context, e.toString().replaceAll('Exception: ', ''));
       }
     } finally {
       _isLoading = false;

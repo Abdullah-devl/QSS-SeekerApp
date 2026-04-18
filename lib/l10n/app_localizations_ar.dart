@@ -718,4 +718,293 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get unavailable => 'غير متاح حالياً';
+
+  @override
+  String get sendSystemComplaint => 'إرسال شكوى';
+
+  @override
+  String get terms_of_service => 'شروط الخدمة';
+
+  @override
+  String get read_terms_desc =>
+      'يرجى قراءة سياسة التطبيق والشروط والأحكام بعناية قبل المتابعة.';
+
+  @override
+  String get terms_intro_title => '1. مقدمة';
+
+  @override
+  String get terms_intro_text =>
+      'أهلاً بك في تطبيق Seeker. تُعد هذه الشروط اتفاقية ملزمة بينك كمستخدم وبين إدارة التطبيق. باستخدامك للتطبيق، فإنك توافق على الالتزام بكافة البنود المذكورة.';
+
+  @override
+  String get terms_quality_title => '2. معايير الجودة';
+
+  @override
+  String get terms_quality_text =>
+      'يلتزم المستخدم بالحفاظ على أعلى معايير الجودة والمهنية عند التعامل مع الطرف الآخر. يجب الحضور في الموعد المحدد وتنفيذ الخدمة المتفق عليها بدقة.';
+
+  @override
+  String get terms_pricing_title => '3. التسعير والدفع';
+
+  @override
+  String get terms_pricing_text =>
+      'يتم تحديد الأسعار بناءً على نوع الخدمة. يمنع طلب مبالغ إضافية خارج التطبيق.';
+
+  @override
+  String get terms_cancellation_title => '4. الإلغاء والاسترجاع';
+
+  @override
+  String get terms_cancellation_text =>
+      'تخضع سياسة الإلغاء للشروط الموضحة في التطبيق. قد يتم فرض رسوم عند الإلغاء المتأخر.';
+
+  @override
+  String get agree_to_terms_prefix => 'لقد قرأت ووافقت على ';
+
+  @override
+  String get and_label => ' و ';
+
+  @override
+  String get agree_and_continue => 'الموافقة والمتابعة';
+
+  @override
+  String activation_code_sent(Object email) {
+    return 'تم إرسال كود التفعيل إلى البريد الإلكتروني\n$email';
+  }
+
+  @override
+  String get error_email_missing => 'حدث خطأ: البريد الإلكتروني غير متوفر';
+
+  @override
+  String get did_not_receive_code => 'لم تستلم الكود؟ ';
+
+  @override
+  String get resend_code => 'إعادة إرسال';
+
+  @override
+  String resend_code_timer(Object timer) {
+    return 'إعادة إرسال (${timer}ث)';
+  }
+
+  @override
+  String get systemComplaints => 'شكاوى النظام';
+
+  @override
+  String get addSystemComplaint => 'إضافة شكوى';
+
+  @override
+  String get pleaseSelectType => 'الرجاء اختيار نوع الشكوى';
+
+  @override
+  String get confirmSend => 'تأكيد الإرسال';
+
+  @override
+  String get confirmSendMsg => 'هل أنت متأكد من إرسال هذه الشكوى؟';
+
+  @override
+  String get complaintSentSuccess => 'تم إرسال الشكوى بنجاح';
+
+  @override
+  String get complaintSentError => 'فشل إرسال الشكوى';
+
+  @override
+  String get sending => 'جاري الإرسال...';
+
+  @override
+  String get complaintTitle => 'عنوان الشكوى';
+
+  @override
+  String get complaintTitleHint => 'مثال: مشكلة في الدخول';
+
+  @override
+  String get pleaseEnterTitle => 'الرجاء إدخال عنوان الشكوى';
+
+  @override
+  String get complaintType => 'نوع الشكوى';
+
+  @override
+  String get selectComplaintType => 'اختر نوع الشكوى';
+
+  @override
+  String get complaintDetails => 'تفاصيل الشكوى';
+
+  @override
+  String get complaintDetailsHint => 'اشرح المشكلة بالتفصيل هنا...';
+
+  @override
+  String get pleaseEnterDetails => 'الرجاء إدخال تفاصيل الشكوى';
+
+  @override
+  String get typeBug => 'خطأ تقني';
+
+  @override
+  String get typePerformance => 'الأداء';
+
+  @override
+  String get typePayment => 'المدفوعات';
+
+  @override
+  String get typeAccount => 'الحساب';
+
+  @override
+  String get typeSuggestion => 'اقتراح';
+
+  @override
+  String get typeOther => 'أخرى';
+
+  @override
+  String get statusPending => 'قيد الانتظار';
+
+  @override
+  String get statusInProgress => 'قيد المتابعة';
+
+  @override
+  String get statusResolved => 'تم الحل';
+
+  @override
+  String get statusRejected => 'مرفوضة';
+
+  @override
+  String get statusClosed => 'مغلقة';
+
+  @override
+  String get noComplaints => 'لا توجد شكاوى حالياً';
+
+  @override
+  String get determiningLocationAccurate => 'تحديد الموقع بدقة...';
+
+  @override
+  String get customLocation => 'موقع مخصص';
+
+  @override
+  String get searchingLocation => 'جاري البحث عن موقعك...';
+
+  @override
+  String get activateAccount => 'تفعيل الحساب';
+
+  @override
+  String get guest => 'زائر';
+
+  @override
+  String get locationPermissionForeverDenied =>
+      'تم رفض إذن الموقع بشكل دائم. يرجى تفعيله من إعدادات الهاتف.';
+
+  @override
+  String get defaultCountry => 'اليمن';
+
+  @override
+  String get locationUpdateFailed => 'فشل تحديث الموقع';
+
+  @override
+  String get last_update => 'آخر تحديث: ';
+
+  @override
+  String get seeker_role => 'طالب خدمة';
+
+  @override
+  String get provider_role => 'مزود خدمة';
+
+  @override
+  String get no_phones_added => 'لا يوجد أرقام مضافة';
+
+  @override
+  String get fetching_address => 'جاري جلب العنوان...';
+
+  @override
+  String get location_not_set => 'الموقع غير محدد';
+
+  @override
+  String get edit_profile_title => 'تعديل الملف الشخصي';
+
+  @override
+  String get bio_label => 'النبذة التعريفية';
+
+  @override
+  String get geo_location => 'الموقع الجغرافي';
+
+  @override
+  String get update_label => 'تحديث';
+
+  @override
+  String get enter_phone_number => 'أدخل رقم الهاتف';
+
+  @override
+  String get profile_updated_success => 'تم تحديث الملف الشخصي بنجاح';
+
+  @override
+  String get save_changes => 'حفظ التغييرات';
+
+  @override
+  String get no_max_limit => 'بدون حد أقصى';
+
+  @override
+  String get closed => 'مغلق';
+
+  @override
+  String get example_address_city => 'الرياض، حي الملقا';
+
+  @override
+  String get example_address_street => 'شارع الأمير محمد بن سعد، مبنى رقم 45';
+
+  @override
+  String get example_reviewer_name => 'سارة العلي';
+
+  @override
+  String get example_review_time => 'منذ يومين';
+
+  @override
+  String get example_review_content =>
+      'خدمة ممتازة جداً والفريق وصل في الوقت المحدد. قاموا بتنظيف كل زاوية في المنزل بدقة. أنصح بهم بشدة!';
+
+  @override
+  String share_service_message(Object title, Object provider, Object price) {
+    return 'مرحباً! اكتشف هذه الخدمة الرائعة: "$title" من $provider، بسعر $price ر.س فقط! \nحمل تطبيقنا للحجز الآن.';
+  }
+
+  @override
+  String get confirm_customize_order => 'تأكيد وتخصيص الطلب';
+
+  @override
+  String get new_service_label => 'جديد';
+
+  @override
+  String get request_details_title => 'بيانات طلب الخدمة';
+
+  @override
+  String get receiver_name => 'اسم المستلم';
+
+  @override
+  String get service_location_title => 'موقع تقديم الخدمة';
+
+  @override
+  String get click_to_pick_location => 'اضغط لتحديد موقعك على الخريطة';
+
+  @override
+  String get additional_services => 'الخدمات الإضافية';
+
+  @override
+  String get additional_notes => 'ملاحظات إضافية';
+
+  @override
+  String get notes_hint => 'اكتب هنا أي تفاصيل تريد لمقدم الخدمة معرفتها...';
+
+  @override
+  String get final_total => 'الإجمالي النهائي';
+
+  @override
+  String get order_sent_success => 'تم إرسال طلبك بنجاح! 🚀';
+
+  @override
+  String get order_sent_error => 'فشل إرسال الطلب';
+
+  @override
+  String get confirm_and_book => 'تأكيد وحجز الخدمة';
+
+  @override
+  String get loading_policy => 'جاري تحميل السياسة...';
+
+  @override
+  String get no_policy_available => 'لا يوجد محتوى متاح حالياً';
+
+  @override
+  String get points => 'نقاط';
 }

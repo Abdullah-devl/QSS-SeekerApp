@@ -274,6 +274,56 @@ class AuthRepository {
   }
 
   // ===========================================================================
+  // 🔐 تغيير كلمة المرور (Change Password)
+  // ===========================================================================
+
+  /// يتيح للمستخدم المسجل دخولهم حالياً استبدال كلمة المرور القديمة بأخرى جديدة.
+  Future<void> changePassword({
+    required String oldPassword,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    try {
+      final response = await _apiService.patch(
+        ApiEndpoints.changePassword,
+        data: {
+          'old_password': oldPassword,
+          'password': password,
+          'password_confirmation': passwordConfirmation,
+        },
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('فشل تغيير كلمة المرور');
+      }
+    } catch (e) {
+      if (e is DioException) {
+        if (e.response?.statusCode == 422 || e.response?.statusCode == 400) {
+          final data = e.response?.data;
+          String errorMessage = data['message'] ?? 'بيانات غير صالحة';
+
+          if (data['errors'] != null && data['errors'] is Map) {
+            final errorsMap = data['errors'] as Map<String, dynamic>;
+            final messages = <String>[];
+            errorsMap.forEach((key, value) {
+              if (value is List) {
+                messages.addAll(value.map((v) => v.toString()));
+              } else {
+                messages.add(value.toString());
+              }
+            });
+            if (messages.isNotEmpty) {
+              errorMessage = messages.join('\n');
+            }
+          }
+          throw Exception(errorMessage);
+        }
+      }
+      rethrow;
+    }
+  }
+
+  // ===========================================================================
   // 👤 الدخول كزائر (Guest Login)
   // ===========================================================================
 

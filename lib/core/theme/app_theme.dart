@@ -17,15 +17,17 @@ class AppTheme {
     // لون خلفية الصفحات (Scaffold)
     scaffoldBackgroundColor: CustomColor.lightBackground,
 
+    // لون البطاقات (Cards)
+    cardColor: Colors.white,
+
     // تعريف نظام الألوان (Color Scheme)
     colorScheme: const ColorScheme.light(
       primary: CustomColor.lightPrimary, // اللون الأساسي
       secondary: CustomColor.lightSecondary, // اللون الثانوي
-
-      surface: CustomColor.lightAccent, // لون العناصر السطحية (Cards, Dialogs)
+      surface: Colors.white, // لون العناصر السطحية (Cards, Dialogs)
       onPrimary: Colors.white, // لون النصوص/الأيقونات فوق اللون الأساسي
       onSurface: CustomColor.lightText, // لون النصوص فوق الأسطح
-      error: Colors.red, // لون الخطأ
+      error: CustomColor.error, // لون الخطأ
     ),
 
     // تخصيص الخطوط
@@ -59,6 +61,9 @@ class AppTheme {
     brightness: Brightness.dark,
 
     scaffoldBackgroundColor: CustomColor.darkBackground,
+
+    // لون البطاقات في الوضع الداكن
+    cardColor: const Color(0xFF1A1D1E),
 
     colorScheme: const ColorScheme.dark(
       primary: CustomColor.darkPrimary,

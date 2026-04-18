@@ -70,8 +70,8 @@ class ServiceCard extends StatelessWidget {
                           errorBuilder: (_, __, ___) => Container(
                             width: 100,
                             height: 100,
-                            color: Colors.grey[100],
-                            child: Icon(Icons.broken_image_outlined, color: colors.textSub, size: 30),
+                            color: colors.primary.withValues(alpha: 0.05),
+                            child: Icon(Icons.broken_image_outlined, color: colors.textSub.withValues(alpha: 0.5), size: 30),
                           ),
                         ),
                       ),
@@ -96,7 +96,7 @@ class ServiceCard extends StatelessWidget {
                           ),
                           child: Icon(
                             isFavorite ? Icons.favorite : Icons.favorite_border,
-                            color: isFavorite ? Colors.redAccent : Colors.grey[400],
+                            color: isFavorite ? Colors.redAccent : colors.textSub.withValues(alpha: 0.4),
                             size: 18,
                           ),
                         ),
@@ -200,7 +200,7 @@ class ServiceCard extends StatelessWidget {
                             ),
                             child: Text(
                                AppLocalizations.of(context)!.book,
-                              style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                              style: TextStyle(color: colors.background, fontSize: 11, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ],

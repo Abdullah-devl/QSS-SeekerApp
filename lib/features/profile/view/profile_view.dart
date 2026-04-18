@@ -46,7 +46,7 @@ class ProfileView extends StatelessWidget {
     }
     
     if (vm.errorMessage != null && vm.profile == null) {
-      return Center(child: Text(vm.errorMessage!, style: const TextStyle(color: Colors.red)));
+      return Center(child: Text(vm.errorMessage!, style: TextStyle(color: colors.error)));
     }
 
     if (vm.profile == null) {
@@ -123,7 +123,7 @@ class ProfileView extends StatelessWidget {
           ),
           if (vm.profile?.verificationProvider == true) ...[
             const SizedBox(width: 4),
-            const Icon(Icons.verified, color: Colors.blue, size: 16),
+            Icon(Icons.verified, color: colors.primary, size: 16),
           ],
         ],
       ),
@@ -176,7 +176,7 @@ class ProfileView extends StatelessWidget {
                     Text(profile.name, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: colors.text)),
                     if (profile.verificationProvider) ...[
                       const SizedBox(width: 6),
-                      const Icon(Icons.verified, color: Colors.blue, size: 22),
+                      Icon(Icons.verified, color: colors.primary, size: 22),
                     ],
                   ],
                 ),
@@ -271,7 +271,7 @@ class ProfileView extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: colors.text.withOpacity(0.05),
+                    backgroundColor: colors.text.withValues(alpha: 0.05),
                     elevation: 0,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                     padding: const EdgeInsets.symmetric(vertical: 12),

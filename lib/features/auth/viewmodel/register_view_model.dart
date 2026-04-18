@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:seeker/core/routes/app_routes.dart';
+import 'package:seeker/core/utils/qs_alerts.dart';
 import '../repositories/auth_repository.dart';
 
 class RegisterViewModel extends ChangeNotifier {
@@ -48,25 +49,19 @@ class RegisterViewModel extends ChangeNotifier {
         emailController.text.isEmpty ||
         passwordController.text.isEmpty ||
         confirmPasswordController.text.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('يرجى تعبئة جميع الحقول')));
+      QSAlerts.showWarning(context, 'يرجى تعبئة جميع الحقول');
       return;
     }
 
     // 2. التحقق من تطابق كلمة المرور
     if (passwordController.text != confirmPasswordController.text) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('كلمة المرور غير متطابقة')));
+      QSAlerts.showWarning(context, 'كلمة المرور غير متطابقة');
       return;
     }
 
     // 3. التحقق من الموافقة على الشروط
     if (!_isAgreed) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('يجب الموافقة على الشروط والأحكام')),
-      );
+      QSAlerts.showWarning(context, 'يجب الموافقة على الشروط والأحكام');
       return;
     }
 
@@ -95,12 +90,8 @@ class RegisterViewModel extends ChangeNotifier {
     } catch (e) {
       // 7. معالجة الأخطاء وعرضها
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '$e')),
-            backgroundColor: Colors.red,
-          ),
-        );
+        final msg = e.toString().replaceAll('Exception: ', '');
+        QSAlerts.showError(context, msg);
       }
     } finally {
       _isLoading = false;

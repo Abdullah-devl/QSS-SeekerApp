@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart'; // ✅ تمت الإضافة
+import 'package:dio/dio.dart';
 import 'package:seeker/features/profile/models/profile_model.dart';
 import 'package:seeker/features/profile/models/phone_model.dart'; // ✅ تمت الإضافة
 import 'package:seeker/features/profile/repositories/profile_repository.dart';
@@ -11,9 +12,17 @@ import 'dart:developer' as developer;
 class PhoneEntry {
   final int? id;
   final TextEditingController controller;
+  final TextEditingController countryCodeController; // ✅ تمت الإضافة
   String originalValue;
+  String originalCountryCode; // ✅ تمت الإضافة
 
-  PhoneEntry({this.id, required this.controller, this.originalValue = ''});
+  PhoneEntry({
+    this.id,
+    required this.controller,
+    required this.countryCodeController,
+    this.originalValue = '',
+    this.originalCountryCode = '',
+  });
 }
 
 class EditProfileViewModel extends ChangeNotifier {
@@ -29,7 +38,9 @@ class EditProfileViewModel extends ChangeNotifier {
       _phoneEntries.add(PhoneEntry(
         id: phone.id,
         controller: TextEditingController(text: phone.phone),
+        countryCodeController: TextEditingController(text: phone.countryCode ?? '+967'),
         originalValue: phone.phone,
+        originalCountryCode: phone.countryCode ?? '+967',
       ));
     }
     
@@ -78,7 +89,10 @@ class EditProfileViewModel extends ChangeNotifier {
   }
 
   void addPhoneField() {
-    _phoneEntries.add(PhoneEntry(controller: TextEditingController()));
+    _phoneEntries.add(PhoneEntry(
+      controller: TextEditingController(),
+      countryCodeController: TextEditingController(text: '+967'),
+    ));
     notifyListeners();
   }
 
@@ -88,6 +102,7 @@ class EditProfileViewModel extends ChangeNotifier {
       _deletedPhoneIds.add(entry.id!);
     }
     entry.controller.dispose();
+    entry.countryCodeController.dispose();
     _phoneEntries.removeAt(index);
     notifyListeners();
   }
@@ -159,20 +174,37 @@ class EditProfileViewModel extends ChangeNotifier {
       // ب) إضافة أو تحديث الأرقام الحالية
       for (var entry in _phoneEntries) {
         final phoneText = entry.controller.text.trim();
+        final countryCode = entry.countryCodeController.text.trim();
         if (phoneText.isEmpty) continue;
 
         if (entry.id == null) {
           // رقم جديد
-          await _repository.addPhone(phone: phoneText);
-        } else if (phoneText != entry.originalValue) {
+          await _repository.addPhone(
+            phone: phoneText,
+            countryCode: countryCode,
+            type: 'mobile', // نستخدم mobile بدل phone لتفادي رفض السيرفر
+          );
+        } else if (phoneText != entry.originalValue || countryCode != entry.originalCountryCode) {
           // رقم تم تعديله
-          await _repository.updatePhone(phoneId: entry.id!, phone: phoneText);
+          await _repository.updatePhone(
+            phoneId: entry.id!,
+            phone: phoneText,
+            countryCode: countryCode,
+            type: 'mobile',
+          );
         }
       }
 
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      if (e is DioException && e.response?.data != null) {
+        final data = e.response!.data;
+        _errorMessage = (data is Map && data.containsKey('message')) 
+            ? data['message'].toString() 
+            : e.message;
+      } else {
+        _errorMessage = e.toString().replaceAll('Exception: ', '');
+      }
       developer.log('❌ EditProfileViewModel Save Error: $e');
       return false;
     } finally {
@@ -187,6 +219,7 @@ class EditProfileViewModel extends ChangeNotifier {
     bioController.dispose();
     for (var entry in _phoneEntries) {
       entry.controller.dispose();
+      entry.countryCodeController.dispose();
     }
     super.dispose();
   }

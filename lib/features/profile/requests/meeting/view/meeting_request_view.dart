@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
+import 'package:seeker/core/utils/qs_alerts.dart'; // ✅ تمت الإضافة
 import '../viewmodel/meeting_request_view_model.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
@@ -92,9 +93,7 @@ class MeetingRequestView extends StatelessWidget {
                     vm.updateLocation(position.latitude, position.longitude, address);
                   }
                 } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('فشل تحديد الموقع')),
-                  );
+                  QSAlerts.showError(context, 'فشل تحديد الموقع');
                 }
               },
               icon: Icon(Icons.my_location, size: 18, color: colors.primary),
@@ -194,22 +193,10 @@ class MeetingRequestView extends StatelessWidget {
     await vm.sendRequest();
     if (context.mounted) {
       if (vm.successMessage != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(vm.successMessage!),
-            backgroundColor: Colors.green,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        QSAlerts.showSuccess(context, vm.successMessage!);
         Navigator.pop(context); // Close the view on success
       } else if (vm.errorMessage != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(vm.errorMessage!),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        QSAlerts.showError(context, vm.errorMessage!);
       }
     }
   }

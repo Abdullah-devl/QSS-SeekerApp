@@ -142,9 +142,9 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
           return Container(
             width: 80,
             decoration: BoxDecoration(
-              color: colors.primary.withOpacity(0.1),
+              color: colors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: colors.primary.withOpacity(0.2)),
+              border: Border.all(color: colors.primary.withValues(alpha: 0.2)),
             ),
             padding: const EdgeInsets.all(8),
             child: Column(
@@ -194,7 +194,7 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: colors.text.withOpacity(0.05),
+                  color: colors.text.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -204,7 +204,7 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
               children: [
                 CircleAvatar(
                   radius: 30,
-                  backgroundColor: colors.textSub.withOpacity(0.1),
+                  backgroundColor: colors.textSub.withValues(alpha: 0.1),
                   backgroundImage: provider.imageUrl.isNotEmpty
                       ? NetworkImage(provider.imageUrl)
                       : null,
@@ -232,7 +232,7 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.star, size: 14, color: Colors.amber),
+                    Icon(Icons.star, size: 14, color: colors.warning),
                     const SizedBox(width: 2),
                     Text(
                       provider.rating.toString(),

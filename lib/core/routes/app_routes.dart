@@ -36,5 +36,17 @@ class AppRoutes {
   static const String orders = 'الطلبات';
 
   /// 🛠️ مسار صفحة طلب مزود خدمة
-  static const String beProvider = 'be_provider';
+  static String get beProvider => 'be_provider';
+
+  /// 🔐 مسار صفحة تغيير كلمة المرور
+  static const String changePassword = 'change_password';
+
+  /// 📜 مسار صفحة سياسة الخصوصية
+  static const String privacyPolicy = 'privacy_policy';
+
+  /// 🚨 مسار صفحة شكاوى النظام (القائمة)
+  static const String systemComplaints = 'system_complaints';
+
+  /// ➕ مسار صفحة إضافة شكوى جديدة
+  static const String createSystemComplaint = 'create_system_complaint';
 }

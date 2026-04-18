@@ -9,6 +9,8 @@ import 'package:seeker/features/settings/viewmodels/settings_view_model.dart';
 import 'package:seeker/features/home/viewmodels/home_view_model.dart'; // ✅ نحتاج HomeViewModel لمعرفة الدور
 // import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:seeker/l10n/app_localizations.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
+import 'package:seeker/features/profile/viewmodels/profile_view_model.dart'; // ✅ تمت الإضافة
 
 /// 📂 اسم الملف: settings_view.dart
 /// 📝 الوصف: شاشة الإعدادات.
@@ -30,6 +32,8 @@ class _SettingsViewState extends State<SettingsView> {
     // 🔄 تحميل بيانات المستخدم عند فتح الصفحة
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<SettingsViewModel>().loadUserData();
+      // 🚀 جلب بيانات الملف الشخصي الحية
+      context.read<ProfileViewModel>().fetchProfile();
     });
   }
 
@@ -71,19 +75,14 @@ class _SettingsViewState extends State<SettingsView> {
       appBar: AppBar(
         title: Text(
           AppLocalizations.of(context)!.settings,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold, color: colors.text),
         ),
         centerTitle: true,
-        backgroundColor: colors.primary,
+        backgroundColor: colors.background,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.menu, color: colors.text),
+          icon: Icon(Icons.menu, color: colors.primary),
           onPressed: widget.onMenuTap,
-        ),
-        titleTextStyle: TextStyle(
-          color: colors.text,
-          fontSize: 20,
-          fontFamily: 'Cairo',
         ),
       ),
       body: SingleChildScrollView(
@@ -93,7 +92,7 @@ class _SettingsViewState extends State<SettingsView> {
             // =================================================================
             // 1. بطاقة المستخدم (تظهر للمسجلين فقط)
             // =================================================================
-            if (userRole != 'زائر')
+            if (userRole != 'guest')
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -107,93 +106,104 @@ class _SettingsViewState extends State<SettingsView> {
                     ),
                   ],
                 ),
-                child:
-                    Selector<SettingsViewModel, ({String name, String email})>(
-                      selector: (context, vm) =>
-                          (name: vm.userName, email: vm.userEmail),
-                      builder: (context, data, child) {
-                        return Row(
+                child: Consumer<ProfileViewModel>(
+                  builder: (context, profileVM, child) {
+                    final profile = profileVM.profile;
+                    final isLoading = profileVM.isLoading;
+
+                    if (isLoading && profile == null) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                profile?.name ?? '...',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: colors.text,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                profile?.email ?? '...',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: colors.textSub,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: colors.success.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  AppLocalizations.of(context)!.trustedCustomer,
+                                  style: TextStyle(
+                                    color: colors.success,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Stack(
+                          alignment: Alignment.bottomRight,
                           children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    data.name,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: colors.text,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    data.email,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: colors.textSub,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFE0F2F1),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Text(
-                                      AppLocalizations.of(
-                                        context,
-                                      )!.trustedCustomer,
-                                      style: const TextStyle(
-                                        color: Color(0xFF00796B),
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                            CircleAvatar(
+                              radius: 35,
+                              backgroundColor: colors.primary.withValues(
+                                alpha: 0.1,
+                              ),
+                              backgroundImage: (profile?.avatarUrl != null &&
+                                      profile!.avatarUrl.isNotEmpty)
+                                  ? NetworkImage(profile.avatarUrl)
+                                  : null,
+                              child: (profile?.avatarUrl == null ||
+                                      profile!.avatarUrl.isEmpty)
+                                  ? Icon(
+                                      Icons.person,
+                                      size: 40,
+                                      color: colors.primary,
+                                    )
+                                  : null,
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: colors.primary,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: colors.background,
+                                  width: 2,
+                                ),
+                              ),
+                              child: Icon(
+                                Icons.edit,
+                                size: 14,
+                                color: colors.background,
                               ),
                             ),
-                            Stack(
-                              alignment: Alignment.bottomRight,
-                              children: [
-                                CircleAvatar(
-                                  radius: 35,
-                                  backgroundColor: colors.primary.withValues(
-                                    alpha: 0.1,
-                                  ),
-                                  child: Icon(
-                                    Icons.person,
-                                    size: 40,
-                                    color: colors.primary,
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                    color: colors.primary,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: Colors.white,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: const Icon(
-                                    Icons.edit,
-                                    size: 14,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
                           ],
-                        );
-                      },
-                    ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
               )
             else
               // 🔵 بطاقة دعوة للتسجيل تظهر للزائر فقط
@@ -204,7 +214,7 @@ class _SettingsViewState extends State<SettingsView> {
             // =================================================================
             // 2. إعدادات الحساب (تختفي للزائر)
             // =================================================================
-            if (userRole != 'زائر') ...[
+            if (userRole != 'guest') ...[
               _buildSectionTitle(
                 AppLocalizations.of(context)!.account,
                 colors.textSub,
@@ -221,7 +231,9 @@ class _SettingsViewState extends State<SettingsView> {
                 _buildSettingsTile(
                   icon: Icons.lock_outline,
                   title: AppLocalizations.of(context)!.changePassword,
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutes.changePassword);
+                  },
                 ),
                 _buildDivider(colors.textSub),
                 _buildSettingsTile(
@@ -308,7 +320,7 @@ class _SettingsViewState extends State<SettingsView> {
                                           .locale
                                           .languageCode ==
                                       'ar'
-                                  ? const Icon(Icons.check, color: Colors.green)
+                                  ? Icon(Icons.check, color: colors.success)
                                   : null,
                               onTap: () {
                                 context
@@ -317,7 +329,7 @@ class _SettingsViewState extends State<SettingsView> {
                                 Navigator.pop(context);
                               },
                             ),
-                            const Divider(),
+                                _buildDivider(colors.textSub),
                             ListTile(
                               leading: const Text(
                                 '🇺🇸',
@@ -330,7 +342,7 @@ class _SettingsViewState extends State<SettingsView> {
                                           .locale
                                           .languageCode ==
                                       'en'
-                                  ? const Icon(Icons.check, color: Colors.green)
+                                  ? Icon(Icons.check, color: colors.success)
                                   : null,
                               onTap: () {
                                 context
@@ -366,7 +378,17 @@ class _SettingsViewState extends State<SettingsView> {
               _buildSettingsTile(
                 icon: Icons.privacy_tip_outlined,
                 title: AppLocalizations.of(context)!.privacyPolicy,
-                onTap: () {},
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.privacyPolicy);
+                },
+              ),
+              _buildDivider(colors.textSub),
+              _buildSettingsTile(
+                icon: Icons.report_problem_outlined,
+                title: AppLocalizations.of(context)!.sendSystemComplaint,
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.systemComplaints);
+                },
               ),
             ]),
             const SizedBox(height: 30),
@@ -379,26 +401,26 @@ class _SettingsViewState extends State<SettingsView> {
               height: 50,
               child: ElevatedButton(
                 // ✅ إذا كان زائر، يذهب لصفحة الدخول، وإذا كان مسجلاً، يقوم بتسجيل الخروج
-                onPressed: userRole == 'زائر'
+                onPressed: userRole == 'guest'
                     ? () => Navigator.pushNamed(context, AppRoutes.login)
                     : _logout,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).cardColor,
                   // ✅ تغيير اللون: أزرق للدخول، أحمر للخروج
-                  foregroundColor: userRole == 'زائر'
+                  foregroundColor: userRole == 'guest'
                       ? colors.text
-                      : Colors.red,
+                      : colors.error,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                     side: BorderSide(
-                      color: (userRole == 'زائر' ? colors.primary : Colors.red)
+                      color: (userRole == 'guest' ? colors.primary : colors.error)
                           .withValues(alpha: 0.1),
                     ),
                   ),
                 ),
                 child: Text(
-                  userRole == 'زائر'
+                  userRole == 'guest'
                       ? AppLocalizations.of(context)!.login
                       : AppLocalizations.of(context)!.logout,
                   style: const TextStyle(
@@ -415,6 +437,8 @@ class _SettingsViewState extends State<SettingsView> {
                 style: TextStyle(color: colors.textSub, fontSize: 12),
               ),
             ),
+            // مساحة إضافية في الأسفل لتجنب تغطية المحتوى بالـ NavBar
+              const SizedBox(height: 100),
           ],
         ),
       ),

@@ -9,6 +9,7 @@ import 'package:seeker/core/network/api_service.dart';
 import 'package:seeker/core/storage/token_storage.dart';
 import 'package:seeker/features/auth/viewmodel/register_view_model.dart';
 import 'package:seeker/features/auth/views/register_view.dart';
+import 'package:seeker/features/auth/views/verify_email_view.dart';
 import 'package:seeker/features/home/views/home_view.dart';
 import 'package:seeker/features/provider/theme_provider.dart';
 
@@ -25,8 +26,14 @@ import 'package:seeker/features/auth/views/login_view.dart';
 import 'package:seeker/features/intro/splash_view.dart';
 import 'package:seeker/features/intro/welcome_view.dart';
 import 'package:seeker/features/auth/views/terms_view.dart';
-import 'package:seeker/features/auth/views/verify_email_view.dart';
-
+import 'package:seeker/features/auth/viewmodel/change_password_view_model.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/auth/views/change_password_view.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/settings/repositories/settings_repository.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/settings/viewmodels/policy_view_model.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/settings/viewmodels/system_complaints_view_model.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/settings/views/privacy_policy_view.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/settings/views/system_complaints_view.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/settings/views/create_system_complaint_view.dart'; // ✅ تمت الإضافة
 import 'package:seeker/features/settings/views/settings_view.dart'; // ✅ تمت الإضافة
 import 'package:seeker/features/profile/view/profile_view.dart';
 import 'package:seeker/features/profile/view/my_profile_view.dart'; // ✅ تمت الإضافة
@@ -143,6 +150,11 @@ void main() async {
           update: (_, apiService, __) => ProfileRepository(apiService),
         ),
 
+        // ⚙️ SettingsRepository
+        ProxyProvider<ApiService, SettingsRepository>(
+          update: (_, apiService, __) => SettingsRepository(apiService),
+        ),
+
         // ----------------------------------------------------------
         // 3️⃣ طبقة إدارة الحالة (ViewModels Layer)
         // ----------------------------------------------------------
@@ -197,8 +209,10 @@ void main() async {
 
         // Favorite ViewModel
         ChangeNotifierProvider<FavoriteViewModel>(
-          create: (context) =>
-              FavoriteViewModel(context.read<FavoriteRepository>()),
+          create: (context) => FavoriteViewModel(
+            context.read<FavoriteRepository>(),
+            context.read<HomeRepository>(),
+          ),
         ),
 
         // Orders ViewModel
@@ -224,6 +238,26 @@ void main() async {
           create: (context) =>
               ProfileViewModel(context.read<ProfileRepository>()),
         ),
+        // ChangePassword ViewModel
+        ChangeNotifierProvider<ChangePasswordViewModel>(
+          create: (context) => ChangePasswordViewModel(
+            context.read<AuthRepository>(),
+          ),
+        ),
+
+        // Policy ViewModel
+        ChangeNotifierProvider<PolicyViewModel>(
+          create: (context) => PolicyViewModel(
+            context.read<SettingsRepository>(),
+          ),
+        ),
+
+        // System Complaints ViewModel
+        ChangeNotifierProvider<SystemComplaintsViewModel>(
+          create: (context) => SystemComplaintsViewModel(
+            context.read<SettingsRepository>(),
+          ),
+        ),
       ],
       child: const MyApp(),
     ),
@@ -240,7 +274,8 @@ class MyApp extends StatelessWidget {
 
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, _) {
-        return MaterialApp(
+        return MaterialApp
+        (
           title: 'Seeker App',
           debugShowCheckedModeBanner: false,
 
@@ -265,7 +300,7 @@ class MyApp extends StatelessWidget {
               create: (_) => VerifyEmailViewModel(
                 authRepository: context.read<AuthRepository>(),
               ),
-              child: const VerifyEmailView(),
+              child:  VerifyEmailView(),
             ),
             AppRoutes.home: (context) => HomeView(title: 'Home'), // الرئيسية
             AppRoutes.settings: (context) => SettingsView(), // الإعدادات
@@ -278,6 +313,25 @@ class MyApp extends StatelessWidget {
               return CategoryDetailsView(category: category);
             },
             AppRoutes.beProvider: (context) => const BeProviderView(),
+            AppRoutes.changePassword: (context) => const ChangePasswordView(),
+            AppRoutes.privacyPolicy: (context) => ChangeNotifierProvider(
+              create: (context) => PolicyViewModel(
+                context.read<SettingsRepository>(),
+              ),
+              child: const PrivacyPolicyView(),
+            ),
+            AppRoutes.systemComplaints: (context) => ChangeNotifierProvider(
+              create: (context) => SystemComplaintsViewModel(
+                context.read<SettingsRepository>(),
+              ),
+              child: const SystemComplaintsView(),
+            ),
+            AppRoutes.createSystemComplaint: (context) => ChangeNotifierProvider(
+              create: (context) => SystemComplaintsViewModel(
+                context.read<SettingsRepository>(),
+              ),
+              child: const CreateSystemComplaintView(),
+            ),
           },
         );
       },

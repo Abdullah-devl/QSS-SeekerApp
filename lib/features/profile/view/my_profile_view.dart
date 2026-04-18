@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/l10n/app_localizations.dart';
 import 'package:seeker/features/profile/repositories/profile_repository.dart';
@@ -21,27 +22,28 @@ class MyProfileView extends StatelessWidget {
 
     if (vm.isLoading && vm.profile == null) {
       return Scaffold(
-        backgroundColor: bgColor,
+        backgroundColor: colors.background,
         body: Center(child: CircularProgressIndicator(color: colors.primary)),
       );
     }
 
     if (vm.errorMessage != null && vm.profile == null) {
       return Scaffold(
-        backgroundColor: bgColor,
+        backgroundColor: colors.background,
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error_outline, size: 60, color: Colors.red),
+                Icon(Icons.error_outline, size: 60, color: colors.error),
                 const SizedBox(height: 16),
-                Text(vm.errorMessage!, textAlign: TextAlign.center),
+                Text(vm.errorMessage!, textAlign: TextAlign.center, style: TextStyle(color: colors.text)),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => vm.fetchProfile(),
-                  child: const Text('إعادة المحاولة'),
+                  style: ElevatedButton.styleFrom(backgroundColor: colors.primary),
+                  child: Text(context.tr('retry'), style: const TextStyle(color: Colors.white)),
                 ),
               ],
             ),
@@ -54,7 +56,7 @@ class MyProfileView extends StatelessWidget {
     if (profile == null) return const Scaffold();
 
     return Scaffold(
-      backgroundColor: bgColor,
+      backgroundColor: colors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -129,12 +131,12 @@ class MyProfileView extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   decoration: BoxDecoration(
-                    color: colors.primary.withAlpha(20),
+                    color: colors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: colors.primary.withAlpha(30)),
+                    border: Border.all(color: colors.primary.withValues(alpha: 0.2)),
                   ),
                   child: Text(
-                    profile.role == 'seeker' ? 'طالب خدمة' : 'مزود خدمة',
+                    profile.role == 'seeker' ? context.tr('seeker_role') : context.tr('provider_role'),
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
@@ -151,8 +153,10 @@ class MyProfileView extends StatelessWidget {
                   icon: Icons.phone_android_rounded,
                   label: l10n.phoneNumber,
                   content: profile.phones.isNotEmpty
-                      ? profile.phones.map((p) => p.phone).join('\n')
-                      : 'لا يوجد أرقام مضافة',
+                      ? profile.phones
+                          .map((p) => '${p.countryCode ?? ''} ${p.phone}')
+                          .join('\n')
+                      : context.tr('no_phones_added'),
                   colors: colors,
                 ),
 
@@ -164,8 +168,8 @@ class MyProfileView extends StatelessWidget {
                   label: l10n.address,
                   content: vm.address ??
                       ((profile.latitude != null && profile.longitude != null)
-                          ? 'جاري جلب العنوان...'
-                          : 'الموقع غير محدد'),
+                          ? context.tr('fetching_address')
+                          : context.tr('location_not_set')),
                   colors: colors,
                 ),
                 
@@ -178,14 +182,14 @@ class MyProfileView extends StatelessWidget {
                     onPressed: () {
                       // TODO: تنفيذ تسجيل الخروج
                     },
-                    icon: const Icon(Icons.logout_rounded, color: Colors.red),
+                    icon: Icon(Icons.logout_rounded, color: colors.error),
                     label: Text(
                       l10n.logout,
-                      style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: colors.error, fontWeight: FontWeight.bold),
                     ),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      side: const BorderSide(color: Colors.red),
+                      side: BorderSide(color: colors.error),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     ),
                   ),
@@ -204,11 +208,11 @@ class MyProfileView extends StatelessWidget {
       height: 130,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: colors.primary.withAlpha(25),
+        color: colors.primary.withValues(alpha: 0.1),
         border: Border.all(color: colors.primary, width: 4),
         boxShadow: [
           BoxShadow(
-            color: colors.primary.withAlpha(50),
+            color: colors.primary.withValues(alpha: 0.2),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),

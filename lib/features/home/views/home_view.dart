@@ -8,10 +8,12 @@ import 'package:seeker/features/home/services/models/service_model.dart';
 import 'package:seeker/features/home/viewmodels/home_view_model.dart';
 import 'package:seeker/features/home/views/home_drawer.dart';
 import 'package:seeker/features/home/widgets/custom_nav_bar.dart'; // Import CustomNavBar
+import 'package:seeker/features/orders/ViewModels/orders_viewmodel.dart';
 import 'package:seeker/features/search/viewmodels/search_viewmodel.dart';
 import 'package:seeker/features/search/views/search_view.dart';
 import 'package:seeker/features/settings/views/settings_view.dart'; // Import SettingsView
 import 'package:seeker/core/network/api_endpoints.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
 import '../services/viewmodels/service_details_view_model.dart';
 
 import '../services/view/service_details_view.dart';
@@ -21,6 +23,8 @@ import 'package:seeker/features/favorites/viewmodels/favorite_view_model.dart';
 import 'package:seeker/core/widgets/service_card.dart';
 import 'package:seeker/l10n/app_localizations.dart';
 import 'package:seeker/features/orders/Views/orders_view.dart';
+import 'package:seeker/features/profile/viewmodels/profile_view_model.dart'; // ✅ تمت الإضافة
+import 'package:seeker/core/utils/qs_alerts.dart'; // ✅ تمت الإضافة
 
 class HomeView extends StatefulWidget {
   final String title;
@@ -39,6 +43,10 @@ class _HomeViewState extends State<HomeView> {
     // 🔄 تحميل البيانات عند فتح الصفحة
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<HomeViewModel>().loadHomeData();
+      // 🚀 جلب الطلبات لتحديث العداد في القائمة الجانبية (Drawer)
+      context.read<OrdersViewModel>().fetchOrders();
+      // 🚀 جلب بيانات الملف الشخصي الحية للترحيب بالاسم الصحيح
+      context.read<ProfileViewModel>().fetchProfile();
     });
   }
 
@@ -82,6 +90,7 @@ class _HomeViewState extends State<HomeView> {
         return Scaffold(
           key: _scaffoldKey, // لفتح القائمة الجانبية برمجياً
           backgroundColor: context.qsColors.background,
+          extendBody: true, // 🚀 تمديد الجسم خلف الناف بار لجعله شفافاً
           drawer: HomeDrawer(
             onLinkTap: (index) {
               // تحديث الاندكس عبر البروفايدر
@@ -90,7 +99,7 @@ class _HomeViewState extends State<HomeView> {
           ), // القائمة الجانبية
           body: currentIndex == 4
               ? currentScreen
-              : SafeArea(child: currentScreen),
+              : SafeArea(bottom: false, child: currentScreen),
           // شريط التنقل السفلي المخصص
           bottomNavigationBar: CustomNavBar(
             currentIndex: currentIndex,
@@ -157,7 +166,7 @@ class _HomeViewState extends State<HomeView> {
               _buildPopularServicesList(viewModel.popularServices),
 
               // مساحة إضافية في الأسفل لتجنب تغطية المحتوى بالـ NavBar
-              const SizedBox(height: 80),
+              const SizedBox(height: 100),
             ],
           );
         },
@@ -177,7 +186,7 @@ class _HomeViewState extends State<HomeView> {
         backgroundColor: context.qsColors.primary,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.menu, color: context.qsColors.text),
+          icon: Icon(Icons.menu, color: Colors.white),
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
       ),
@@ -195,10 +204,27 @@ class _HomeViewState extends State<HomeView> {
   // ---------------------------------------------------------------------------
   Widget _buildHeader(BuildContext context) {
     // نستخدم select للاستماع فقط للتغييرات في الاسم والموقع لتقليل إعادة البناء غير الضرورية
-    final userName = context.select<HomeViewModel, String>((vm) => vm.userName);
-    final currentAddress = context.select<HomeViewModel, String>(
+    final profileName = context.select<ProfileViewModel, String>((vm) => vm.profile?.name ?? '');
+    final cachedName = context.select<HomeViewModel, String>((vm) => vm.userName);
+    final String userName;
+    if (profileName.isNotEmpty) {
+      userName = profileName;
+    } else if (cachedName == 'Guest') {
+      userName = AppLocalizations.of(context)!.guest;
+    } else {
+      userName = cachedName;
+    }
+    
+    String currentAddress = context.select<HomeViewModel, String>(
       (vm) => vm.currentAddress,
     );
+    // ✅ ترجمة المواقع الافتراضية
+    if (currentAddress == 'unknownLocation') {
+      currentAddress = AppLocalizations.of(context)!.unknownLocation;
+    } else if (currentAddress == 'Yemen') {
+      currentAddress = AppLocalizations.of(context)!.defaultCountry;
+    }
+
     final isLocationLoading = context.select<HomeViewModel, bool>(
       (vm) => vm.isLocationLoading,
     );
@@ -215,13 +241,6 @@ class _HomeViewState extends State<HomeView> {
             decoration: BoxDecoration(
               color: Theme.of(context).cardColor,
               shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: context.qsColors.text.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
             ),
             child: Icon(Icons.menu, color: context.qsColors.text),
           ),
@@ -242,17 +261,38 @@ class _HomeViewState extends State<HomeView> {
                     .updateLocation();
 
                 if (error != null && context.mounted) {
+                  // ✅ استخراج الرسالة المترجمة بناءً على الـ key الراجع من الـ ViewModel
+                  String translatedError;
+                  final l10n = AppLocalizations.of(context)!;
+
+                  switch (error) {
+                    case 'locationServiceDisabled':
+                      translatedError = l10n.locationServicesDisabled;
+                      break;
+                    case 'locationPermissionDenied':
+                      translatedError = l10n.locationPermissionsDenied;
+                      break;
+                    case 'locationPermissionForeverDenied':
+                      translatedError = l10n.locationPermissionForeverDenied;
+                      break;
+                    case 'locationUpdateFailed':
+                      translatedError = l10n.locationUpdateFailed;
+                      break;
+                    default:
+                      translatedError = error;
+                  }
+
                   // عرض رسالة خطأ في حال الفشل
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
                       title: Text(
-                        AppLocalizations.of(context)!.alert,
+                        l10n.alert,
                         textAlign: TextAlign.right,
                         style: const TextStyle(fontFamily: 'Cairo'),
                       ),
                       content: Text(
-                        error,
+                        translatedError,
                         textAlign: TextAlign.right,
                         style: const TextStyle(fontFamily: 'Cairo'),
                       ),
@@ -260,7 +300,7 @@ class _HomeViewState extends State<HomeView> {
                         TextButton(
                           onPressed: () => Navigator.pop(context),
                           child: Text(
-                            AppLocalizations.of(context)!.ok,
+                            l10n.ok,
                             style: const TextStyle(fontFamily: 'Cairo'),
                           ),
                         ),
@@ -369,7 +409,7 @@ class _HomeViewState extends State<HomeView> {
         decoration: InputDecoration(
           hintText: AppLocalizations.of(context)!.searchHint,
           hintStyle: TextStyle(
-            color: context.qsColors.text.withValues(alpha: 5),
+            color: context.qsColors.background.withValues(alpha: 0.7),
             fontSize: 14,
           ),
           // زر الفلترة (يسار)
@@ -411,7 +451,21 @@ class _HomeViewState extends State<HomeView> {
       height: 200, // ✅ ارتفاع ثابت لتجنب مشاكل العرض (Overflow)
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: context.qsColors.secondary, // خلفية داكنة افتراضية
+        gradient: LinearGradient(
+          colors: [
+            context.qsColors.primary,
+            context.qsColors.secondary,
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: context.qsColors.primary.withValues(alpha: 0.2),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Stack(
         children: [
@@ -446,7 +500,7 @@ class _HomeViewState extends State<HomeView> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF10B981), // أخضر
+                    color: context.qsColors.success, // أخضر متجاوب
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -501,7 +555,7 @@ class _HomeViewState extends State<HomeView> {
             onTap: onSeeAll,
             child: Text(
               AppLocalizations.of(context)!.seeAll,
-              style: TextStyle(color: Color(0xFF3B82F6), fontSize: 14),
+              style: TextStyle(color: context.qsColors.primary, fontSize: 14),
             ),
           ),
         Text(
@@ -526,13 +580,13 @@ class _HomeViewState extends State<HomeView> {
         itemBuilder: (context, index) {
           final cat = categories[index];
           // ألوان خلفية مختلفة لكل عنصر لإضفاء حيوية
-          final colors = [
-            const Color(0xFFE0F2FE), // أزرق فاتح
-            const Color(0xFFFEF3C7), // أصفر فاتح
-            const Color(0xFFFFEDD5), // برتقالي فاتح
-            const Color(0xFFF3E8FF), // بنفسجي فاتح
+          final categoryColors = [
+            context.qsColors.primary.withValues(alpha: 0.1),
+            context.qsColors.secondary.withValues(alpha: 0.1),
+            context.qsColors.success.withValues(alpha: 0.1),
+            context.qsColors.warning.withValues(alpha: 0.1),
           ];
-          final bgColor = colors[index % colors.length];
+          final bgColor = categoryColors[index % categoryColors.length];
 
           return GestureDetector(
             onTap: () {
@@ -580,9 +634,8 @@ class _HomeViewState extends State<HomeView> {
               context,
               MaterialPageRoute(
                 builder: (context) => ChangeNotifierProvider(
-                  create: (context) => ServiceDetailsViewModel(
-                    context.read<HomeRepository>(),
-                  ),
+                  create: (context) =>
+                      ServiceDetailsViewModel(context.read<HomeRepository>()),
                   child: ServiceDetailsView(initialService: service),
                 ),
               ),
@@ -622,7 +675,7 @@ class _HomeViewState extends State<HomeView> {
         fit: BoxFit.contain,
         errorBuilder: (_, __, ___) {
           debugPrint('❌ Failed to load local asset: $rawPath');
-          return const Icon(Icons.category, color: Colors.blueGrey);
+          return Icon(Icons.category, color: context.qsColors.textSub);
         },
       );
     }
@@ -653,8 +706,8 @@ class _HomeViewState extends State<HomeView> {
         // طباعة الخطأ لمعرفة السبب
         debugPrint('❌ Image Error for $imageUrl: $error');
         return Container(
-          color: Colors.grey[200],
-          child: const Icon(Icons.broken_image, color: Colors.grey),
+          color: context.qsColors.background,
+          child: Icon(Icons.broken_image, color: context.qsColors.textSub),
         );
       },
       loadingBuilder: (context, child, loadingProgress) {

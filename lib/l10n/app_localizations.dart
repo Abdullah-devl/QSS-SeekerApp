@@ -1470,7 +1470,284 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Currently Unavailable'**
-  String get unavailable;
+  /// No description provided for @sendSystemComplaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Complaint'**
+  String get sendSystemComplaint;
+
+  /// No description provided for @terms_of_service.
+  String get terms_of_service;
+
+  /// No description provided for @read_terms_desc.
+  String get read_terms_desc;
+
+  /// No description provided for @terms_intro_title.
+  String get terms_intro_title;
+
+  /// No description provided for @terms_intro_text.
+  String get terms_intro_text;
+
+  /// No description provided for @terms_quality_title.
+  String get terms_quality_title;
+
+  /// No description provided for @terms_quality_text.
+  String get terms_quality_text;
+
+  /// No description provided for @terms_pricing_title.
+  String get terms_pricing_title;
+
+  /// No description provided for @terms_pricing_text.
+  String get terms_pricing_text;
+
+  /// No description provided for @terms_cancellation_title.
+  String get terms_cancellation_title;
+
+  /// No description provided for @terms_cancellation_text.
+  String get terms_cancellation_text;
+
+  /// No description provided for @agree_to_terms_prefix.
+  String get agree_to_terms_prefix;
+
+  /// No description provided for @and_label.
+  String get and_label;
+
+  /// No description provided for @agree_and_continue.
+  String get agree_and_continue;
+
+  /// No description provided for @activation_code_sent.
+  String activation_code_sent(Object email);
+
+  /// No description provided for @error_email_missing.
+  String get error_email_missing;
+
+  /// No description provided for @did_not_receive_code.
+  String get did_not_receive_code;
+
+  /// No description provided for @resend_code.
+  String get resend_code;
+
+  /// No description provided for @resend_code_timer.
+  String resend_code_timer(Object timer);
+
+  /// No description provided for @systemComplaints.
+  String get systemComplaints;
+
+  /// No description provided for @addSystemComplaint.
+  String get addSystemComplaint;
+
+  /// No description provided for @pleaseSelectType.
+  String get pleaseSelectType;
+
+  /// No description provided for @confirmSend.
+  String get confirmSend;
+
+  /// No description provided for @confirmSendMsg.
+  String get confirmSendMsg;
+
+  /// No description provided for @complaintSentSuccess.
+  String get complaintSentSuccess;
+
+  /// No description provided for @complaintSentError.
+  String get complaintSentError;
+
+  /// No description provided for @sending.
+  String get sending;
+
+  /// No description provided for @complaintTitle.
+  String get complaintTitle;
+
+  /// No description provided for @complaintTitleHint.
+  String get complaintTitleHint;
+
+  /// No description provided for @pleaseEnterTitle.
+  String get pleaseEnterTitle;
+
+  /// No description provided for @complaintType.
+  String get complaintType;
+
+  /// No description provided for @selectComplaintType.
+  String get selectComplaintType;
+
+  /// No description provided for @complaintDetails.
+  String get complaintDetails;
+
+  /// No description provided for @complaintDetailsHint.
+  String get complaintDetailsHint;
+
+  /// No description provided for @pleaseEnterDetails.
+  String get pleaseEnterDetails;
+
+  /// No description provided for @typeBug.
+  String get typeBug;
+
+  /// No description provided for @typePerformance.
+  String get typePerformance;
+
+  /// No description provided for @typePayment.
+  String get typePayment;
+
+  /// No description provided for @typeAccount.
+  String get typeAccount;
+
+  /// No description provided for @typeSuggestion.
+  String get typeSuggestion;
+
+  /// No description provided for @typeOther.
+  String get typeOther;
+
+  /// No description provided for @statusPending.
+  String get statusPending;
+
+  /// No description provided for @statusInProgress.
+  String get statusInProgress;
+
+  /// No description provided for @statusResolved.
+  String get statusResolved;
+
+  /// No description provided for @statusRejected.
+  String get statusRejected;
+
+  /// No description provided for @statusClosed.
+  String get statusClosed;
+
+  /// No description provided for @noComplaints.
+  String get noComplaints;
+
+  /// No description provided for @determiningLocationAccurate.
+  String get determiningLocationAccurate;
+
+  /// No description provided for @customLocation.
+  String get customLocation;
+
+  /// No description provided for @searchingLocation.
+  String get searchingLocation;
+
+  /// No description provided for @activateAccount.
+  String get activateAccount;
+
+  /// No description provided for @guest.
+  String get guest;
+
+  /// No description provided for @locationPermissionForeverDenied.
+  String get locationPermissionForeverDenied;
+
+  /// No description provided for @defaultCountry.
+  String get defaultCountry;
+
+  /// No description provided for @locationUpdateFailed.
+  String get locationUpdateFailed;
+
+  /// No description provided for @last_update.
+  String get last_update;
+
+  /// No description provided for @seeker_role.
+  String get seeker_role;
+
+  /// No description provided for @provider_role.
+  String get provider_role;
+
+  /// No description provided for @no_phones_added.
+  String get no_phones_added;
+
+  /// No description provided for @fetching_address.
+  String get fetching_address;
+
+  /// No description provided for @location_not_set.
+  String get location_not_set;
+
+  /// No description provided for @edit_profile_title.
+  String get edit_profile_title;
+
+  /// No description provided for @bio_label.
+  String get bio_label;
+
+  /// No description provided for @geo_location.
+  String get geo_location;
+
+  /// No description provided for @update_label.
+  String get update_label;
+
+  /// No description provided for @enter_phone_number.
+  String get enter_phone_number;
+
+  /// No description provided for @profile_updated_success.
+  String get profile_updated_success;
+
+  /// No description provided for @save_changes.
+  String get save_changes;
+
+  /// No description provided for @no_max_limit.
+  String get no_max_limit;
+
+  /// No description provided for @closed.
+  String get closed;
+
+  /// No description provided for @example_address_city.
+  String get example_address_city;
+
+  /// No description provided for @example_address_street.
+  String get example_address_street;
+
+  /// No description provided for @example_reviewer_name.
+  String get example_reviewer_name;
+
+  /// No description provided for @example_review_time.
+  String get example_review_time;
+
+  /// No description provided for @example_review_content.
+  String get example_review_content;
+
+  /// No description provided for @share_service_message.
+  String share_service_message(Object title, Object provider, Object price);
+
+  /// No description provided for @confirm_customize_order.
+  String get confirm_customize_order;
+
+  /// No description provided for @new_service_label.
+  String get new_service_label;
+
+  /// No description provided for @request_details_title.
+  String get request_details_title;
+
+  /// No description provided for @receiver_name.
+  String get receiver_name;
+
+  /// No description provided for @service_location_title.
+  String get service_location_title;
+
+  /// No description provided for @click_to_pick_location.
+  String get click_to_pick_location;
+
+  /// No description provided for @additional_services.
+  String get additional_services;
+
+  /// No description provided for @additional_notes.
+  String get additional_notes;
+
+  /// No description provided for @notes_hint.
+  String get notes_hint;
+
+  /// No description provided for @final_total.
+  String get final_total;
+
+  /// No description provided for @order_sent_success.
+  String get order_sent_success;
+
+  /// No description provided for @order_sent_error.
+  String get order_sent_error;
+
+  /// No description provided for @confirm_and_book.
+  String get confirm_and_book;
+
+  /// No description provided for @loading_policy.
+  String get loading_policy;
+
+  /// No description provided for @no_policy_available.
+  String get no_policy_available;
+
+  String get points;
+
 }
 
 class _AppLocalizationsDelegate

@@ -37,6 +37,9 @@ class ApiEndpoints {
   /// 🚪 رابط تسجيل الخروج.
   static String get logout => "$baseUrl/logout";
 
+  /// 🔐 رابط تغيير كلمة المرور.
+  static String get changePassword => "$baseUrl/change-password";
+
   /// ✅ رابط تفعيل البريد الإلكتروني (OTP).
   static String get verifyEmail => "$baseUrl/verify-email-code";
 
@@ -131,4 +134,10 @@ class ApiEndpoints {
   static String get pointsBalance => "$baseUrl/points/balance";
   static String payByPoints(String id) => "$baseUrl/requests/$id/payByPoints";
   static String get requestBonds => "$baseUrl/request-bonds";
+
+  /// 📜 رابط جلب السياسات (Privacy Policy / Terms).
+  static String policy(String role) => "$baseUrl/policies/$role";
+
+  /// 🚨 روابط شكاوى النظام.
+  static String get systemComplaints => "$baseUrl/system-complaints";
 }

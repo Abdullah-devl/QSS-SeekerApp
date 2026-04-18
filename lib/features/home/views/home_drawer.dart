@@ -5,10 +5,12 @@ import 'package:seeker/core/storage/token_storage.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/core/theme/qs_colors.dart';
 import 'package:seeker/features/home/viewmodels/home_view_model.dart';
+import 'package:seeker/features/orders/ViewModels/orders_viewmodel.dart';
 import 'package:seeker/features/provider/theme_provider.dart';
 import 'package:seeker/features/auth/repositories/auth_repository.dart';
 // import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:seeker/l10n/app_localizations.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
 
 /// 📂 اسم الملف: home_drawer.dart
 /// 📝 الوصف: القائمة الجانبية (Drawer).
@@ -54,6 +56,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
     final colors = context.qsColors;
 
     return Drawer(
+      backgroundColor: colors.background,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
@@ -65,8 +68,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
       child: Selector<HomeViewModel, ({String name, String role})>(
         selector: (context, vm) => (name: vm.userName, role: vm.role),
         builder: (context, userData, child) {
-          final String userName = userData.name;
-          final String userRole = userData.role;
+          final String userName = userData.name == 'Guest'
+              ? AppLocalizations.of(context)!.guest
+              : userData.name;
+          final String userRole = (userData.role == 'guest' || userData.role == 'زائر')
+              ? AppLocalizations.of(context)!.guest
+              : userData.role;
 
           return SafeArea(
             child: Column(
@@ -74,8 +81,15 @@ class _HomeDrawerState extends State<HomeDrawer> {
                 // =================================================================
                 // 1. رأس القائمة (Header - معلومات المستخدم)
                 // =================================================================
-                Padding(
+                Container(
                   padding: const EdgeInsets.all(20.0),
+                  decoration: BoxDecoration(
+                    color: colors.primary.withValues(alpha: 0.05),
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(30),
+                      bottomRight: Radius.circular(30),
+                    ),
+                  ),
                   child: Row(
                     children: [
                       Stack(
@@ -101,9 +115,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
                             width: 12,
                             height: 12,
                             decoration: BoxDecoration(
-                              color: Colors.green,
+                              color: colors.success,
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2),
+                              border: Border.all(color: colors.background, width: 2),
                             ),
                           ),
                         ],
@@ -120,11 +134,21 @@ class _HomeDrawerState extends State<HomeDrawer> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Text(
-                              userRole,
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: colors.textSub,
+                            const SizedBox(height: 4),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: colors.primary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: colors.primary.withValues(alpha: 0.2)),
+                              ),
+                              child: Text(
+                                userRole,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: colors.primary,
+                                ),
                               ),
                             ),
                           ],
@@ -138,7 +162,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   ),
                 ),
 
-                const Divider(),
+                Divider(color: colors.textSub.withValues(alpha: 0.1), thickness: 1),
 
                 // =================================================================
                 // 2. روابط التنقل (Navigation Items)
@@ -159,7 +183,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       ),
 
                       // 🛡️ شرط الصلاحيات: عرض "طلباتي" و "المفضلة" فقط إذا لم يكن زائر
-                      if (userRole != 'زائر') ...[
+                      if (userRole != AppLocalizations.of(context)!.guest) ...[
                         _buildNavItem(
                           colors,
                           Icons.archive,
@@ -169,7 +193,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                             Navigator.pop(context);
                             widget.onLinkTap?.call(1);
                           },
-                          badgeCount: 3,
+                          badgeCount: context.watch<OrdersViewModel>().newOrdersCount,
                         ),
 
                         _buildNavItem(
@@ -220,7 +244,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                 // =================================================================
                 Padding(
                   padding: const EdgeInsets.all(20.0),
-                  child: userRole == 'زائر'
+                  child: userRole == AppLocalizations.of(context)!.guest
                       ? //  إذا كان المستخدم زائراً، نعرض زر تسجيل الدخول
                         InkWell(
                           onTap: () {
@@ -246,12 +270,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
                           onTap: _logout,
                           child: Row(
                             children: [
-                              Icon(Icons.logout, color: Colors.red),
+                              Icon(Icons.logout, color: colors.error),
                               const SizedBox(width: 8),
                               Text(
                                 AppLocalizations.of(context)!.logout,
                                 style: TextStyle(
-                                  color: Colors.red,
+                                  color: colors.error,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                 ),
@@ -282,8 +306,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: colors.secondary.withValues(alpha: 0.5),
+        color: colors.primary.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colors.primary.withValues(alpha: 0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -324,7 +349,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: colors.primary,
-                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                foregroundColor: colors.background,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -378,17 +403,20 @@ class _HomeDrawerState extends State<HomeDrawer> {
   }) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(
+        color: isSelected ? colors.primary.withValues(alpha: 0.1) : Colors.transparent,
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: ListTile(
-        leading: Icon(icon, color: isSelected ? colors.text : colors.textSub),
+        leading: Icon(icon, color: isSelected ? colors.primary : colors.textSub),
         title: Text(
           title,
           style: TextStyle(
-            color: isSelected ? colors.text : colors.textSub,
+            color: isSelected ? colors.primary : colors.textSub,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
-        trailing: badgeCount != null
+        trailing: (badgeCount != null && badgeCount > 0)
             ? Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
@@ -397,8 +425,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
                 ),
                 child: Text(
                   '$badgeCount',
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: colors.background,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),

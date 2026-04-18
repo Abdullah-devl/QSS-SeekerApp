@@ -7,6 +7,7 @@ import 'package:seeker/features/home/viewmodels/confirm_order_view_model.dart';
 import 'package:seeker/features/home/views/confirm_order_view.dart';
 import 'package:seeker/features/profile/view/profile_view.dart';
 import 'package:seeker/l10n/app_localizations.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:seeker/features/home/services/models/service_model.dart';
@@ -101,7 +102,13 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
       centerTitle: true,
       title: Text(AppLocalizations.of(context)!.serviceDetails, style: TextStyle(color: colors.text, fontWeight: FontWeight.bold, fontSize: 18)),
       leading: IconButton(
-        icon: Icon(Icons.arrow_back_ios_new, color: colors.text, size: 20),
+        icon: Icon(
+          Directionality.of(context) == TextDirection.rtl
+              ? Icons.arrow_forward_ios
+              : Icons.arrow_back_ios_new,
+          color: colors.text,
+          size: 20,
+        ),
         onPressed: () => Navigator.pop(context),
       ),
       actions: [
@@ -119,7 +126,11 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
           icon: Icon(Icons.share_outlined, color: colors.text),
           onPressed: () {
             if (service != null) {
-              Share.share('مرحباً! اكتشف هذه الخدمة الرائعة: "${service.title}" من ${service.providerName}، بسعر ${service.price.toInt()} ر.س فقط! \nحمل تطبيقنا للحجز الآن.');
+              Share.share(context.tr('share_service_message', args: {
+                'title': service.title,
+                'provider': service.providerName,
+                'price': service.price.toInt().toString(),
+              }));
             }
           },
         ),
@@ -307,8 +318,8 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('الرياض، حي الملقا', style: TextStyle(fontWeight: FontWeight.bold, color: colors.text, fontSize: 14)),
-                          Text('شارع الأمير محمد بن سعد، مبنى رقم 45', style: TextStyle(color: colors.textSub, fontSize: 11)),
+                          Text(context.tr('example_address_city'), style: TextStyle(fontWeight: FontWeight.bold, color: colors.text, fontSize: 14)),
+                          Text(context.tr('example_address_street'), style: TextStyle(color: colors.textSub, fontSize: 11)),
                         ],
                       ),
                     ),
@@ -377,7 +388,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                           const Icon(Icons.keyboard_arrow_down_rounded, size: 10, color: Colors.grey),
                           Text(schedule.toTime, style: TextStyle(fontSize: 10, color: colors.text)),
                         ] else
-                          Text('مغلق', style: TextStyle(fontSize: 12, color: Colors.redAccent.withOpacity(0.7), fontWeight: FontWeight.bold)),
+                          Text(context.tr('closed'), style: TextStyle(fontSize: 12, color: Colors.redAccent.withOpacity(0.7), fontWeight: FontWeight.bold)),
                       ],
                     ),
                   );
@@ -443,8 +454,8 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                   children: [
                     CircleAvatar(radius: 18, backgroundColor: colors.primary.withOpacity(0.1), child: Icon(Icons.person, color: colors.primary, size: 20)),
                     const SizedBox(width: 12),
-                    Expanded(child: Text('سارة العلي', style: TextStyle(fontWeight: FontWeight.bold, color: colors.text, fontSize: 14))),
-                    Text('منذ يومين', style: TextStyle(color: colors.textSub, fontSize: 11)),
+                    Expanded(child: Text(context.tr('example_reviewer_name'), style: TextStyle(fontWeight: FontWeight.bold, color: colors.text, fontSize: 14))),
+                    Text(context.tr('example_review_time'), style: TextStyle(color: colors.textSub, fontSize: 11)),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -459,7 +470,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'خدمة ممتازة جداً والفريق وصل في الوقت المحدد. قاموا بتنظيف كل زاوية في المنزل بدقة. أنصح بهم بشدة!',
+                  context.tr('example_review_content'),
                   style: TextStyle(color: colors.textSub, fontSize: 12, height: 1.6),
                 ),
               ],
@@ -526,7 +537,13 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                       children: [
                         Text(AppLocalizations.of(context)!.bookNow, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
                         const SizedBox(width: 8),
-                        const Icon(Icons.arrow_back, color: Colors.white, size: 20),
+                         Icon(
+                          Directionality.of(context) == TextDirection.rtl
+                              ? Icons.arrow_back
+                              : Icons.arrow_forward,
+                          color: Colors.white,
+                          size: 20,
+                        ),
                       ],
                     ),
               ),

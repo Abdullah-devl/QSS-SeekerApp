@@ -95,7 +95,7 @@ class _SplashViewState extends State<SplashView> {
             const SizedBox(height: 20),
 
             // مؤشر تحميل بسيط
-            const CircularProgressIndicator(),
+            CircularProgressIndicator(color: context.qsColors.primary),
           ],
         ),
       ),

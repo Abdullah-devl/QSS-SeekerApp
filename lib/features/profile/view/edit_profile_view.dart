@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/l10n/app_localizations.dart';
+import 'package:seeker/core/utils/qs_alerts.dart'; // ✅ تمت الإضافة
 import '../viewmodels/parts/edit_profile_view_model.dart';
 
 /// 📂 اسم الملف: edit_profile_view.dart
@@ -17,17 +19,22 @@ class EditProfileView extends StatelessWidget {
     final bgColor = Theme.of(context).scaffoldBackgroundColor;
 
     return Scaffold(
-      backgroundColor: bgColor,
+      backgroundColor: colors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
         title: Text(
-          'تعديل الملف الشخصي',
+          context.tr('edit_profile_title'),
           style: TextStyle(color: colors.text, fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: colors.text),
+          icon: Icon(
+            Directionality.of(context) == TextDirection.rtl
+                ? Icons.arrow_forward
+                : Icons.arrow_back,
+            color: colors.text,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -54,7 +61,7 @@ class EditProfileView extends StatelessWidget {
                 // 3. النبذة التعريفية
                 _buildTextField(
                   controller: vm.bioController,
-                  label: 'النبذة التعريفية',
+                  label: context.tr('bio_label'),
                   icon: Icons.info_outline,
                   maxLines: 3,
                   colors: colors,
@@ -65,14 +72,14 @@ class EditProfileView extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 // 4. الموقع الجغرافي
-                _buildLocationSection(vm, colors),
+                _buildLocationSection(context, vm, colors),
                 const SizedBox(height: 24),
 
                 const Divider(),
                 const SizedBox(height: 16),
 
                 // 5. أرقام الهاتف المتعددة
-                _buildPhonesSection(vm, colors, l10n),
+                _buildPhonesSection(context, vm, colors, l10n),
                 const SizedBox(height: 40),
 
                 // 6. زر الحفظ
@@ -83,8 +90,8 @@ class EditProfileView extends StatelessWidget {
           ),
           if (vm.isLoading)
             Container(
-              color: Colors.black.withOpacity(0.3),
-              child: const Center(child: CircularProgressIndicator()),
+              color: colors.text.withValues(alpha: 0.3),
+              child: Center(child: CircularProgressIndicator(color: colors.primary)),
             ),
         ],
       ),
@@ -148,36 +155,39 @@ class EditProfileView extends StatelessWidget {
     );
   }
 
-  Widget _buildLocationSection(EditProfileViewModel vm, dynamic colors) {
+  Widget _buildLocationSection(BuildContext context, EditProfileViewModel vm, dynamic colors) {
     return Column(
       children: [
         Row(
           children: [
             Icon(Icons.map_outlined, color: colors.primary),
             const SizedBox(width: 8),
-            Text('الموقع الجغرافي', style: TextStyle(fontWeight: FontWeight.bold, color: colors.text)),
+            Text(context.tr('geo_location'), style: TextStyle(fontWeight: FontWeight.bold, color: colors.text)),
           ],
         ),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: colors.primary.withOpacity(0.05),
+            color: colors.primary.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: colors.primary.withOpacity(0.1)),
+            border: Border.all(color: colors.primary.withValues(alpha: 0.1)),
           ),
           child: Row(
             children: [
               Expanded(
                 child: Text(
-                  vm.address ?? (vm.latitude != null ? 'جاري جلب العنوان...' : 'الموقع غير محدد حالياً'),
+                  vm.address ??
+                      (vm.latitude != null
+                          ? context.tr('fetching_address')
+                          : context.tr('location_not_set')),
                   style: TextStyle(color: colors.textSub, fontSize: 13),
                 ),
               ),
               TextButton.icon(
                 onPressed: vm.updateLocation,
                 icon: const Icon(Icons.my_location),
-                label: const Text('تحديث'),
+                label: Text(context.tr('update_label')),
                 style: TextButton.styleFrom(foregroundColor: colors.primary),
               ),
             ],
@@ -187,7 +197,8 @@ class EditProfileView extends StatelessWidget {
     );
   }
 
-  Widget _buildPhonesSection(EditProfileViewModel vm, dynamic colors, dynamic l10n) {
+  Widget _buildPhonesSection(
+      BuildContext context, EditProfileViewModel vm, dynamic colors, dynamic l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -198,7 +209,8 @@ class EditProfileView extends StatelessWidget {
               children: [
                 Icon(Icons.phone_android_outlined, color: colors.primary),
                 const SizedBox(width: 8),
-                Text(l10n.phoneNumber, style: TextStyle(fontWeight: FontWeight.bold, color: colors.text)),
+                Text(l10n.phoneNumber,
+                    style: TextStyle(fontWeight: FontWeight.bold, color: colors.text)),
               ],
             ),
             IconButton(
@@ -213,13 +225,32 @@ class EditProfileView extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // 🌍 كود الدولة
+                SizedBox(
+                  width: 80,
+                  child: TextFormField(
+                    controller: entry.countryCodeController,
+                    keyboardType: TextInputType.phone,
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                      hintText: '+967',
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // 📱 رقم الهاتف
                 Expanded(
                   child: TextFormField(
                     controller: entry.controller,
                     keyboardType: TextInputType.phone,
                     decoration: InputDecoration(
-                      hintText: 'أدخل رقم الهاتف',
+                      hintText: context.tr('enter_phone_number'),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                   ),
@@ -227,7 +258,7 @@ class EditProfileView extends StatelessWidget {
                 if (vm.phoneEntries.length > 1)
                   IconButton(
                     onPressed: () => vm.removePhoneField(index),
-                    icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                    icon: Icon(Icons.remove_circle_outline, color: colors.error),
                   ),
               ],
             ),
@@ -244,14 +275,10 @@ class EditProfileView extends StatelessWidget {
         onPressed: () async {
           final success = await vm.saveChanges();
           if (success && context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('تم تحديث الملف الشخصي بنجاح'), backgroundColor: Colors.green),
-            );
-            Navigator.pop(context, true); // العودة بنجاح لتحديث الصفحة السابقة
+            await QSAlerts.showSuccess(context, context.tr('profile_updated_success'));
+            if (context.mounted) Navigator.pop(context, true); 
           } else if (vm.errorMessage != null && context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(vm.errorMessage!), backgroundColor: Colors.red),
-            );
+            await QSAlerts.showError(context, vm.errorMessage!);
           }
         },
         style: ElevatedButton.styleFrom(
@@ -259,7 +286,9 @@ class EditProfileView extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
-        child: const Text('حفظ التغييرات', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+        child: Text(context.tr('save_changes'),
+            style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
       ),
     );
   }

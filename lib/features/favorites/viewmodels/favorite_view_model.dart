@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:seeker/features/home/models/category_model.dart';
 import 'package:seeker/features/home/services/models/service_model.dart';
 import 'package:seeker/features/favorites/repositories/favorite_repository.dart';
+import 'package:seeker/features/home/repositories/home_repository.dart';
 
 class FavoriteViewModel extends ChangeNotifier {
   final FavoriteRepository _repository;
+  final HomeRepository _homeRepository;
 
-  FavoriteViewModel(this._repository) {
+  FavoriteViewModel(this._repository, this._homeRepository) {
     _loadInitialData();
   }
 
@@ -52,21 +54,18 @@ class FavoriteViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // جلب الخدمات المفضلة من المستودع
+      // 1. جلب الخدمات المفضلة
       _allFavoriteServices = await _repository.getFavorites();
 
-      // أقسام الفلترة العلوية (نضيف "الكل" يدوياً برقم 0)
-      // ملاحظة: يمكن جلب هذه التصنيفات من السيرفر أيضاً إذا لزم الأمر
+      // 2. جلب التصنيفات الحقيقية من السيرفر
+      final realCategories = await _homeRepository.fetchCategories();
+      
+      // 3. بناء قائمة التصنيفات للفلترة مع إضافة خيار "الكل"
       _filterCategories = [
         CategoryModel(id: 0, name: 'الكل', iconPath: 'grid_view'),
-        CategoryModel(id: 1, name: 'صيانة', iconPath: 'build_outlined'),
-        CategoryModel(
-          id: 2,
-          name: 'تنظيف',
-          iconPath: 'cleaning_services_outlined',
-        ),
-        CategoryModel(id: 3, name: 'نقل', iconPath: 'local_shipping_outlined'),
+        ...realCategories,
       ];
+
     } catch (e) {
       _errorMessage = 'حدث خطأ في جلب المفضلة';
     } finally {

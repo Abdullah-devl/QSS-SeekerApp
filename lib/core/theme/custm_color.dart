@@ -12,43 +12,55 @@ class CustomColor {
   // ☀️ ألوان الثيم الفاتح (Light Mode Colors)
   // ===========================================================================
 
-  /// لون النصوص الرئيسي في الوضع الفاتح (أسود داكن).
-  static const Color lightText = Color(0xFF0A0E10);
+  /// لون النصوص الرئيسي (فحمي داكن).
+  static const Color lightText = Color(0xFF2D3436);
 
-  /// لون النصوص الفرعية أو الوصف (رمادي).
-  static const Color lightTextSub = Color(0xFF5F6B7A);
+  /// لون النصوص الفرعية.
+  static const Color lightTextSub = Color(0xFF636E72);
 
-  /// لون الخلفية في الوضع الفاتح (أبيض مائل للزرقة الخفيفة جداً).
-  static const Color lightBackground = Color(0xFFF8FBFC);
+  /// لون الخلفية (أزرق سماوي ناعم جداً لراحة العين ولمسة Premium).
+  static const Color lightBackground = Color(0xFFF1FAFF);
 
-  /// اللون الأساسي للتطبيق (أزرق متوسط).
-  static const Color lightPrimary = Color(0xFF4F9CBF);
+  /// اللون الأساسي (أزرق حيوي).
+  static const Color lightPrimary = Color(0xFF1CB0F6);
 
-  /// اللون الثانوي (أزرق فاتح).
-  static const Color lightSecondary = Color(0xFF92C9E3);
+  /// اللون الثانوي.
+  static const Color lightSecondary = Color(0xFF74B9FF);
 
-  /// لون التمييز (Accent Color).
-  static const Color lightAccent = Color(0xFF67BDE4);
+  /// لون التمييز.
+  static const Color lightAccent = Color(0xFF1CB0F6);
+
+  // ألوان الحالات (Status Colors)
+  static const Color success = Color(0xFF2ECC71);
+  static const Color warning = Color(0xFFFFA502);
+  static const Color error = Color(0xFFFF4757);
+  static const Color info = Color(0xFF1CB0F6);
 
   // ===========================================================================
-  // 🌙 ألوان الثيم الداكن (Dark Mode Colors)
+  // 🌙 ألوان الثيم الداكن (Dark Mode Colors) - تم اختيار درجات هادئة
   // ===========================================================================
 
-  /// لون النصوص الرئيسي في الوضع الداكن (أبيض تقريباً).
-  static const Color darkText = Color(0xFFEFF3F5);
+  /// لون النصوص الرئيسي.
+  static const Color darkText = Color(0xFFDFE6E9);
 
-  /// لون النصوص الفرعية (رمادي فاتح).
-  static const Color darkTextSub = Color(0xFF9CA3AF);
+  /// لون النصوص الفرعية.
+  static const Color darkTextSub = Color(0xFFB2BEC3);
 
-  /// لون الخلفية في الوضع الداكن (أسود داكن جداً).
-  static const Color darkBackground = Color(0xFF030607);
+  /// لون الخلفية.
+  static const Color darkBackground = Color(0xFF0A0E10);
 
-  /// اللون الأساسي في الوضع الداكن.
-  static const Color darkPrimary = Color(0xFF408DB0);
+  /// اللون الأساسي (أزرق هادئ للوضع الداكن).
+  static const Color darkPrimary = Color(0xFF189AD3);
 
-  /// اللون الثانوي في الوضع الداكن.
-  static const Color darkSecondary = Color(0xFF1C546D);
+  /// اللون الثانوي.
+  static const Color darkSecondary = Color(0xFF0984E3);
 
-  /// لون التمييز في الوضع الداكن.
-  static const Color darkAccent = Color(0xFF1B7098);
+  /// لون التمييز.
+  static const Color darkAccent = Color(0xFF189AD3);
+
+  // ألوان الحالات للوضع الداكن (بدرجات أقل حدة)
+  static const Color darkSuccess = Color(0xFF27AE60);
+  static const Color darkWarning = Color(0xFFE67E22);
+  static const Color darkError = Color(0xFFD63031);
+  static const Color darkInfo = Color(0xFF189AD3);
 }

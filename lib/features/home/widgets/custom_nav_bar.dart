@@ -1,6 +1,8 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:seeker/core/routes/app_routes.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 
 class CustomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -16,44 +18,64 @@ class CustomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.qsColors;
     // دالة بناء شريط التنقل
-    return Container(
-      margin: const EdgeInsets.only(left: 10, right: 10, bottom: 20, top: 10),
-      height: 70,
-      decoration: BoxDecoration(
-        color: context.qsColors.primary,
-        borderRadius: BorderRadius.circular(30), // حواف دائرية
-        boxShadow: [
-          BoxShadow(
-            color: colors.text.withValues(alpha: 0.01),
-            blurRadius: 20,
-            offset: const Offset(0, 5),
+    return SafeArea(
+      top: false,
+      child: Container(
+        margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(30),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              height: 85,
+              decoration: BoxDecoration(
+                color: colors.background.withValues(alpha: 0.8),
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(
+                  color: colors.primary.withValues(alpha: 0.1),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: colors.text.withValues(alpha: 0.05),
+                    blurRadius: 20,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildNavItem(
+                    context,
+                    0,
+                    Icons.home_filled,
+                    AppLocalizations.of(context)!.home,
+                  ), // زر الصفحة الرئيسية
+                  _buildNavItem(
+                    context,
+                    1,
+                    Icons.assignment_outlined,
+                    AppLocalizations.of(context)!.myOrders,
+                  ),
+                  _buildSearchItem(context, 2), // زر البحث في المنتصف
+                  _buildNavItem(
+                    context,
+                    3,
+                    Icons.favorite_border,
+                    AppLocalizations.of(context)!.favorites,
+                  ),
+                  _buildNavItem(
+                    context,
+                    4,
+                    Icons.settings_outlined,
+                    AppLocalizations.of(context)!.settings,
+                  ),
+                ],
+              ),
+            ),
           ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(
-            context,
-            0,
-            Icons.home_filled,
-            AppRoutes.home,
-          ), // زر الصفحة الرئيسية
-          _buildNavItem(
-            context,
-            1,
-            Icons.assignment_outlined,
-            AppRoutes.orders,
-          ),
-          _buildSearchItem(context, 2), // زر البحث في المنتصف
-          _buildNavItem(context, 3, Icons.favorite_border, AppRoutes.favorites),
-          _buildNavItem(
-            context,
-            4,
-            Icons.settings_outlined,
-            AppRoutes.settings,
-          ),
-        ],
+        ),
       ),
     );
   }

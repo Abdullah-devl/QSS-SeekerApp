@@ -224,32 +224,36 @@ class _SearchViewState extends State<SearchView> {
                   const SizedBox(height: 24),
 
                   // نطاق السعر
-                  Text(context.tr('price_range'), style: const TextStyle(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 12),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(
-                        child: TextField(
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            hintText: context.tr('min_price'),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                          onChanged: (v) => viewModel.setPriceRange(double.tryParse(v), viewModel.maxPrice),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextField(
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            hintText: context.tr('max_price'),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                          ),
-                          onChanged: (v) => viewModel.setPriceRange(viewModel.minPrice, double.tryParse(v)),
-                        ),
+                      Text(context.tr('price_range'), style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text(
+                        '${viewModel.minPrice?.toInt() ?? 0} - ${(viewModel.maxPrice == null || viewModel.maxPrice == 100000) ? 'بدون حد أقصى' : viewModel.maxPrice?.toInt().toString()} ${context.tr('currency_sar')}',
+                        style: const TextStyle(color: Color(0xFF1CB0F6), fontWeight: FontWeight.bold),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 12),
+                  RangeSlider(
+                    values: RangeValues(
+                      viewModel.minPrice ?? 0,
+                      viewModel.maxPrice ?? 100000,
+                    ),
+                    min: 0,
+                    max: 100000,
+                    divisions: 200,
+                    activeColor: const Color(0xFF1CB0F6),
+                    inactiveColor: const Color(0xFF1CB0F6).withOpacity(0.2),
+                    labels: RangeLabels(
+                      '${viewModel.minPrice?.toInt() ?? 0}',
+                      viewModel.maxPrice == 100000 ? 'بدون حد أقصى' : '${viewModel.maxPrice?.toInt() ?? 100000}',
+                    ),
+                    onChanged: (RangeValues values) {
+                      setModalState(() {
+                        viewModel.setPriceRange(values.start, values.end);
+                      });
+                    },
                   ),
 
                   const SizedBox(height: 32),

@@ -99,11 +99,15 @@ class SearchViewModel extends ChangeNotifier {
       // محاولة جلب الموقع قبل البحث لحساب المسافات
       await _fetchCurrentLocation();
 
+      // تنظيف قيم السعر قبل الإرسال (إذا كانت تغطي النطاق الكامل لا نرسلها لتقليل القيود)
+      double? finalMin = _minPrice == 0 ? null : _minPrice;
+      double? finalMax = (_maxPrice == null || _maxPrice == 100000) ? null : _maxPrice;
+
       _results = await _repository.searchServices(
         query: _query,
         categoryId: _selectedCategoryId,
-        minPrice: _minPrice,
-        maxPrice: _maxPrice,
+        minPrice: finalMin,
+        maxPrice: finalMax,
         lat: _currentPosition?.latitude,
         lng: _currentPosition?.longitude,
       );

@@ -36,6 +36,29 @@ class ProfileRepository {
     }
   }
 
+  /// 👤 جلب بيانات الملف الشخصي للمستخدم الحالي.
+  Future<ProfileModel> fetchMyProfile() async {
+    try {
+      final Response response = await _apiService.get(ApiEndpoints.myProfile);
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        final Map<String, dynamic> jsonResponse =
+            (data is Map && data.containsKey('data')) ? data['data'] : data;
+
+        return ProfileModel.fromJson(jsonResponse);
+      } else {
+        throw Exception('فشل في تحميل ملفك الشخصي');
+      }
+    } on DioException catch (e) {
+      developer.log('❌ ProfileRepository: fetchMyProfile Dio Error: $e');
+      throw Exception('خطأ في الاتصال بالخادم: ${e.message}');
+    } catch (e) {
+      developer.log('❌ ProfileRepository: fetchMyProfile Unexpected Error: $e');
+      throw Exception('خطأ غير متوقع في جلب بياناتك: $e');
+    }
+  }
+
   /// 📸 جلب معرض الأعمال السابقة لمزود معين بناءً على معرفه.
   Future<List<WorkModel>> fetchProviderWorks(int userId) async {
     try {
@@ -109,6 +132,109 @@ class ProfileRepository {
       }
     } catch (e) {
       developer.log('❌ ProfileRepository: Delete Error: $e');
+      throw e;
+    }
+  }
+
+  /// 👤 تحديث بيانات الملف الشخصي.
+  Future<void> updateProfile({
+    required int profileId,
+    required String name,
+    required String bio,
+    String? avatarPath,
+    double? latitude,
+    double? longitude,
+  }) async {
+    try {
+      // 📝 استخدام FormData لدعم رفع الصور وتمرير البيانات المعقدة
+      // ملاحظة: نستخدم POST مع _method=PUT لأن PHP لا يستقبل FormData في طلب PUT الحقيقي
+      final Map<String, dynamic> data = {
+        '_method': 'PUT',
+        'name': name,
+        'bio': bio,
+      };
+
+      if (avatarPath != null && avatarPath.isNotEmpty) {
+        data['image'] = await MultipartFile.fromFile(
+          avatarPath,
+          filename: avatarPath.split('/').last,
+        );
+      }
+
+      if (latitude != null) data['latitude'] = latitude;
+      if (longitude != null) data['longitude'] = longitude;
+
+      final formData = FormData.fromMap(data);
+
+      final Response response = await _apiService.post(
+        ApiEndpoints.updateProfile(profileId),
+        data: formData,
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw Exception('فشل في تحديث الملف الشخصي');
+      }
+    } catch (e) {
+      developer.log('❌ ProfileRepository: updateProfile Error: $e');
+      throw e;
+    }
+  }
+
+  /// 📞 إضافة رقم هاتف جديد.
+  Future<void> addPhone({
+    required String phone,
+    String? type,
+    String countryCode = '',
+  }) async {
+    try {
+      final response = await _apiService.post(ApiEndpoints.profilePhones, data: {
+        'phone': phone,
+        'country_code': countryCode,
+        'type': type ?? 'phone',
+      });
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('فشل في إضافة الرقم');
+      }
+    } catch (e) {
+      developer.log('❌ ProfileRepository: addPhone Error: $e');
+      throw e;
+    }
+  }
+
+  /// 📞 تحديث رقم هاتف موجود.
+  Future<void> updatePhone({
+    required int phoneId,
+    required String phone,
+    String? type,
+    String countryCode = '',
+  }) async {
+    try {
+      final response = await _apiService.put(ApiEndpoints.profilePhone(phoneId), data: {
+        'phone': phone,
+        'country_code': countryCode,
+        'type': type ?? 'phone',
+      });
+
+      if (response.statusCode != 200) {
+        throw Exception('فشل في تحديث الرقم');
+      }
+    } catch (e) {
+      developer.log('❌ ProfileRepository: updatePhone Error: $e');
+      throw e;
+    }
+  }
+
+  /// 📞 حذف رقم هاتف.
+  Future<void> deletePhone(int phoneId) async {
+    try {
+      final response = await _apiService.delete(ApiEndpoints.profilePhone(phoneId));
+
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw Exception('فشل في حذف الرقم');
+      }
+    } catch (e) {
+      developer.log('❌ ProfileRepository: deletePhone Error: $e');
       throw e;
     }
   }

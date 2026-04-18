@@ -28,7 +28,8 @@ import 'package:seeker/features/auth/views/terms_view.dart';
 import 'package:seeker/features/auth/views/verify_email_view.dart';
 
 import 'package:seeker/features/settings/views/settings_view.dart'; // ✅ تمت الإضافة
-import 'package:seeker/features/profile/view/profile_view.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/profile/view/profile_view.dart';
+import 'package:seeker/features/profile/view/my_profile_view.dart'; // ✅ تمت الإضافة
 import 'package:seeker/features/home/views/category_details_view.dart'; // ✅ تمت الإضافة
 import 'package:seeker/features/home/models/category_model.dart'; // ✅ تمت الإضافة
 
@@ -53,11 +54,14 @@ import 'package:seeker/features/payment/repositories/payment_repository.dart';
 import 'package:seeker/features/payment/viewmodels/payment_viewmodel.dart';
 // import 'package:seeker/features/payment/views/payment_view.dart';
 
+// Profile Feature
+import 'package:seeker/features/profile/repositories/profile_repository.dart';
+import 'package:seeker/features/profile/viewmodels/profile_view_model.dart';
+
 // Search Feature
 import 'package:seeker/features/search/repositories/search_repository.dart';
 import 'package:seeker/features/search/viewmodels/search_viewmodel.dart';
 import 'package:seeker/features/search/views/search_view.dart';
-
 import 'dart:io';
 
 import 'package:seeker/l10n/app_localizations.dart';
@@ -68,12 +72,11 @@ import 'package:seeker/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // 📦 تهيئة Hive للتخزين المحلي
   await Hive.initFlutter();
-  
-  HttpOverrides.global =
-      BadCertificateHttpOverrides(); 
+
+  HttpOverrides.global = BadCertificateHttpOverrides();
 
   runApp(
     MultiProvider(
@@ -135,6 +138,11 @@ void main() async {
           update: (_, apiService, __) => SearchRepository(apiService),
         ),
 
+        // 👤 ProfileRepository
+        ProxyProvider<ApiService, ProfileRepository>(
+          update: (_, apiService, __) => ProfileRepository(apiService),
+        ),
+
         // ----------------------------------------------------------
         // 3️⃣ طبقة إدارة الحالة (ViewModels Layer)
         // ----------------------------------------------------------
@@ -189,9 +197,8 @@ void main() async {
 
         // Favorite ViewModel
         ChangeNotifierProvider<FavoriteViewModel>(
-          create: (context) => FavoriteViewModel(
-            context.read<FavoriteRepository>(),
-          ),
+          create: (context) =>
+              FavoriteViewModel(context.read<FavoriteRepository>()),
         ),
 
         // Orders ViewModel
@@ -210,6 +217,12 @@ void main() async {
         ChangeNotifierProvider<SearchViewModel>(
           create: (context) =>
               SearchViewModel(context.read<SearchRepository>()),
+        ),
+
+        // 👤 Profile ViewModel
+        ChangeNotifierProvider<ProfileViewModel>(
+          create: (context) =>
+              ProfileViewModel(context.read<ProfileRepository>()),
         ),
       ],
       child: const MyApp(),
@@ -256,7 +269,8 @@ class MyApp extends StatelessWidget {
             ),
             AppRoutes.home: (context) => HomeView(title: 'Home'), // الرئيسية
             AppRoutes.settings: (context) => SettingsView(), // الإعدادات
-            AppRoutes.profile: (context) => const ProfileView(), // الملف الشخصي
+            AppRoutes.profile: (context) =>
+                const MyProfileView(), // الملف الشخصي الجديد
             // التعامل مع تمرير البيانات (CategoryModel) عبر المسار
             AppRoutes.categoryDetails: (context) {
               final category =
@@ -280,4 +294,3 @@ class BadCertificateHttpOverrides extends HttpOverrides {
           (X509Certificate cert, String host, int port) => true;
   }
 }
- 

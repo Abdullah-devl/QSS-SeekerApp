@@ -70,8 +70,18 @@ class ApiEndpoints {
   /// 👤 رابط ملف المستخدم (Profile) لجلب بيانات المزود (النبذة والأعمال).
   static String userProfile(int userId) => "$baseUrl/user-profile/$userId";
 
+  /// 👤 رابط الملف الشخصي للمستخدم الحالي (My Profile).
+  static String get myProfile => "$baseUrl/my-profile";
+
+  /// 👤 رابط تحديث الملف الشخصي.
+  static String updateProfile(int profileId) => "$baseUrl/profiles/$profileId";
+
   /// 📸 رابط جلب معرض الأعمال السابقة لمستخدم معين.
   static String previousWorks(int userId) => "$baseUrl/previous-work?user_id=$userId";
+
+  /// 📞 روابط أرقام الجوال.
+  static String get profilePhones => "$baseUrl/profile-phones";
+  static String profilePhone(int id) => "$baseUrl/profile-phones/$id";
 
   // ===========================================================================
   // 📝 روابط الطلبات (Request Endpoints)

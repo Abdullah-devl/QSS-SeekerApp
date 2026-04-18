@@ -35,6 +35,10 @@ class ProfileModel {
   final List<PhoneModel> phones;
   final List<BankModel> banks;
 
+  // 📍 الموقع الجغرافي
+  final double? latitude;
+  final double? longitude;
+
   ProfileModel({
     required this.id,
     required this.name,
@@ -58,6 +62,8 @@ class ProfileModel {
     this.isAvailable = true,
     this.phones = const [],
     this.banks = const [],
+    this.latitude,
+    this.longitude,
   });
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
@@ -97,7 +103,15 @@ class ProfileModel {
       '0'
     ).toString()) ?? 0;
 
-    developer.log('🔍 [ProfileModel.fromJson] Parsed ID: $parsedId, Name: ${findName()}', name: 'ProfileModel');
+    final double? lat = (profileData['latitude'] is num) 
+        ? (profileData['latitude'] as num).toDouble() 
+        : double.tryParse(profileData['latitude']?.toString() ?? '');
+        
+    final double? lng = (profileData['longitude'] is num) 
+        ? (profileData['longitude'] as num).toDouble() 
+        : double.tryParse(profileData['longitude']?.toString() ?? '');
+
+    developer.log('🔍 [ProfileModel.fromJson] Parsed ID: $parsedId, Name: ${findName()}, Lat: $lat, Lng: $lng', name: 'ProfileModel');
 
     return ProfileModel(
       id: parsedId,
@@ -155,6 +169,8 @@ class ProfileModel {
               .toList()
               .cast<BankModel>()
           : [],
+      latitude: lat,
+      longitude: lng,
     );
   }
 }

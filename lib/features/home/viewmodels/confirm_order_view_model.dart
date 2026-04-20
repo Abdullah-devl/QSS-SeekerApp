@@ -307,11 +307,8 @@ class ConfirmOrderViewModel extends ChangeNotifier {
     return total;
   }
 
-  /// 🧮 حساب الضريبة (15%)
-  double get vatAmount => subTotal * 0.15;
-
   /// 🧮 حساب الإجمالي النهائي
-  double get finalTotal => subTotal + vatAmount;
+  double get finalTotal => subTotal;
 
   // ➕ زيادة كمية الخدمة الفرعية
   void incrementSubService(int index) {

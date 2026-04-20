@@ -63,7 +63,7 @@ extension LocalizationExt on BuildContext {
       case 'payment_page_title': return l.payment_page_title;
       case 'service_price': return l.service_price;
       case 'available_points': return l.available_points;
-      case 'points': return l.points;
+      // case 'points': return l.points;
       case 'payment_confirm': return l.payment_confirm;
       case 'pay_by_points': return l.pay_by_points;
       case 'pay_by_bond': return l.pay_by_bond;

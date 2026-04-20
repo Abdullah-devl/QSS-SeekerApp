@@ -8,8 +8,13 @@ class ProviderWorksViewModel extends ChangeNotifier {
   final ProfileRepository _repository;
   final int userId;
 
-  ProviderWorksViewModel(this._repository, {required this.userId}) {
-    fetchWorks();
+  ProviderWorksViewModel(this._repository, {required this.userId, List<WorkModel>? initialWorks}) {
+    if (initialWorks != null && initialWorks.isNotEmpty) {
+      _works = initialWorks;
+      _isLoading = false;
+    } else {
+      fetchWorks();
+    }
   }
 
   List<WorkModel> _works = [];

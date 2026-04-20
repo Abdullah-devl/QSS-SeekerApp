@@ -240,6 +240,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
   ) {
     final colors = context.qsColors;
     final bool isCompleted = order.status == 'completed';
+    final bool isPending = order.status == 'pending' || order.status == 'new';
     final bool isCancelled =
         order.status == 'cancelled' || order.status == 'canceled';
     final bool isRejected = order.status == 'rejected';
@@ -391,7 +392,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                 ],
               ),
             )
-          else if (!isCompleted)
+          else if (!isCompleted && !isPending)
             SizedBox(
               width: double.infinity,
               height: 65,

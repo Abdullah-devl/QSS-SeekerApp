@@ -25,7 +25,7 @@ class ProfileViewModel extends ChangeNotifier {
   ProfileModel? get profile => _profile;
   String? get address => _address; // ✅ تمت الإضافة
   
-  List<String> get works => _profile?.worksImages ?? [];
+  List<String> get works => _profile?.previousWorks.map((w) => w.imageUrl).toList() ?? [];
 
   /// 🚀 جلب بيانات الملف الشخصي بالكامل من الـ API
   Future<void> fetchProfile() async {

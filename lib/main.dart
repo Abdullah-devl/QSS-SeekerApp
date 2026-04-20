@@ -144,7 +144,7 @@ void main() async {
         ProxyProvider<ApiService, SearchRepository>(
           update: (_, apiService, __) => SearchRepository(apiService),
         ),
-
+      
         // 👤 ProfileRepository
         ProxyProvider<ApiService, ProfileRepository>(
           update: (_, apiService, __) => ProfileRepository(apiService),

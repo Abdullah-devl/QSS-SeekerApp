@@ -87,6 +87,8 @@ class ProfileRepository {
              list = responseData['works'];
           } else if (responseData.containsKey('previousWorks') && responseData['previousWorks'] is List) {
              list = responseData['previousWorks'];
+          } else if (responseData.containsKey('previous_works') && responseData['previous_works'] is List) {
+             list = responseData['previous_works'];
           }
         }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
 import '../viewmodel/provider_works_view_model.dart';
+import 'work_detail_gallery_view.dart';
 
 /// 📂 اسم الملف: provider_works_view.dart
 /// 📝 الوصف: واجهة عرض الأعمال السابقة لمزود الخدمة في شكل شبكة (Grid).
@@ -63,41 +64,52 @@ class ProviderWorksView extends StatelessWidget {
         itemCount: vm.works.length,
         itemBuilder: (context, index) {
           final work = vm.works[index];
-          return Container(
-            color: colors.textSub.withOpacity(0.05),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Image.network(
-                  work.imageUrl,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                            : null,
-                        color: colors.primary.withOpacity(0.3),
-                        strokeWidth: 2,
-                      ),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) => Icon(
-                    Icons.broken_image_outlined,
-                    color: colors.textSub.withOpacity(0.3),
-                  ),
-                ),
-                // ℹ️ لمسة تفاعلية عند الضغط (يمكن تفعيلها لعرض تفاصيل العمل)
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () {
-                      // TODO: عرض تفاصيل العمل في BottomSheet أو شاشة كاملة
+          return Hero(
+            tag: 'work_image_${work.id}',
+            child: Container(
+              color: colors.textSub.withOpacity(0.05),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                   Image.network(
+                    work.imageUrl,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                              : null,
+                          color: colors.primary.withOpacity(0.3),
+                          strokeWidth: 2,
+                        ),
+                      );
                     },
+                    errorBuilder: (context, error, stackTrace) => Icon(
+                      Icons.broken_image_outlined,
+                      color: colors.textSub.withOpacity(0.3),
+                    ),
                   ),
-                ),
-              ],
+                  // ℹ️ لمسة تفاعلية عند الضغط (لعرض تفاصيل العمل)
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => WorkDetailGalleryView(
+                              works: vm.works,
+                              initialIndex: index,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },

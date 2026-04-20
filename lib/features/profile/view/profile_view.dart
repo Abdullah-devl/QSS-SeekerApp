@@ -90,6 +90,7 @@ class ProfileView extends StatelessWidget {
                 create: (context) => ProviderWorksViewModel(
                   ProfileRepository(context.read<ApiService>()),
                   userId: (profile.id != 0) ? profile.id : (userId ?? 0),
+                  initialWorks: profile.previousWorks,
                 ),
                 child: const ProviderWorksView(),
               ),

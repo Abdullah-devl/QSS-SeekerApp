@@ -308,7 +308,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Location permissions are permanently denied.';
 
   @override
-  String get unknownLocation => 'Unknown Location';
+  String get unknownLocation => 'Unknown location';
 
   @override
   String get unableToDetermineAddress => 'Unable to determine address';
@@ -726,37 +726,264 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unavailable => 'Currently Unavailable';
 
   @override
+  String get systemComplaints => 'System Complaints';
+
+  @override
+  String get addSystemComplaint => 'Add Complaint';
+
+  @override
   String get sendSystemComplaint => 'Send Complaint';
+
+  @override
+  String get complaintTitle => 'Complaint Title';
+
+  @override
+  String get complaintTitleHint => 'e.g., Login Problem';
+
+  @override
+  String get complaintType => 'Complaint Type';
+
+  @override
+  String get selectComplaintType => 'Select Complaint Type';
+
+  @override
+  String get complaintDetails => 'Complaint Details';
+
+  @override
+  String get complaintDetailsHint => 'Explain the problem in detail here...';
+
+  @override
+  String get sending => 'Sending...';
+
+  @override
+  String get confirmSend => 'Confirm Send';
+
+  @override
+  String get confirmSendMsg => 'Are you sure you want to send this complaint?';
+
+  @override
+  String get complaintSentSuccess => 'Complaint sent successfully';
+
+  @override
+  String get complaintSentError => 'Failed to send complaint';
+
+  @override
+  String get pleaseEnterTitle => 'Please enter complaint title';
+
+  @override
+  String get pleaseEnterDetails => 'Please enter complaint details';
+
+  @override
+  String get pleaseSelectType => 'Please select complaint type';
+
+  @override
+  String get noComplaints => 'No complaints currently';
+
+  @override
+  String get statusPending => 'Pending';
+
+  @override
+  String get statusInProgress => 'In Progress';
+
+  @override
+  String get statusResolved => 'Resolved';
+
+  @override
+  String get statusClosed => 'Closed';
+
+  @override
+  String get statusRejected => 'Rejected';
+
+  @override
+  String get typeBug => 'Bug';
+
+  @override
+  String get typePerformance => 'Performance';
+
+  @override
+  String get typePayment => 'Payment';
+
+  @override
+  String get typeAccount => 'Account';
+
+  @override
+  String get typeSuggestion => 'Suggestion';
+
+  @override
+  String get typeOther => 'Other';
+
+  @override
+  String get searchingLocation => 'Searching for your location...';
+
+  @override
+  String get determiningLocationAccurate => 'Determining accurate location...';
+
+  @override
+  String get guest => 'Guest';
+
+  @override
+  String get locationServiceDisabled =>
+      'Location service is disabled, please enable GPS';
+
+  @override
+  String get locationPermissionDenied => 'Location permission denied';
+
+  @override
+  String get locationPermissionForeverDenied =>
+      'Location permission is permanently denied. Please enable it from phone settings.';
+
+  @override
+  String get locationUpdateFailed => 'Location update failed';
+
+  @override
+  String get defaultCountry => 'Yemen';
+
+  @override
+  String get seeker_role => 'Service Seeker';
+
+  @override
+  String get provider_role => 'Service Provider';
+
+  @override
+  String get no_phones_added => 'No phone numbers added';
+
+  @override
+  String get fetching_address => 'Fetching address...';
+
+  @override
+  String get location_not_set => 'Location not set';
+
+  @override
+  String get edit_profile_title => 'Edit Profile';
+
+  @override
+  String get bio_label => 'Bio';
+
+  @override
+  String get geo_location => 'Geographic Location';
+
+  @override
+  String get update_label => 'Update';
+
+  @override
+  String get enter_phone_number => 'Enter phone number';
+
+  @override
+  String get profile_updated_success => 'Profile updated successfully';
+
+  @override
+  String get save_changes => 'Save Changes';
+
+  @override
+  String get no_max_limit => 'No max limit';
+
+  @override
+  String share_service_message(Object price, Object provider, Object title) {
+    return 'Hello! Discover this amazing service: \"$title\" by $provider, for only $price SAR! \nDownload our app to book now.';
+  }
+
+  @override
+  String get closed => 'Closed';
+
+  @override
+  String get example_address_city => 'Riyadh, Al-Malqa';
+
+  @override
+  String get example_address_street =>
+      'Prince Muhammad bin Saad St, Building 45';
+
+  @override
+  String get example_reviewer_name => 'Sarah Al-Ali';
+
+  @override
+  String get example_review_time => '2 days ago';
+
+  @override
+  String get example_review_content =>
+      'Excellent service and the team arrived on time. They cleaned every corner of the house thoroughly. Highly recommend!';
+
+  @override
+  String get confirm_customize_order => 'Confirm and Customize Order';
+
+  @override
+  String get new_service_label => 'New';
+
+  @override
+  String get request_details_title => 'Request Details';
+
+  @override
+  String get receiver_name => 'Receiver Name';
+
+  @override
+  String get service_location_title => 'Service Location';
+
+  @override
+  String get click_to_pick_location => 'Click to pick your location on map';
+
+  @override
+  String get additional_services => 'Additional Services';
+
+  @override
+  String get additional_notes => 'Additional Notes';
+
+  @override
+  String get notes_hint => 'Write any details you want the provider to know...';
+
+  @override
+  String get final_total => 'Final Total';
+
+  @override
+  String get order_sent_success => 'Your order has been sent successfully! 🚀';
+
+  @override
+  String get order_sent_error => 'Failed to send order';
+
+  @override
+  String get confirm_and_book => 'Confirm and Book Service';
+
+  @override
+  String get loading_policy => 'Loading policy...';
+
+  @override
+  String get no_policy_available => 'No content available currently';
+
+  @override
+  String get last_update => 'Last Update: ';
 
   @override
   String get terms_of_service => 'Terms of Service';
 
   @override
-  String get read_terms_desc => 'Please read the app policy and terms and conditions carefully before proceeding.';
+  String get read_terms_desc =>
+      'Please read the app policy and terms and conditions carefully before proceeding.';
 
   @override
   String get terms_intro_title => '1. Introduction';
 
   @override
-  String get terms_intro_text => 'Welcome to Seeker. These terms are a binding agreement between you as a user and the app management. By using the app, you agree to comply with all mentioned terms.';
+  String get terms_intro_text =>
+      'Welcome to Seeker. These terms are a binding agreement between you as a user and the app management. By using the app, you agree to comply with all mentioned terms.';
 
   @override
   String get terms_quality_title => '2. Quality Standards';
 
   @override
-  String get terms_quality_text => 'The user is committed to maintaining the highest standards of quality and professionalism when dealing with the other party. You must arrive on time and perform the agreed service accurately.';
+  String get terms_quality_text =>
+      'The user is committed to maintaining the highest standards of quality and professionalism when dealing with the other party. You must arrive on time and perform the agreed service accurately.';
 
   @override
   String get terms_pricing_title => '3. Pricing and Payment';
 
   @override
-  String get terms_pricing_text => 'Prices are determined based on the type of service. It is forbidden to request additional amounts outside the application.';
+  String get terms_pricing_text =>
+      'Prices are determined based on the type of service. It is forbidden to request additional amounts outside the application.';
 
   @override
   String get terms_cancellation_title => '4. Cancellation and Refund';
 
   @override
-  String get terms_cancellation_text => 'The cancellation policy is subject to the terms shown in the app. Fees may be imposed for late cancellations.';
+  String get terms_cancellation_text =>
+      'The cancellation policy is subject to the terms shown in the app. Fees may be imposed for late cancellations.';
 
   @override
   String get agree_to_terms_prefix => 'I have read and agree to the ';
@@ -787,224 +1014,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get systemComplaints => 'System Complaints';
-
-  @override
-  String get addSystemComplaint => 'Add Complaint';
-
-  @override
-  String get pleaseSelectType => 'Please select complaint type';
-
-  @override
-  String get confirmSend => 'Confirm Send';
-
-  @override
-  String get confirmSendMsg => 'Are you sure you want to send this complaint?';
-
-  @override
-  String get complaintSentSuccess => 'Complaint sent successfully';
-
-  @override
-  String get complaintSentError => 'Failed to send complaint';
-
-  @override
-  String get sending => 'Sending...';
-
-  @override
-  String get complaintTitle => 'Complaint Title';
-
-  @override
-  String get complaintTitleHint => 'e.g., Login Problem';
-
-  @override
-  String get pleaseEnterTitle => 'Please enter complaint title';
-
-  @override
-  String get complaintType => 'Complaint Type';
-
-  @override
-  String get selectComplaintType => 'Select Complaint Type';
-
-  @override
-  String get complaintDetails => 'Complaint Details';
-
-  @override
-  String get complaintDetailsHint => 'Explain the problem in detail here...';
-
-  @override
-  String get pleaseEnterDetails => 'Please enter complaint details';
-
-  @override
-  String get typeBug => 'Bug';
-
-  @override
-  String get typePerformance => 'Performance';
-
-  @override
-  String get typePayment => 'Payment';
-
-  @override
-  String get typeAccount => 'Account';
-
-  @override
-  String get typeSuggestion => 'Suggestion';
-
-  @override
-  String get typeOther => 'Other';
-
-  @override
-  String get statusPending => 'Pending';
-
-  @override
-  String get statusInProgress => 'In Progress';
-
-  @override
-  String get statusResolved => 'Resolved';
-
-  @override
-  String get statusRejected => 'Rejected';
-
-  @override
-  String get statusClosed => 'Closed';
-
-  @override
-  String get noComplaints => 'No complaints currently';
-
-  @override
-  String get determiningLocationAccurate => 'Determining accurate location...';
-
-  @override
   String get customLocation => 'Custom Location';
 
   @override
-  String get searchingLocation => 'Searching for your location...';
-
-  @override
   String get activateAccount => 'Activate Account';
-
-  @override
-  String get guest => 'Guest';
-
-  @override
-  String get locationPermissionForeverDenied => 'Location permission is permanently denied. Please enable it from phone settings.';
-
-  @override
-  String get defaultCountry => 'Yemen';
-
-  @override
-  String get locationUpdateFailed => 'Location update failed';
-
-  @override
-  String get last_update => 'Last Update: ';
-
-  @override
-  String get seeker_role => 'Service Seeker';
-
-  @override
-  String get provider_role => 'Service Provider';
-
-  @override
-  String get no_phones_added => 'No phone numbers added';
-
-  @override
-  String get fetching_address => 'Fetching address...';
-
-  @override
-  String get location_not_set => 'Location not set';
-
-  @override
-  String get edit_profile_title => 'Edit Profile';
-
-  @override
-  String get bio_label => 'Bio / Description';
-
-  @override
-  String get geo_location => 'Geographic Location';
-
-  @override
-  String get update_label => 'Update';
-
-  @override
-  String get enter_phone_number => 'Enter phone number';
-
-  @override
-  String get profile_updated_success => 'Profile updated successfully';
-
-  @override
-  String get save_changes => 'Save Changes';
-
-  @override
-  String get no_max_limit => 'No Maximum Limit';
-
-  @override
-  String get closed => 'Closed';
-
-  @override
-  String get example_address_city => 'Riyadh, Al-Malqa District';
-
-  @override
-  String get example_address_street => 'Amir Mohammed bin Saad St, Bldg 45';
-
-  @override
-  String get example_reviewer_name => 'Sarah Al-Ali';
-
-  @override
-  String get example_review_time => '2 days ago';
-
-  @override
-  String get example_review_content => 'Excellent service! The team arrived on time and cleaned every corner perfectly. Highly recommend!';
-
-  @override
-  String share_service_message(Object title, Object provider, Object price) {
-    return 'Hello! Discover this great service: "$title" from $provider, for only $price SAR! \nDownload our app to book now.';
-  }
-
-  @override
-  String get confirm_customize_order => 'Confirm and Customize Order';
-
-  @override
-  String get new_service_label => 'New';
-
-  @override
-  String get request_details_title => 'Service Request Details';
-
-  @override
-  String get receiver_name => 'Receiver Name';
-
-  @override
-  String get service_location_title => 'Service Delivery Location';
-
-  @override
-  String get click_to_pick_location => 'Click to pick your location on the map';
-
-  @override
-  String get additional_services => 'Additional Services';
-
-  @override
-  String get additional_notes => 'Additional Notes';
-
-  @override
-  String get notes_hint => 'Write any details here you want the provider to know...';
-
-  @override
-  String get final_total => 'Final Total';
-
-  @override
-  String get order_sent_success => 'Your order has been sent successfully! 🚀';
-
-  @override
-  String get order_sent_error => 'Failed to send order';
-
-  @override
-  String get confirm_and_book => 'Confirm and Book Service';
-
-  @override
-  String get loading_policy => 'Loading policy...';
-
-  @override
-  String get no_policy_available => 'No content currently available';
-  
-  @override
-  String get points => 'Points';
-
 }

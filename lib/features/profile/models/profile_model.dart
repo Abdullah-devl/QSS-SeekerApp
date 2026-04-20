@@ -2,6 +2,7 @@
 import 'package:seeker/core/network/api_endpoints.dart';
 import 'phone_model.dart';
 import 'bank_model.dart';
+import 'work_model.dart';
 import 'dart:developer' as developer;
 
 /// 📂 اسم الملف: profile_model.dart
@@ -28,7 +29,7 @@ class ProfileModel {
   final String avatarUrl;
   final int completedJobs;
   final int yearsExperience;
-  final List<String> worksImages;
+  final List<WorkModel> previousWorks;
   final bool isAvailable;
 
   // 📞 بيانات التواصل الإضافية والحسابات البنكية من الباك إند
@@ -58,7 +59,7 @@ class ProfileModel {
     this.avatarUrl = '',
     this.completedJobs = 0,
     this.yearsExperience = 0,
-    this.worksImages = const [],
+    this.previousWorks = const [],
     this.isAvailable = true,
     this.phones = const [],
     this.banks = const [],
@@ -146,29 +147,41 @@ class ProfileModel {
       avatarUrl: findAvatar(),
       completedJobs: profileData['completed_jobs'] ?? 0,
       yearsExperience: profileData['years_experience'] ?? 0,
-      worksImages: (profileData['previous_works'] ?? profileData['works']) != null
-          ? (profileData['previous_works'] ?? profileData['works'] as List).map((work) {
-              if (work is String) return work;
-              if (work is Map && (work['image_url'] != null || work['image_path'] != null)) {
-                final url = (work['image_url'] ?? work['image_path']).toString();
-                return url.startsWith('http') ? url : '${ApiEndpoints.domain}$url';
-              }
-              return '';
-            }).where((url) => url != null && url.toString().isNotEmpty).toList().cast<String>()
-          : [],
+      previousWorks: () {
+        final List<WorkModel> works = [];
+        final dynamic rawWorks = profileData['previous_works'] ?? 
+                                 profileData['previousWorks'] ?? 
+                                 profileData['works'];
+        if (rawWorks is List) {
+          for (final work in rawWorks) {
+            if (work is Map) {
+              works.add(WorkModel.fromJson(Map<String, dynamic>.from(work)));
+            }
+          }
+        }
+        return works;
+      }(),
       isAvailable: profileData['is_available'] == 1 || profileData['is_available'] == true,
-      phones: (profileData['profile_phones'] ?? profileData['phones'] ?? json['phones']) != null
-          ? (profileData['profile_phones'] ?? profileData['phones'] ?? json['phones'] as List)
-              .map((p) => PhoneModel.fromJson(Map<String, dynamic>.from(p)))
-              .toList()
-              .cast<PhoneModel>()
-          : [],
-      banks: (userJson['banks'] ?? json['banks']) != null
-          ? (userJson['banks'] ?? json['banks'] as List)
-              .map((b) => BankModel.fromJson(Map<String, dynamic>.from(b)))
-              .toList()
-              .cast<BankModel>()
-          : [],
+      phones: () {
+        final List<PhoneModel> list = [];
+        final dynamic raw = profileData['profile_phones'] ?? profileData['phones'] ?? json['phones'];
+        if (raw is List) {
+          for (final p in raw) {
+            if (p is Map) list.add(PhoneModel.fromJson(Map<String, dynamic>.from(p)));
+          }
+        }
+        return list;
+      }(),
+      banks: () {
+        final List<BankModel> list = [];
+        final dynamic raw = userJson['banks'] ?? json['banks'];
+        if (raw is List) {
+          for (final b in raw) {
+            if (b is Map) list.add(BankModel.fromJson(Map<String, dynamic>.from(b)));
+          }
+        }
+        return list;
+      }(),
       latitude: lat,
       longitude: lng,
     );

@@ -683,7 +683,7 @@ abstract class AppLocalizations {
   /// No description provided for @unknownLocation.
   ///
   /// In en, this message translates to:
-  /// **'Unknown Location'**
+  /// **'Unknown location'**
   String get unknownLocation;
 
   /// No description provided for @unableToDetermineAddress.
@@ -1470,284 +1470,565 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Currently Unavailable'**
+  String get unavailable;
+
+  /// No description provided for @systemComplaints.
+  ///
+  /// In en, this message translates to:
+  /// **'System Complaints'**
+  String get systemComplaints;
+
+  /// No description provided for @addSystemComplaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Complaint'**
+  String get addSystemComplaint;
+
   /// No description provided for @sendSystemComplaint.
   ///
   /// In en, this message translates to:
   /// **'Send Complaint'**
   String get sendSystemComplaint;
 
-  /// No description provided for @terms_of_service.
-  String get terms_of_service;
-
-  /// No description provided for @read_terms_desc.
-  String get read_terms_desc;
-
-  /// No description provided for @terms_intro_title.
-  String get terms_intro_title;
-
-  /// No description provided for @terms_intro_text.
-  String get terms_intro_text;
-
-  /// No description provided for @terms_quality_title.
-  String get terms_quality_title;
-
-  /// No description provided for @terms_quality_text.
-  String get terms_quality_text;
-
-  /// No description provided for @terms_pricing_title.
-  String get terms_pricing_title;
-
-  /// No description provided for @terms_pricing_text.
-  String get terms_pricing_text;
-
-  /// No description provided for @terms_cancellation_title.
-  String get terms_cancellation_title;
-
-  /// No description provided for @terms_cancellation_text.
-  String get terms_cancellation_text;
-
-  /// No description provided for @agree_to_terms_prefix.
-  String get agree_to_terms_prefix;
-
-  /// No description provided for @and_label.
-  String get and_label;
-
-  /// No description provided for @agree_and_continue.
-  String get agree_and_continue;
-
-  /// No description provided for @activation_code_sent.
-  String activation_code_sent(Object email);
-
-  /// No description provided for @error_email_missing.
-  String get error_email_missing;
-
-  /// No description provided for @did_not_receive_code.
-  String get did_not_receive_code;
-
-  /// No description provided for @resend_code.
-  String get resend_code;
-
-  /// No description provided for @resend_code_timer.
-  String resend_code_timer(Object timer);
-
-  /// No description provided for @systemComplaints.
-  String get systemComplaints;
-
-  /// No description provided for @addSystemComplaint.
-  String get addSystemComplaint;
-
-  /// No description provided for @pleaseSelectType.
-  String get pleaseSelectType;
-
-  /// No description provided for @confirmSend.
-  String get confirmSend;
-
-  /// No description provided for @confirmSendMsg.
-  String get confirmSendMsg;
-
-  /// No description provided for @complaintSentSuccess.
-  String get complaintSentSuccess;
-
-  /// No description provided for @complaintSentError.
-  String get complaintSentError;
-
-  /// No description provided for @sending.
-  String get sending;
-
   /// No description provided for @complaintTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint Title'**
   String get complaintTitle;
 
   /// No description provided for @complaintTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Login Problem'**
   String get complaintTitleHint;
 
-  /// No description provided for @pleaseEnterTitle.
-  String get pleaseEnterTitle;
-
   /// No description provided for @complaintType.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint Type'**
   String get complaintType;
 
   /// No description provided for @selectComplaintType.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Complaint Type'**
   String get selectComplaintType;
 
   /// No description provided for @complaintDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint Details'**
   String get complaintDetails;
 
   /// No description provided for @complaintDetailsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain the problem in detail here...'**
   String get complaintDetailsHint;
 
+  /// No description provided for @sending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending...'**
+  String get sending;
+
+  /// No description provided for @confirmSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Send'**
+  String get confirmSend;
+
+  /// No description provided for @confirmSendMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to send this complaint?'**
+  String get confirmSendMsg;
+
+  /// No description provided for @complaintSentSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint sent successfully'**
+  String get complaintSentSuccess;
+
+  /// No description provided for @complaintSentError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send complaint'**
+  String get complaintSentError;
+
+  /// No description provided for @pleaseEnterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter complaint title'**
+  String get pleaseEnterTitle;
+
   /// No description provided for @pleaseEnterDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter complaint details'**
   String get pleaseEnterDetails;
 
-  /// No description provided for @typeBug.
-  String get typeBug;
+  /// No description provided for @pleaseSelectType.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select complaint type'**
+  String get pleaseSelectType;
 
-  /// No description provided for @typePerformance.
-  String get typePerformance;
-
-  /// No description provided for @typePayment.
-  String get typePayment;
-
-  /// No description provided for @typeAccount.
-  String get typeAccount;
-
-  /// No description provided for @typeSuggestion.
-  String get typeSuggestion;
-
-  /// No description provided for @typeOther.
-  String get typeOther;
+  /// No description provided for @noComplaints.
+  ///
+  /// In en, this message translates to:
+  /// **'No complaints currently'**
+  String get noComplaints;
 
   /// No description provided for @statusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
   String get statusPending;
 
   /// No description provided for @statusInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
   String get statusInProgress;
 
   /// No description provided for @statusResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
   String get statusResolved;
 
-  /// No description provided for @statusRejected.
-  String get statusRejected;
-
   /// No description provided for @statusClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
   String get statusClosed;
 
-  /// No description provided for @noComplaints.
-  String get noComplaints;
+  /// No description provided for @statusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get statusRejected;
 
-  /// No description provided for @determiningLocationAccurate.
-  String get determiningLocationAccurate;
+  /// No description provided for @typeBug.
+  ///
+  /// In en, this message translates to:
+  /// **'Bug'**
+  String get typeBug;
 
-  /// No description provided for @customLocation.
-  String get customLocation;
+  /// No description provided for @typePerformance.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance'**
+  String get typePerformance;
+
+  /// No description provided for @typePayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get typePayment;
+
+  /// No description provided for @typeAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get typeAccount;
+
+  /// No description provided for @typeSuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestion'**
+  String get typeSuggestion;
+
+  /// No description provided for @typeOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get typeOther;
 
   /// No description provided for @searchingLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching for your location...'**
   String get searchingLocation;
 
-  /// No description provided for @activateAccount.
-  String get activateAccount;
+  /// No description provided for @determiningLocationAccurate.
+  ///
+  /// In en, this message translates to:
+  /// **'Determining accurate location...'**
+  String get determiningLocationAccurate;
 
   /// No description provided for @guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest'**
   String get guest;
 
+  /// No description provided for @locationServiceDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Location service is disabled, please enable GPS'**
+  String get locationServiceDisabled;
+
+  /// No description provided for @locationPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission denied'**
+  String get locationPermissionDenied;
+
   /// No description provided for @locationPermissionForeverDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission is permanently denied. Please enable it from phone settings.'**
   String get locationPermissionForeverDenied;
 
-  /// No description provided for @defaultCountry.
-  String get defaultCountry;
-
   /// No description provided for @locationUpdateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Location update failed'**
   String get locationUpdateFailed;
 
-  /// No description provided for @last_update.
-  String get last_update;
+  /// No description provided for @defaultCountry.
+  ///
+  /// In en, this message translates to:
+  /// **'Yemen'**
+  String get defaultCountry;
 
   /// No description provided for @seeker_role.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Seeker'**
   String get seeker_role;
 
   /// No description provided for @provider_role.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Provider'**
   String get provider_role;
 
   /// No description provided for @no_phones_added.
+  ///
+  /// In en, this message translates to:
+  /// **'No phone numbers added'**
   String get no_phones_added;
 
   /// No description provided for @fetching_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Fetching address...'**
   String get fetching_address;
 
   /// No description provided for @location_not_set.
+  ///
+  /// In en, this message translates to:
+  /// **'Location not set'**
   String get location_not_set;
 
   /// No description provided for @edit_profile_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
   String get edit_profile_title;
 
   /// No description provided for @bio_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Bio'**
   String get bio_label;
 
   /// No description provided for @geo_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Geographic Location'**
   String get geo_location;
 
   /// No description provided for @update_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
   String get update_label;
 
   /// No description provided for @enter_phone_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter phone number'**
   String get enter_phone_number;
 
   /// No description provided for @profile_updated_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully'**
   String get profile_updated_success;
 
   /// No description provided for @save_changes.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
   String get save_changes;
 
   /// No description provided for @no_max_limit.
+  ///
+  /// In en, this message translates to:
+  /// **'No max limit'**
   String get no_max_limit;
 
+  /// No description provided for @share_service_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello! Discover this amazing service: \"{title}\" by {provider}, for only {price} SAR! \nDownload our app to book now.'**
+  String share_service_message(Object price, Object provider, Object title);
+
   /// No description provided for @closed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
   String get closed;
 
   /// No description provided for @example_address_city.
+  ///
+  /// In en, this message translates to:
+  /// **'Riyadh, Al-Malqa'**
   String get example_address_city;
 
   /// No description provided for @example_address_street.
+  ///
+  /// In en, this message translates to:
+  /// **'Prince Muhammad bin Saad St, Building 45'**
   String get example_address_street;
 
   /// No description provided for @example_reviewer_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Sarah Al-Ali'**
   String get example_reviewer_name;
 
   /// No description provided for @example_review_time.
+  ///
+  /// In en, this message translates to:
+  /// **'2 days ago'**
   String get example_review_time;
 
   /// No description provided for @example_review_content.
+  ///
+  /// In en, this message translates to:
+  /// **'Excellent service and the team arrived on time. They cleaned every corner of the house thoroughly. Highly recommend!'**
   String get example_review_content;
 
-  /// No description provided for @share_service_message.
-  String share_service_message(Object title, Object provider, Object price);
-
   /// No description provided for @confirm_customize_order.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm and Customize Order'**
   String get confirm_customize_order;
 
   /// No description provided for @new_service_label.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
   String get new_service_label;
 
   /// No description provided for @request_details_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Details'**
   String get request_details_title;
 
   /// No description provided for @receiver_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Receiver Name'**
   String get receiver_name;
 
   /// No description provided for @service_location_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Location'**
   String get service_location_title;
 
   /// No description provided for @click_to_pick_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Click to pick your location on map'**
   String get click_to_pick_location;
 
   /// No description provided for @additional_services.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Services'**
   String get additional_services;
 
   /// No description provided for @additional_notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Notes'**
   String get additional_notes;
 
   /// No description provided for @notes_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write any details you want the provider to know...'**
   String get notes_hint;
 
   /// No description provided for @final_total.
+  ///
+  /// In en, this message translates to:
+  /// **'Final Total'**
   String get final_total;
 
   /// No description provided for @order_sent_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Your order has been sent successfully! 🚀'**
   String get order_sent_success;
 
   /// No description provided for @order_sent_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send order'**
   String get order_sent_error;
 
   /// No description provided for @confirm_and_book.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm and Book Service'**
   String get confirm_and_book;
 
   /// No description provided for @loading_policy.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading policy...'**
   String get loading_policy;
 
   /// No description provided for @no_policy_available.
+  ///
+  /// In en, this message translates to:
+  /// **'No content available currently'**
   String get no_policy_available;
 
-  String get points;
+  /// No description provided for @last_update.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Update: '**
+  String get last_update;
 
+  /// No description provided for @terms_of_service.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get terms_of_service;
+
+  /// No description provided for @read_terms_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Please read the app policy and terms and conditions carefully before proceeding.'**
+  String get read_terms_desc;
+
+  /// No description provided for @terms_intro_title.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Introduction'**
+  String get terms_intro_title;
+
+  /// No description provided for @terms_intro_text.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Seeker. These terms are a binding agreement between you as a user and the app management. By using the app, you agree to comply with all mentioned terms.'**
+  String get terms_intro_text;
+
+  /// No description provided for @terms_quality_title.
+  ///
+  /// In en, this message translates to:
+  /// **'2. Quality Standards'**
+  String get terms_quality_title;
+
+  /// No description provided for @terms_quality_text.
+  ///
+  /// In en, this message translates to:
+  /// **'The user is committed to maintaining the highest standards of quality and professionalism when dealing with the other party. You must arrive on time and perform the agreed service accurately.'**
+  String get terms_quality_text;
+
+  /// No description provided for @terms_pricing_title.
+  ///
+  /// In en, this message translates to:
+  /// **'3. Pricing and Payment'**
+  String get terms_pricing_title;
+
+  /// No description provided for @terms_pricing_text.
+  ///
+  /// In en, this message translates to:
+  /// **'Prices are determined based on the type of service. It is forbidden to request additional amounts outside the application.'**
+  String get terms_pricing_text;
+
+  /// No description provided for @terms_cancellation_title.
+  ///
+  /// In en, this message translates to:
+  /// **'4. Cancellation and Refund'**
+  String get terms_cancellation_title;
+
+  /// No description provided for @terms_cancellation_text.
+  ///
+  /// In en, this message translates to:
+  /// **'The cancellation policy is subject to the terms shown in the app. Fees may be imposed for late cancellations.'**
+  String get terms_cancellation_text;
+
+  /// No description provided for @agree_to_terms_prefix.
+  ///
+  /// In en, this message translates to:
+  /// **'I have read and agree to the '**
+  String get agree_to_terms_prefix;
+
+  /// No description provided for @and_label.
+  ///
+  /// In en, this message translates to:
+  /// **' and '**
+  String get and_label;
+
+  /// No description provided for @agree_and_continue.
+  ///
+  /// In en, this message translates to:
+  /// **'Agree and Continue'**
+  String get agree_and_continue;
+
+  /// No description provided for @activation_code_sent.
+  ///
+  /// In en, this message translates to:
+  /// **'The activation code has been sent to the email\n{email}'**
+  String activation_code_sent(Object email);
+
+  /// No description provided for @error_email_missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: Email is missing'**
+  String get error_email_missing;
+
+  /// No description provided for @did_not_receive_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t receive the code? '**
+  String get did_not_receive_code;
+
+  /// No description provided for @resend_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend Code'**
+  String get resend_code;
+
+  /// No description provided for @resend_code_timer.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend Code ({timer}s)'**
+  String resend_code_timer(Object timer);
+
+  /// No description provided for @customLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Location'**
+  String get customLocation;
+
+  /// No description provided for @activateAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate Account'**
+  String get activateAccount;
 }
 
 class _AppLocalizationsDelegate

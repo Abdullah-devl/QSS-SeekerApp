@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:seeker/core/routes/app_routes.dart';
+
 import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/l10n/app_localizations.dart';
 

@@ -403,16 +403,32 @@ class ConfirmOrderView extends StatelessWidget {
             height: 60,
             child: ElevatedButton(
               onPressed: vm.isLoading ? null : () async {
+                // 1️⃣ إظهار تنبيه تأكيد قبل الإرسال
+                final confirmed = await QSAlerts.showConfirm(
+                  context,
+                  title: context.tr('confirm_booking_title'),
+                  message: context.tr('confirm_booking_message'),
+                );
+
+                if (!confirmed) return;
+
+                // 2️⃣ تنفيذ عملية الحجز
                 final success = await vm.confirmOrder();
+                
                 if (success) {
-                  QSAlerts.showSuccess(context, context.tr('order_sent_success'));
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    AppRoutes.home,
-                    (route) => false,
-                  );
+                  // 3️⃣ الانتظار حتى يرى المستخدم رسالة النجاح ويضغط موافق
+                  await QSAlerts.showSuccess(context, context.tr('order_sent_success'));
+                  
+                  if (context.mounted) {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      AppRoutes.home,
+                      (route) => false,
+                    );
+                  }
                 } else {
-                  QSAlerts.showError(context, vm.errorMessage ?? context.tr('order_sent_error'));
+                  // إظهار رسالة الخطأ والانتظار
+                  await QSAlerts.showError(context, vm.errorMessage ?? context.tr('order_sent_error'));
                 }
               },
               style: ElevatedButton.styleFrom(

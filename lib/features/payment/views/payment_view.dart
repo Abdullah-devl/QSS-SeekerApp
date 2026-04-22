@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
-import 'package:seeker/core/theme/qs_colors.dart';
+// import 'package:seeker/core/theme/qs_colors.dart';
 import 'package:seeker/core/utils/qs_alerts.dart'; // ✅ تمت الإضافة
 import '../../../core/localization/app_localizations.dart';
 import '../../orders/Models/order_model.dart';
@@ -251,30 +251,47 @@ class _PaymentViewState extends State<PaymentView> {
 
   Widget _buildPointsPaymentForm(BuildContext context, PaymentViewModel viewModel) {
     final colors = context.qsColors;
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colors.primary.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          Text(
-            context.tr('confirm_points_payment_msg'),
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 14, color: colors.textSub),
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: colors.primary.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(16),
+          ),    
+          child: Row(
+            children: [
+              Icon(Icons.info_outline, color: colors.primary, size: 20),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  context.tr('confirm_points_payment_msg'),
+                  style: TextStyle(fontSize: 13, color: colors.textSub),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          Text(
-            '${widget.order.remainingAmount.toInt()} ${context.tr('points')}',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w900,
-              color: colors.primary,
+        ),
+        const SizedBox(height: 20),
+        TextField(
+          controller: _amountController,
+          keyboardType: TextInputType.number,
+          style: TextStyle(color: colors.text, fontWeight: FontWeight.bold),
+          decoration: InputDecoration(
+            labelText: context.tr('points_to_pay'),
+            hintText: '${context.tr('max_limit')}: ${widget.order.remainingAmount.toInt()}',
+            labelStyle: TextStyle(color: colors.textSub),
+            filled: true,
+            fillColor: Theme.of(context).cardColor,
+            prefixIcon: Icon(Icons.stars_rounded, color: colors.warning),
+            suffixText: context.tr('points'),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: colors.textSub.withValues(alpha: 0.2)),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -346,11 +363,33 @@ class _PaymentViewState extends State<PaymentView> {
   }
 
   void _handlePayment(BuildContext context, PaymentViewModel viewModel) async {
-    final colors = context.qsColors;
+    // final colors = context.qsColors;
+    
+    // 1. استخراج المبلغ المدفوع (سواء نقاط أو سند)
+    final amount = double.tryParse(_amountController.text);
+    if (amount == null || amount <= 0) {
+      QSAlerts.showWarning(context, context.tr('enter_correct_amount'));
+      return;
+    }
+
     if (viewModel.selectedMethod == PaymentMethod.points) {
-      // التحقق من الرصيد
-      if (viewModel.balance.bonusPoints < widget.order.remainingAmount) {
+      // --- التحقق من النقاط ---
+      
+      // لا يقل عن 1
+      if (amount < 1) {
+        QSAlerts.showWarning(context, context.tr('min_points_error'));
+        return;
+      }
+
+      // لا يتجاوز الرصيد
+      if (amount > viewModel.balance.bonusPoints) {
         QSAlerts.showError(context, context.tr('no_points_balance'));
+        return;
+      }
+
+      // لا يتجاوز المبلغ المتبقي
+      if (amount > widget.order.remainingAmount) {
+        QSAlerts.showWarning(context, context.tr('exceed_order_amount_error'));
         return;
       }
 
@@ -358,32 +397,27 @@ class _PaymentViewState extends State<PaymentView> {
       final bool confirm = await QSAlerts.showConfirm(
         context,
         title: context.tr('confirm_points_payment'),
-        message: context.tr('confirm_points_payment_msg'),
+        message: '${context.tr('confirm_points_payment_msg')} ($amount ${context.tr('points')})',
       );
 
       if (confirm) {
-        final success = await viewModel.payByPoints(widget.order.id, widget.order.remainingAmount);
+        final success = await viewModel.payByPoints(widget.order.id, amount);
         if (success) {
-          QSAlerts.showSuccess(context, context.tr('points_payment_success'));
-          Navigator.pop(context);
+          await QSAlerts.showSuccess(context, context.tr('points_payment_success'));
+          if (context.mounted) Navigator.pop(context);
         } else {
-          QSAlerts.showError(context, viewModel.errorMessage ?? context.tr('points_payment_error'));
+          await QSAlerts.showError(context, viewModel.errorMessage ?? context.tr('points_payment_error'));
         }
       }
     } else {
-      // سداد بسند
-      final amount = double.tryParse(_amountController.text);
-      if (amount == null || amount <= 0) {
-        QSAlerts.showWarning(context, context.tr('enter_correct_amount'));
-        return;
-      }
-
+      // --- سداد بسند ---
+      
       final success = await viewModel.payByBond(widget.order.id, amount);
       if (success) {
-        QSAlerts.showSuccess(context, context.tr('bond_payment_success'));
-        Navigator.pop(context);
+        await QSAlerts.showSuccess(context, context.tr('bond_payment_success'));
+        if (context.mounted) Navigator.pop(context);
       } else {
-        QSAlerts.showError(context, viewModel.errorMessage ?? context.tr('bond_payment_error'));
+        await QSAlerts.showError(context, viewModel.errorMessage ?? context.tr('bond_payment_error'));
       }
     }
   }

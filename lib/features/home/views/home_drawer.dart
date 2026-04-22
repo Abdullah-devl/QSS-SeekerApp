@@ -10,7 +10,7 @@ import 'package:seeker/features/provider/theme_provider.dart';
 import 'package:seeker/features/auth/repositories/auth_repository.dart';
 // import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:seeker/l10n/app_localizations.dart';
-import 'package:seeker/core/localization/app_localizations.dart';
+
 
 /// 📂 اسم الملف: home_drawer.dart
 /// 📝 الوصف: القائمة الجانبية (Drawer).

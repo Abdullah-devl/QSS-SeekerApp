@@ -7,6 +7,7 @@ import '../../../core/theme/qs_color_extension.dart';
 import '../ViewModels/orders_viewmodel.dart';
 import '../Models/order_model.dart';
 import 'order_detail_view.dart';
+import '../../../core/utils/qs_alerts.dart';
 
 class OrdersView extends StatefulWidget {
   const OrdersView({super.key});
@@ -424,7 +425,42 @@ class _OrderCardWidget extends StatelessWidget {
                               borderRadius: BorderRadius.circular(16),
                             ),
                           ),
-                          onPressed: () {},
+                          onPressed: () async {
+                            final viewModel = context.read<OrdersViewModel>();
+                            
+                            // 1️⃣ إظهار تنبيه تأكيد قبل الإلغاء
+                            final confirmed = await QSAlerts.showConfirm(
+                              context,
+                              title: context.tr('confirm_cancel_title'),
+                              message: context.tr('confirm_cancel_message'),
+                            );
+
+                            if (!confirmed) return;
+
+                            // 2️⃣ تنفيذ عملية الإلغاء
+                            final success = await viewModel.updateStatus(
+                              order.id,
+                              'cancelled',
+                            );
+
+                            if (success) {
+                              // 3️⃣ الانتظار حتى يرى المستخدم رسالة النجاح ويضغط موافق
+                              if (context.mounted) {
+                                await QSAlerts.showSuccess(
+                                  context,
+                                  context.tr('order_cancelled_success'),
+                                );
+                              }
+                            } else {
+                              // إظهار رسالة الخطأ والانتظار
+                              if (context.mounted) {
+                                await QSAlerts.showError(
+                                  context, 
+                                  viewModel.errorMessage ?? context.tr('order_cancelled_error'),
+                                );
+                              }
+                            }
+                          },
                           child: Text(
                             context.tr('cancel_order'),
                             style: const TextStyle(

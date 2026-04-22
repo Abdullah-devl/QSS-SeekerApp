@@ -9,6 +9,7 @@ import '../models/category_model.dart';
 import '../services/models/service_model.dart';
 import '../repositories/home_repository.dart';
 import '../viewmodels/category_details_view_model.dart';
+import 'package:seeker/core/routes/app_routes.dart'; // ✅ إضافة الاستيراد المفقود
 
 /// 📂 اسم الملف: category_details_view.dart
 /// 📝 الوصف: صفحة تفاصيل التصنيف بالتصميم الأفقي الأنيق ومتوافقة مع الثيم الخاص (qsColors).
@@ -68,44 +69,49 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
 
           final data = vm.data;
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 1️⃣ التصنيفات الفرعية (Sub Categories)
-                if (data.subCategories.isNotEmpty) ...[
-                  _buildSectionTitle('التصنيفات الفرعية', colors),
-                  const SizedBox(height: 12),
-                  _buildSubCategoriesList(data.subCategories, colors),
-                  const SizedBox(height: 24),
-                ],
+          return RefreshIndicator(
+            onRefresh: () => vm.fetchCategoryDetails(widget.category.id),
+            color: colors.primary,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 1️⃣ التصنيفات الفرعية (Sub Categories)
+                  if (data.subCategories.isNotEmpty) ...[
+                    _buildSectionTitle('التصنيفات الفرعية', colors),
+                    const SizedBox(height: 12),
+                    _buildSubCategoriesList(data.subCategories, colors),
+                    const SizedBox(height: 24),
+                  ],
 
-                // 2️⃣ الموصى بهم (Recommended Providers)
-                if (data.recommendedProviders.isNotEmpty) ...[
-                  _buildSectionTitle('الموصى بهم', colors),
-                  const SizedBox(height: 12),
-                  _buildProvidersList(data.recommendedProviders, colors),
-                  const SizedBox(height: 24),
-                ],
+                  // 2️⃣ الموصى بهم (Recommended Providers)
+                  if (data.recommendedProviders.isNotEmpty) ...[
+                    _buildSectionTitle('الموصى بهم', colors),
+                    const SizedBox(height: 12),
+                    _buildProvidersList(data.recommendedProviders, colors),
+                    const SizedBox(height: 24),
+                  ],
 
-                // 3️⃣ الخدمات (Services) بتصميم screen.png المطابق
-                if (data.services.isNotEmpty) ...[
-                  _buildSectionTitle('الخدمات المتاحة', colors),
-                  const SizedBox(height: 12),
-                  _buildServicesList(data.services, colors),
-                ] else ...[
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 40),
-                      child: Text(
-                        'لا توجد بيانات متاحة لهذا التصنيف حالياً',
-                        style: TextStyle(color: colors.textSub),
+                  // 3️⃣ الخدمات (Services) بتصميم screen.png المطابق
+                  if (data.services.isNotEmpty) ...[
+                    _buildSectionTitle('الخدمات المتاحة', colors),
+                    const SizedBox(height: 12),
+                    _buildServicesList(data.services, colors),
+                  ] else ...[
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 40),
+                        child: Text(
+                          'لا توجد بيانات متاحة لهذا التصنيف حالياً',
+                          style: TextStyle(color: colors.textSub),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ],
-              ],
+              ),
             ),
           );
         },
@@ -139,35 +145,45 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
         separatorBuilder: (_, __) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
           final cat = categories[index];
-          return Container(
-            width: 80,
-            decoration: BoxDecoration(
-              color: colors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: colors.primary.withValues(alpha: 0.2)),
-            ),
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                cat.iconPath.isNotEmpty
-                    ? (cat.iconPath.startsWith('http') 
-                        ? Image.network(cat.iconPath, width: 30, height: 30)
-                        : Image.asset(cat.iconPath, width: 30, height: 30))
-                    : Icon(Icons.category, color: colors.primary, size: 30),
-                const SizedBox(height: 6),
-                Text(
-                  cat.name,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: colors.text,
+          return InkWell(
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                AppRoutes.categoryDetails,
+                arguments: cat,
+              );
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              width: 80,
+              decoration: BoxDecoration(
+                color: colors.primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: colors.primary.withValues(alpha: 0.2)),
+              ),
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  cat.iconPath.isNotEmpty
+                      ? (cat.iconPath.startsWith('http') 
+                          ? Image.network(cat.iconPath, width: 30, height: 30)
+                          : Image.asset(cat.iconPath, width: 30, height: 30))
+                      : Icon(Icons.category, color: colors.primary, size: 30),
+                  const SizedBox(height: 6),
+                  Text(
+                    cat.name,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: colors.text,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

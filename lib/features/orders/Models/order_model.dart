@@ -17,7 +17,9 @@ class OrderSubService {
   });
 
   factory OrderSubService.fromJson(Map<String, dynamic> json) {
-    final pivot = json['pivot'] ?? {};
+    final Map<String, dynamic> pivot = json['pivot'] != null 
+        ? Map<String, dynamic>.from(json['pivot']) 
+        : {};
     return OrderSubService(
       name: json['name'] ?? 'خدمة فرعية',
       price: double.tryParse(json['price']?.toString() ?? '0') ?? 0.0,
@@ -159,7 +161,7 @@ class OrderModel {
       subServices =
           allServices
               .where((s) => s['id'] != mainServiceJson['id'])
-              .map((e) => OrderSubService.fromJson(e))
+              .map((e) => OrderSubService.fromJson(Map<String, dynamic>.from(e)))
               .toList();
     } else {
       // 🔄 Fallback للنظام القديم 'main_service' إذا لم تتوفر مصفوفة services
@@ -179,11 +181,11 @@ class OrderModel {
 
     // استخراج السندات
     final List rawBonds = json['bonds'] ?? json['receipts'] ?? [];
-    List<OrderBond> bonds = rawBonds.map((e) => OrderBond.fromJson(e)).toList();
+    List<OrderBond> bonds = rawBonds.map((e) => OrderBond.fromJson(Map<String, dynamic>.from(e))).toList();
 
     // استخراج الحسابات البنكية للمزود
     final List rawBanks = providerData['banks'] ?? providerData['bank_accounts'] ?? [];
-    List<BankModel> providerBanks = rawBanks.map((e) => BankModel.fromJson(e)).toList();
+    List<BankModel> providerBanks = rawBanks.map((e) => BankModel.fromJson(Map<String, dynamic>.from(e))).toList();
 
     if (providerBanks.isEmpty && providerData.isNotEmpty) {
       providerBanks = BankModel.getMockBanks();

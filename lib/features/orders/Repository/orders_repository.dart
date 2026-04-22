@@ -1,5 +1,6 @@
 // مسار الملف: lib/features/orders/repositories/orders_repository.dart
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:seeker/core/errors/api_error_handler.dart';
@@ -42,15 +43,26 @@ class OrdersRepository {
 
       // 🕵️ تشخيص البيانات القادمة من السيرفر
       debugPrint('🔍 [STORAGE] Raw Data from Server: $data');
+      List responseList = []; // تهيئة القائمة بقيمة فارغة افتراضياً
 
-      List responseList;
-      if (data is Map && data.containsKey('data')) {
-        responseList = data['data'] is List ? data['data'] : [];
+      if (data is Map<String, dynamic>) {
+        var rawData = data['requests'] ?? data['data'];
+        if (rawData is List) {
+          responseList = rawData;
+        }
       } else if (data is List) {
         responseList = data;
-      } else {
-        responseList = [];
       }
+      // List responseList;
+      // if (data is Map) {
+      //   // السيرفر قد يرسل البيانات تحت مفتاح 'requests' أو 'data'
+      //   responseList = data['requests'] ?? data['data'] ?? [];
+      //   if (responseList is! List) responseList = [];
+      // } else if (data is List) {
+      //   responseList = data;
+      // } else {
+      //   responseList = [];
+      // }
 
       // 2. 🚀 حفظ البيانات (الكاش) في هايف فور وصولها بنجاح
       var box = await Hive.openBox(_boxName);
@@ -64,7 +76,15 @@ class OrdersRepository {
         return OrderModel.fromJson(orderMap);
       }).toList();
     } catch (e) {
-      // 3. 🚀 في حال فشل السيرفر (لا يوجد إنترنت أو السيرفر متوقف)، نقرأ من هايف
+      // 3. 🚀 التحقق من نوع الخطأ: إذا كان الخطأ Unauthorized (401)، لا نمسح الكاش بل نعيد رمي الخطأ
+      if (e is DioException && e.response?.statusCode == 401) {
+        debugPrint(
+          '⚠️ [AUTH] Unauthorized detected in Repository. Skipping Hive fallback.',
+        );
+        throw ApiErrorHandler.handle(e);
+      }
+
+      // 4. 🚀 في حال فشل السيرفر (لا يوجد إنترنت أو السيرفر متوقف)، نقرأ من هايف
       try {
         var box = await Hive.openBox(_boxName);
         final cachedData = box.get('cached_orders');
@@ -128,11 +148,7 @@ class OrdersRepository {
     try {
       final response = await _apiService.post(
         ApiEndpoints.reviews,
-        data: {
-          'request_id': requestId,
-          'rating': rating,
-          'comment': comment,
-        },
+        data: {'request_id': requestId, 'rating': rating, 'comment': comment},
       );
       ApiErrorHandler.handleResponse(response);
     } catch (e) {

@@ -9,7 +9,7 @@ import 'package:seeker/features/settings/viewmodels/settings_view_model.dart';
 import 'package:seeker/features/home/viewmodels/home_view_model.dart'; // ✅ نحتاج HomeViewModel لمعرفة الدور
 // import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:seeker/l10n/app_localizations.dart';
-import 'package:seeker/core/localization/app_localizations.dart';
+
 import 'package:seeker/features/profile/viewmodels/profile_view_model.dart'; // ✅ تمت الإضافة
 
 /// 📂 اسم الملف: settings_view.dart

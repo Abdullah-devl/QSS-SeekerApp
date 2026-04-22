@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/features/favorites/viewmodels/favorite_view_model.dart';
-import 'package:seeker/features/home/services/models/service_model.dart';
+
 import 'package:seeker/core/widgets/service_card.dart';
 import 'package:seeker/features/home/services/viewmodels/service_details_view_model.dart';
 import 'package:seeker/features/home/services/view/service_details_view.dart';
@@ -130,7 +130,7 @@ class FavoriteView extends StatelessWidget {
         itemBuilder: (context, index) {
           final category = vm.filterCategories[index];
           final isSelected = vm.selectedCategoryId == category.id;
-          final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+
 
           // تحويل المسار أو الاسم إلى أيقونة مناسبة
           IconData getIcon(String? iconPath, String name) {

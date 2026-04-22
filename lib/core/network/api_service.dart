@@ -96,9 +96,11 @@ class ApiService {
           // ⚠️ التحقق مما إذا كان الخطأ بسبب انتهاء الصلاحية (401 Unauthorized).
           if (e.response?.statusCode == 401) {
             developer.log(
-              '⚠️ Unauthorized! Token might be expired.',
+              '⚠️ Unauthorized! Token might be expired. Clearing user data...',
               name: 'ApiService',
             );
+            // 🧹 مسح بيانات المستخدم والتوكن فوراً
+            _tokenStorage.clearUserData();
           }
           return handler.next(e); // ⚠️ تمرير الخطأ ليتم معالجته في المكان المناسب
         },

@@ -8,8 +8,9 @@ import 'package:seeker/features/orders/ViewModels/orders_viewmodel.dart';
 import 'package:seeker/core/network/api_endpoints.dart';
 import 'package:seeker/features/payment/views/payment_view.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
-import 'package:seeker/core/theme/qs_colors.dart';
+
 import 'package:seeker/core/utils/qs_alerts.dart'; // ✅ تمت الإضافة
+import 'bond_gallery_view.dart'; // ✅ تمت الإضافة
 
 class OrderDetailView extends StatefulWidget {
   final OrderModel order;
@@ -185,47 +186,63 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                 BoxShadow(color: colors.text.withOpacity(0.05), blurRadius: 10),
               ],
             ),
-            child: Column(
-              children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(16),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BondGalleryView(
+                      bonds: order.bonds,
+                      initialPage: index,
                     ),
-                    child: bond.imagePath.isNotEmpty
-                        ? Image.network(
-                            bond.imagePath,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                          )
-                        : const Icon(Icons.receipt_long, color: Colors.grey),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: Column(
-                    children: [
-                      Text(
-                        bond.bondNumber,
-                        style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                );
+              },
+              child: Column(
+                children: [
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(16),
                       ),
-                      Text(
-                        '${bond.amount.toInt()} ${context.tr('currency_sar')}',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w900,
-                          color: colors.primary,
-                        ),
+                      child: Hero(
+                        tag: 'bond_${bond.id}',
+                        child: bond.imagePath.isNotEmpty
+                            ? Image.network(
+                                bond.imagePath,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                              )
+                            : const Icon(Icons.receipt_long, color: Colors.grey),
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Column(
+                      children: [
+                        Text(
+                          bond.bondNumber,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          '${bond.amount.toInt()} ${context.tr('currency_sar')}',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w900,
+                            color: colors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },
@@ -569,66 +586,6 @@ class _OrderDetailViewState extends State<OrderDetailView> {
     );
   }
 
-  Widget _buildSendButton(
-    BuildContext context,
-    OrdersViewModel viewModel,
-    OrderModel order,
-  ) {
-    final colors = context.qsColors;
-    // 🚦 التحقق من الحالة: لا يمكن إضافة مبلغ إذا كان الطلب لا يزال "في الانتظار"
-    final bool canPay = currentStatusIndex(order.status) > 0;
-
-    return ElevatedButton.icon(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: canPay
-            ? colors.primary
-            : colors.textSub.withOpacity(0.3),
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        elevation: viewModel.isLoading ? 0 : 0,
-      ),
-      onPressed: (viewModel.isLoading || !canPay)
-          ? null
-          : () async {
-              final amount = double.tryParse(_amountController.text);
-              if (amount == null || amount <= 0) {
-                QSAlerts.showWarning(
-                  context,
-                  context.tr('enter_correct_amount'),
-                );
-                return;
-              }
-              debugPrint(
-                '🎯 [VIEW] User clicked Add Amount for Order ID: ${order.id}',
-              );
-              final success = await viewModel.addPaidAmount(order.id, amount);
-              if (success) {
-                _amountController.clear();
-                QSAlerts.showSuccess(
-                  context,
-                  context.tr('amount_updated_success'),
-                );
-              }
-            },
-      icon: viewModel.isLoading
-          ? const SizedBox(
-              width: 18,
-              height: 18,
-              child: CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 2,
-              ),
-            )
-          : Icon(canPay ? Icons.send_rounded : Icons.lock_outline, size: 20),
-      label: Text(
-        viewModel.isLoading
-            ? context.tr('loading')
-            : (canPay ? context.tr('send_amount') : context.tr('accept_first')),
-        style: const TextStyle(fontWeight: FontWeight.bold),
-      ),
-    );
-  }
 
   Widget _buildUnifiedRequestCard(BuildContext context, OrderModel order) {
     final colors = context.qsColors;
@@ -1266,16 +1223,37 @@ class _OrderDetailViewState extends State<OrderDetailView> {
           onPressed: viewModel.isLoading
               ? null
               : () async {
+                  // 1️⃣ إظهار تنبيه تأكيد قبل الإلغاء
+                  final confirmed = await QSAlerts.showConfirm(
+                    context,
+                    title: context.tr('confirm_cancel_title'),
+                    message: context.tr('confirm_cancel_message'),
+                  );
+
+                  if (!confirmed) return;
+
+                  // 2️⃣ تنفيذ عملية الإلغاء
                   final success = await viewModel.updateStatus(
                     order.id,
                     'cancelled',
                   );
+
                   if (success) {
-                    QSAlerts.showSuccess(
+                    // 3️⃣ الانتظار حتى يرى المستخدم رسالة النجاح ويضغط موافق
+                    await QSAlerts.showSuccess(
                       context,
                       context.tr('order_cancelled_success'),
                     );
-                    Navigator.of(context).pop();
+                    
+                    if (context.mounted) {
+                      Navigator.of(context).pop();
+                    }
+                  } else {
+                    // إظهار رسالة الخطأ والانتظار
+                    await QSAlerts.showError(
+                      context, 
+                      viewModel.errorMessage ?? context.tr('order_cancelled_error'),
+                    );
                   }
                 },
           icon: viewModel.isLoading
@@ -1540,93 +1518,6 @@ class _OrderDetailViewState extends State<OrderDetailView> {
             ],
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildCommissionCard(BuildContext context, OrderModel order) {
-    // محاولة جلب قيمة العمولة من البيانات الخام، أو حسابها افتراضياً بنسبة 10%
-    final double commissionAmount =
-        double.tryParse(order.rawJson?['order_commission']?.toString() ?? '') ??
-        (order.price * 0.10);
-
-    final colors = context.qsColors;
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colors.warning.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: colors.warning.withOpacity(0.2)),
-        boxShadow: [
-          BoxShadow(
-            color: colors.warning.withOpacity(0.05),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: colors.warning,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(
-                  Icons.account_balance_wallet_outlined,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  context.tr('platform_commission'),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: colors.warning,
-                  ),
-                ),
-              ),
-              Text(
-                '${commissionAmount.toInt()} ${context.tr('currency_sar')}',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900,
-                  color: colors.warning,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          const Divider(thickness: 0.5),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                context.tr(
-                  'total_order_value_label',
-                  args: {'price': order.price.toInt()},
-                ),
-                style: TextStyle(fontSize: 11, color: colors.textSub),
-              ),
-              Text(
-                context.tr(
-                  'commission_percentage_label',
-                  args: {'percentage': '10'},
-                ),
-                style: TextStyle(fontSize: 11, color: colors.textSub),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

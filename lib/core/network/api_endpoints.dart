@@ -1,5 +1,3 @@
-
-
 /// � اسم الملف: api_endpoints.dart
 /// 📝 الوصف: يحتوي هذا الملف على جميع روابط الـ API المستخدمة في التطبيق.
 /// الهدف منه هو تجميع الروابط في مكان واحد لسهولة التعديل والإدارة.
@@ -8,6 +6,7 @@ class ApiEndpoints {
   /// 🌐 النطاق الأساسي (Domain) للسيرفر.
   /// يتم استخدامه كأساس لجميع الروابط الأخرى.
   // static String get domain => "http://10.0.2.2:8000";
+  // static String get domain => "http://192.168.137.59 :8000";
   static String get domain => "http://127.0.0.1:8000";
   // static String get domain => "http://192.168.43.245:8000";
   // static String get domain => "http://localhost:8000/api";
@@ -80,7 +79,8 @@ class ApiEndpoints {
   static String updateProfile(int profileId) => "$baseUrl/profiles/$profileId";
 
   /// 📸 رابط جلب معرض الأعمال السابقة لمستخدم معين.
-  static String previousWorks(int userId) => "$baseUrl/previous-work?user_id=$userId";
+  static String previousWorks(int userId) =>
+      "$baseUrl/previous-work?user_id=$userId";
 
   /// 📞 روابط أرقام الجوال.
   static String get profilePhones => "$baseUrl/profile-phones";
@@ -112,7 +112,8 @@ class ApiEndpoints {
   static String updateStatus(String id) => "$baseUrl/requests/$id/status";
 
   /// 💰 رابط إضافة مبلغ مدفوع للطلب.
-  static String addAmount(String id) => "$baseUrl/requests/$id/addAmountToMoneyPaid";
+  static String addAmount(String id) =>
+      "$baseUrl/requests/$id/addAmountToMoneyPaid";
 
   // ===========================================================================
   // ⭐ روابط المفضلة (Favorites Endpoints)

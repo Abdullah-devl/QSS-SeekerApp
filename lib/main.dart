@@ -35,7 +35,7 @@ import 'package:seeker/features/settings/views/privacy_policy_view.dart'; // ✅
 import 'package:seeker/features/settings/views/system_complaints_view.dart'; // ✅ تمت الإضافة
 import 'package:seeker/features/settings/views/create_system_complaint_view.dart'; // ✅ تمت الإضافة
 import 'package:seeker/features/settings/views/settings_view.dart'; // ✅ تمت الإضافة
-import 'package:seeker/features/profile/view/profile_view.dart';
+// import 'package:seeker/features/profile/view/profile_view.dart';
 import 'package:seeker/features/profile/view/my_profile_view.dart'; // ✅ تمت الإضافة
 import 'package:seeker/features/home/views/category_details_view.dart'; // ✅ تمت الإضافة
 import 'package:seeker/features/home/models/category_model.dart'; // ✅ تمت الإضافة
@@ -68,7 +68,7 @@ import 'package:seeker/features/profile/viewmodels/profile_view_model.dart';
 // Search Feature
 import 'package:seeker/features/search/repositories/search_repository.dart';
 import 'package:seeker/features/search/viewmodels/search_viewmodel.dart';
-import 'package:seeker/features/search/views/search_view.dart';
+// import 'package:seeker/features/search/views/search_view.dart';
 import 'dart:io';
 
 import 'package:seeker/l10n/app_localizations.dart';
@@ -189,12 +189,6 @@ void main() async {
           create: (context) => SettingsViewModel(context.read<TokenStorage>()),
         ),
 
-        // Category Details ViewModel - يحتاج HomeRepository
-        ChangeNotifierProvider<CategoryDetailsViewModel>(
-          create: (context) =>
-              CategoryDetailsViewModel(context.read<HomeRepository>()),
-        ),
-
         // Be Provider ViewModel - يحتاج BeProviderRepository
         ChangeNotifierProvider<BeProviderViewModel>(
           create: (context) =>
@@ -310,7 +304,12 @@ class MyApp extends StatelessWidget {
             AppRoutes.categoryDetails: (context) {
               final category =
                   ModalRoute.of(context)!.settings.arguments as CategoryModel;
-              return CategoryDetailsView(category: category);
+              return ChangeNotifierProvider(
+                create: (context) => CategoryDetailsViewModel(
+                  context.read<HomeRepository>(),
+                ),
+                child: CategoryDetailsView(category: category),
+              );
             },
             AppRoutes.beProvider: (context) => const BeProviderView(),
             AppRoutes.changePassword: (context) => const ChangePasswordView(),

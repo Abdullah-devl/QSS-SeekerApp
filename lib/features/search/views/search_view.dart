@@ -71,52 +71,70 @@ class _SearchViewState extends State<SearchView> {
 
             // 📜 قائمة النتائج
             Expanded(
-              child: Consumer<SearchViewModel>(
-                builder: (context, viewModel, child) {
-                  if (viewModel.isLoading) {
-                    return Center(
-                      child: CircularProgressIndicator(color: colors.primary),
-                    );
-                  }
+              child: RefreshIndicator(
+                onRefresh: () => context.read<SearchViewModel>().performSearch(),
+                color: colors.primary,
+                child: Consumer<SearchViewModel>(
+                  builder: (context, viewModel, child) {
+                    if (viewModel.isLoading) {
+                      return Center(
+                        child: CircularProgressIndicator(color: colors.primary),
+                      );
+                    }
 
-                  if (viewModel.errorMessage != null) {
-                    return Center(
-                      child: Text(
-                        viewModel.errorMessage!,
-                        style: TextStyle(color: colors.error),
-                      ),
-                    );
-                  }
-
-                  if (viewModel.results.isEmpty && viewModel.query.isNotEmpty) {
-                    return _buildEmptyState(context);
-                  }
-
-                  return ListView.builder(
-                    padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 100),
-                    itemCount: viewModel.results.length,
-                    itemBuilder: (context, index) {
-                      final service = viewModel.results[index];
-                      return ServiceCard(
-                        service: service,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ChangeNotifierProvider(
-                                create: (context) => ServiceDetailsViewModel(
-                                  context.read<HomeRepository>(),
-                                ),
-                                child:
-                                    ServiceDetailsView(initialService: service),
+                    if (viewModel.errorMessage != null) {
+                      return ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.4,
+                            child: Center(
+                              child: Text(
+                                viewModel.errorMessage!,
+                                style: TextStyle(color: colors.error),
                               ),
                             ),
-                          );
-                        },
+                          ),
+                        ],
                       );
-                    },
-                  );
-                },
+                    }
+
+                    if (viewModel.results.isEmpty && viewModel.query.isNotEmpty) {
+                      return ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          _buildEmptyState(context),
+                        ],
+                      );
+                    }
+
+                    return ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 100),
+                      itemCount: viewModel.results.length,
+                      itemBuilder: (context, index) {
+                        final service = viewModel.results[index];
+                        return ServiceCard(
+                          service: service,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ChangeNotifierProvider(
+                                  create: (context) => ServiceDetailsViewModel(
+                                    context.read<HomeRepository>(),
+                                  ),
+                                  child:
+                                      ServiceDetailsView(initialService: service),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ),
           ],

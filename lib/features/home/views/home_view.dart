@@ -13,7 +13,7 @@ import 'package:seeker/features/search/viewmodels/search_viewmodel.dart';
 import 'package:seeker/features/search/views/search_view.dart';
 import 'package:seeker/features/settings/views/settings_view.dart'; // Import SettingsView
 import 'package:seeker/core/network/api_endpoints.dart';
-import 'package:seeker/core/localization/app_localizations.dart';
+
 import '../services/viewmodels/service_details_view_model.dart';
 
 import '../services/view/service_details_view.dart';
@@ -24,7 +24,7 @@ import 'package:seeker/core/widgets/service_card.dart';
 import 'package:seeker/l10n/app_localizations.dart';
 import 'package:seeker/features/orders/Views/orders_view.dart';
 import 'package:seeker/features/profile/viewmodels/profile_view_model.dart'; // ✅ تمت الإضافة
-import 'package:seeker/core/utils/qs_alerts.dart'; // ✅ تمت الإضافة
+
 
 class HomeView extends StatefulWidget {
   final String title;
@@ -117,28 +117,46 @@ class _HomeViewState extends State<HomeView> {
   // 🏠 محتوى الصفحة الرئيسية
   // ---------------------------------------------------------------------------
   Widget _buildHomeContent(QSColors colors) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      child: Consumer<HomeViewModel>(
-        builder: (context, viewModel, child) {
-          // ⏳ عرض مؤشر تحميل طالما البيانات لم تجهز
-          if (viewModel.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return RefreshIndicator(
+      onRefresh: () async { 
+        // 🔄 تحديث جميع البيانات عند السحب باستخدام الموديلات مباشرة لتجنب تحذيرات Context
+        final homeVM = context.read<HomeViewModel>();
+        final ordersVM = context.read<OrdersViewModel>();
+        final profileVM = context.read<ProfileViewModel>();
+        
+        await Future.wait([
+          homeVM.loadHomeData(),
+          ordersVM.fetchOrders(),
+          profileVM.fetchProfile(),
+        ]);
+      },
+      color: colors.primary,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(), // لضمان عمل السحب حتى لو كان المحتوى قصيراً
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        child: Consumer<HomeViewModel>(
+          builder: (context, viewModel, child) {
+            // ⏳ عرض مؤشر تحميل طالما البيانات لم تجهز
+            if (viewModel.isLoading) {
+              return SizedBox(
+                height: MediaQuery.of(context).size.height * 0.7,
+                child: const Center(child: CircularProgressIndicator()),
+              );
+            }
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ===========================================
-              // 1️⃣ الهيدر (الموقع + الترحيب + زر القائمة)
-              // ===========================================
-              _buildHeader(context),
-              const SizedBox(height: 20),
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ===========================================
+                // 1️⃣ الهيدر (الموقع + الترحيب + زر القائمة)
+                // ===========================================
+                _buildHeader(context),
+                const SizedBox(height: 20),
 
-              // ===========================================
-              // 2️⃣ شريط البحث
-              // ===========================================
-              _buildSearchBar(context),
+                // ===========================================
+                // 2️⃣ شريط البحث
+                // ===========================================
+                _buildSearchBar(context),
               const SizedBox(height: 24),
 
               // ===========================================
@@ -171,33 +189,10 @@ class _HomeViewState extends State<HomeView> {
           );
         },
       ),
-    );
-  }
+    ),
+  );
+}
 
-  // ---------------------------------------------------------------------------
-  // 📄 صفحة مؤقتة (Placeholder Page) لمرعفة العمل  انه شغال او لا
-  // ---------------------------------------------------------------------------
-  Widget _buildPlaceholderPage(BuildContext context, String title) {
-    return Scaffold(
-      backgroundColor: context.qsColors.background,
-      appBar: AppBar(
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        centerTitle: true,
-        backgroundColor: context.qsColors.primary,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.menu, color: Colors.white),
-          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-        ),
-      ),
-      body: Center(
-        child: Text(
-          '$title - ${AppLocalizations.of(context)!.soon}',
-          style: TextStyle(fontSize: 18, color: context.qsColors.textSub),
-        ),
-      ),
-    );
-  }
 
   // ---------------------------------------------------------------------------
   // 1️⃣ الهيدر (Header Component)

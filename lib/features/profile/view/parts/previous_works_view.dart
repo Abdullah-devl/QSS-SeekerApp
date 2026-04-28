@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/l10n/app_localizations.dart';
 
 import '../../models/profile_model.dart';
@@ -12,37 +13,38 @@ class PreviousWorksView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.qsColors;
     final vm = context.watch<PreviousWorksViewModel>();
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: colors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F9FA),
+        backgroundColor: colors.background,
         elevation: 0,
         centerTitle: true,
         title: Text(
           l10n?.previousWorks ?? 'الأعمال السابقة',
-          style: const TextStyle(
-            color: Colors.black,
+          style: TextStyle(
+            color: colors.text,
             fontWeight: FontWeight.bold,
             fontSize: 16,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.more_vert, color: Color(0xFF637381)),
+          icon: Icon(Icons.more_vert, color: colors.textSub),
           onPressed: () {},
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.arrow_forward, color: Colors.black),
+            icon: Icon(Icons.arrow_forward, color: colors.text),
             onPressed: () => Navigator.pop(context),
           ),
         ],
       ),
       body: vm.isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF5CA4B8)),
+          ? Center(
+              child: CircularProgressIndicator(color: colors.primary),
             )
           : vm.errorMessage != null
           ? Center(
@@ -54,8 +56,8 @@ class PreviousWorksView extends StatelessWidget {
           : vm.works.isEmpty
           ? const Center(child: Text('لا توجد أعمال سابقة'))
           : RefreshIndicator(
-              color: const Color(0xFF5CA4B8),
-              backgroundColor: Colors.white,
+              color: colors.primary,
+              backgroundColor: colors.card,
               onRefresh: vm.fetchWorks,
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(
@@ -73,10 +75,11 @@ class PreviousWorksView extends StatelessWidget {
   }
 
   Widget _buildWorkCard(BuildContext context, dynamic work) {
+    final colors = context.qsColors;
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.card,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
@@ -101,18 +104,18 @@ class PreviousWorksView extends StatelessWidget {
                     children: [
                       Text(
                         profile.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: colors.text,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         '${profile.jobTitle} • الرياض',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF637381),
+                          color: colors.textSub,
                         ),
                       ),
                     ],
@@ -169,14 +172,14 @@ class PreviousWorksView extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(Icons.bookmark, color: Color(0xFF5CA4B8)),
+                Icon(Icons.bookmark, color: colors.primary),
                 Row(
-                  children: const [
-                    Icon(Icons.send, color: Color(0xFF637381)),
-                    SizedBox(width: 16),
-                    Icon(Icons.chat_bubble, color: Color(0xFF637381)),
-                    SizedBox(width: 16),
-                    Icon(Icons.favorite, color: Color(0xFF5CA4B8)),
+                  children: [
+                    Icon(Icons.send, color: colors.textSub),
+                    const SizedBox(width: 16),
+                    Icon(Icons.chat_bubble, color: colors.textSub),
+                    const SizedBox(width: 16),
+                    Icon(Icons.favorite, color: colors.primary),
                   ],
                 ),
               ],
@@ -191,19 +194,19 @@ class PreviousWorksView extends StatelessWidget {
               children: [
                 Text(
                   work.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: colors.text,
                   ),
                   textAlign: TextAlign.right,
                 ),
                 const SizedBox(height: 8),
                 Text(
                   work.description,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
-                    color: Color(0xFF637381),
+                    color: colors.textSub,
                     height: 1.6,
                   ),
                   textAlign: TextAlign.right,
@@ -218,9 +221,9 @@ class PreviousWorksView extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                _buildTag('#الرياض'),
+                _buildTag('#الرياض', colors),
                 const SizedBox(width: 8),
-                _buildTag('#صيانة'),
+                _buildTag('#صيانة', colors),
               ],
             ),
           ),
@@ -229,17 +232,17 @@ class PreviousWorksView extends StatelessWidget {
     );
   }
 
-  Widget _buildTag(String tag) {
+  Widget _buildTag(String tag, dynamic colors) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFFE4F3F8),
+        color: colors.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
         tag,
-        style: const TextStyle(
-          color: Color(0xFF5CA4B8),
+        style: TextStyle(
+          color: colors.primary,
           fontSize: 12,
           fontWeight: FontWeight.bold,
         ),

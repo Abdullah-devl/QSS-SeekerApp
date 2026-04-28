@@ -12,51 +12,64 @@ class CustomColor {
   // ☀️ ألوان الثيم الفاتح (Light Mode Colors)
   // ===========================================================================
 
-  /// لون النصوص الرئيسي (فحمي داكن).
+  /// لون النصوص الرئيسي في الوضع الفاتح (فحمي داكن).
   static const Color lightText = Color(0xFF2D3436);
 
-  /// لون النصوص الفرعية.
+  /// لون النصوص الفرعية أو الوصف (رمادي).
   static const Color lightTextSub = Color(0xFF636E72);
 
-  /// لون الخلفية (أزرق سماوي ناعم جداً لراحة العين ولمسة Premium).
+  /// لون الخلفية في الوضع الفاتح (أزرق سماوي ناعم).
   static const Color lightBackground = Color(0xFFF1FAFF);
 
-  /// اللون الأساسي (أزرق حيوي).
+  /// اللون الأساسي للتطبيق (أزرق حيوي).
   static const Color lightPrimary = Color(0xFF1CB0F6);
 
-  /// اللون الثانوي.
+  /// اللون الثانوي (أزرق فاتح).
   static const Color lightSecondary = Color(0xFF74B9FF);
 
-  /// لون التمييز.
+  /// لون التمييز (Accent Color).
   static const Color lightAccent = Color(0xFF1CB0F6);
 
-  // ألوان الحالات (Status Colors)
-  static const Color success = Color(0xFF2ECC71);
-  static const Color warning = Color(0xFFFFA502);
-  static const Color error = Color(0xFFFF4757);
-  static const Color info = Color(0xFF1CB0F6);
+  /// لون البطاقات في الوضع الفاتح.
+  static const Color lightCard = Colors.white;
 
   // ===========================================================================
-  // 🌙 ألوان الثيم الداكن (Dark Mode Colors) - تم اختيار درجات هادئة
+  // 🌙 ألوان الثيم الداكن (Dark Mode Colors)
   // ===========================================================================
 
-  /// لون النصوص الرئيسي.
+  /// لون النصوص الرئيسي في الوضع الداكن (أبيض ناعم).
   static const Color darkText = Color(0xFFDFE6E9);
 
-  /// لون النصوص الفرعية.
+  /// لون النصوص الفرعية (رمادي فاتح).
   static const Color darkTextSub = Color(0xFFB2BEC3);
 
-  /// لون الخلفية.
+  /// لون الخلفية في الوضع الداكن (أسود عميق).
   static const Color darkBackground = Color(0xFF0A0E10);
 
-  /// اللون الأساسي (أزرق هادئ للوضع الداكن).
+  /// اللون الأساسي في الوضع الداكن (أزرق هادئ).
   static const Color darkPrimary = Color(0xFF189AD3);
 
-  /// اللون الثانوي.
+  /// لون النصوص الفرعية (رمادي فاتح).
   static const Color darkSecondary = Color(0xFF0984E3);
 
-  /// لون التمييز.
+  /// لون التمييز في الوضع الداكن.
   static const Color darkAccent = Color(0xFF189AD3);
+
+  /// لون البطاقات في الوضع الداكن.
+  static const Color darkCard = Color(0xFF1A1D1E);
+
+  // ===========================================================================
+  // 🛠️ ألوان الوظائف (Functional Colors - ثابتة في كل الأوضاع)
+  // ===========================================================================
+
+  /// البرتقالي: للتحذيرات والتنبيهات.
+  static const Color amber = Color(0xFFFFA502);
+
+  /// الأخضر: للنجاح والعمليات المكتملة.
+  static const Color success = Color(0xFF2ECC71);
+
+  /// الأحمر: للأخطاء والرفض.
+  static const Color error = Color(0xFFFF4757);
 
   // ألوان الحالات للوضع الداكن (بدرجات أقل حدة)
   static const Color darkSuccess = Color(0xFF27AE60);

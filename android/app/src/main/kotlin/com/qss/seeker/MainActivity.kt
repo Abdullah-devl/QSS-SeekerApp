@@ -1,4 +1,4 @@
-package com.example.seeker
+package com.qss.seeker
 
 import io.flutter.embedding.android.FlutterActivity
 

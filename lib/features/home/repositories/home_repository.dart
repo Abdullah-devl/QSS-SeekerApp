@@ -65,10 +65,10 @@ class HomeRepository {
       final Response response = await _apiService.get(ApiEndpoints.categories);
 
       if (response.statusCode == 200) {
-        developer.log(
-          '📦 Raw Categories Data: ${response.data}',
-          name: 'HomeRepository',
-        );
+        // developer.log(
+        //   '📦 Raw Categories Data: ${response.data}',
+        //   name: 'HomeRepository',
+        // );
 
         // التعامل مع هيكلية البيانات المختلفة المحتملة من السيرفر
         final dynamic data = response.data;
@@ -90,20 +90,15 @@ class HomeRepository {
         // تحويل القائمة إلى كائنات CategoryModel
         return list.map((json) => CategoryModel.fromJson(json)).toList();
       } else {
-        developer.log(
-          '❌ Failed to load categories: Status ${response.statusCode}',
-          name: 'HomeRepository',
-        );
-        // في حال الفشل نرجع قائمة فارغة
+        // developer.log(
+        //   '❌ Failed to load categories: Status ${response.statusCode}',
+        //   name: 'HomeRepository',
+        // );
+        // // في حال الفشل نرجع قائمة فارغة
         return [];
       }
     } catch (e) {
-      developer.log(
-        '❌ Error fetching categories: $e',
-        name: 'HomeRepository',
-        error: e,
-      );
-      // في حال حدوث استثناء نرجع قائمة فارغة لعدم تعطيل الواجهة
+      // Logic remains, print removed
       return [];
     }
   }
@@ -163,17 +158,10 @@ class HomeRepository {
       ApiEndpoints.categoryDetails(categoryId),
     );
 
-    print('✅ URL: ${response.requestOptions.uri}');
-    print('✅ STATUS: ${response.statusCode}');
-    print('✅ RAW: ${response.data}');
-
     if (response.statusCode == 200) {
       final data = response.data;
-
       final Map<String, dynamic> jsonResponse =
           (data is Map && data.containsKey('data')) ? data['data'] : data;
-
-      print('✅ PARSED: $jsonResponse');
 
       return CategoryDetailsModel.fromJson(jsonResponse);
     }
@@ -197,7 +185,7 @@ class HomeRepository {
         final Map<String, dynamic> jsonResponse =
             (data is Map && data.containsKey('data')) ? data['data'] : data;
 
-        print('✅ RAW SERVICE: ${response.data}');
+        // print('✅ RAW SERVICE: ${response.data}');
 
         return ServiceModel.fromJson(jsonResponse);
       } else {
@@ -224,7 +212,7 @@ class HomeRepository {
         final Map<String, dynamic> jsonResponse =
             (data is Map && data.containsKey('data')) ? data['data'] : data;
 
-        print('✅ RAW PROFILE: $jsonResponse');
+        // print('✅ RAW PROFILE: $jsonResponse');
 
         return ProfileModel.fromJson(jsonResponse);
       } else {

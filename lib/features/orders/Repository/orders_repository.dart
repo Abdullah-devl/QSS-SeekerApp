@@ -42,27 +42,17 @@ class OrdersRepository {
       final data = ApiErrorHandler.handleResponse(response);
 
       // 🕵️ تشخيص البيانات القادمة من السيرفر
-      debugPrint('🔍 [STORAGE] Raw Data from Server: $data');
+      final responseData = data;
       List responseList = []; // تهيئة القائمة بقيمة فارغة افتراضياً
 
-      if (data is Map<String, dynamic>) {
-        var rawData = data['requests'] ?? data['data'];
+      if (responseData is Map<String, dynamic>) {
+        var rawData = responseData['requests'] ?? responseData['data'];
         if (rawData is List) {
           responseList = rawData;
         }
-      } else if (data is List) {
-        responseList = data;
+      } else if (responseData is List) {
+        responseList = responseData;
       }
-      // List responseList;
-      // if (data is Map) {
-      //   // السيرفر قد يرسل البيانات تحت مفتاح 'requests' أو 'data'
-      //   responseList = data['requests'] ?? data['data'] ?? [];
-      //   if (responseList is! List) responseList = [];
-      // } else if (data is List) {
-      //   responseList = data;
-      // } else {
-      //   responseList = [];
-      // }
 
       // 2. 🚀 حفظ البيانات (الكاش) في هايف فور وصولها بنجاح
       var box = await Hive.openBox(_boxName);
@@ -70,17 +60,11 @@ class OrdersRepository {
 
       return responseList.map((e) {
         final orderMap = Map<String, dynamic>.from(e);
-        debugPrint(
-          '🔍 [MODEL] Mapping Item ID: ${orderMap['id']} - Data: $orderMap',
-        );
         return OrderModel.fromJson(orderMap);
       }).toList();
     } catch (e) {
       // 3. 🚀 التحقق من نوع الخطأ: إذا كان الخطأ Unauthorized (401)، لا نمسح الكاش بل نعيد رمي الخطأ
       if (e is DioException && e.response?.statusCode == 401) {
-        debugPrint(
-          '⚠️ [AUTH] Unauthorized detected in Repository. Skipping Hive fallback.',
-        );
         throw ApiErrorHandler.handle(e);
       }
 
@@ -90,16 +74,12 @@ class OrdersRepository {
         final cachedData = box.get('cached_orders');
 
         if (cachedData != null) {
-          debugPrint(
-            '⚠️ فشل الاتصال بالسيرفر.. تم جلب الطلبات من الكاش (Hive)',
-          );
           final List mapData = List.from(cachedData);
           return mapData
               .map((e) => OrderModel.fromJson(Map<String, dynamic>.from(e)))
               .toList();
         }
       } catch (hiveError) {
-        debugPrint('❌ خطأ في قراءة الكاش: $hiveError');
       }
 
       // إذا فشل السيرفر ولا يوجد كاش مسبق، نعرض رسالة الخطأ للمستخدم
@@ -124,10 +104,6 @@ class OrdersRepository {
   Future<void> addPaidAmount(String requestId, double amount) async {
     try {
       final url = ApiEndpoints.addAmount(requestId);
-      debugPrint('🚀 [NETWORK] Calling AddPayment API...');
-      debugPrint('📍 URL: $url');
-      debugPrint('📦 DATA: {"added_amount": $amount}');
-      debugPrint('🆔 Request ID used in URL: $requestId');
 
       final response = await _apiService.post(
         url,

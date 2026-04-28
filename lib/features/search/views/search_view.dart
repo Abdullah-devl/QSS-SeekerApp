@@ -147,7 +147,7 @@ class _SearchViewState extends State<SearchView> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.card,
         boxShadow: [
           BoxShadow(
             color: colors.text.withValues(alpha: 0.05),
@@ -287,7 +287,7 @@ class _SearchViewState extends State<SearchView> {
                     onChanged: (val) => viewModel.setCategory(val),
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Theme.of(context).cardColor,
+                      fillColor: colors.card,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(color: colors.textSub.withValues(alpha: 0.1)),

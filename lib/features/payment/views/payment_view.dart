@@ -140,7 +140,7 @@ class _PaymentViewState extends State<PaymentView> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.card,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: colors.primary.withValues(alpha: 0.1)),
       ),
@@ -218,7 +218,7 @@ class _PaymentViewState extends State<PaymentView> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? colors.primary.withValues(alpha: 0.1) : Theme.of(context).cardColor,
+          color: isSelected ? colors.primary.withValues(alpha: 0.1) : colors.card,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected ? colors.primary : colors.textSub.withValues(alpha: 0.1),
@@ -282,7 +282,7 @@ class _PaymentViewState extends State<PaymentView> {
             hintText: '${context.tr('max_limit')}: ${widget.order.remainingAmount.toInt()}',
             labelStyle: TextStyle(color: colors.textSub),
             filled: true,
-            fillColor: Theme.of(context).cardColor,
+            fillColor: colors.card,
             prefixIcon: Icon(Icons.stars_rounded, color: colors.warning),
             suffixText: context.tr('points'),
             border: OutlineInputBorder(
@@ -308,7 +308,7 @@ class _PaymentViewState extends State<PaymentView> {
             labelText: context.tr('amount_to_pay'),
             labelStyle: TextStyle(color: colors.textSub),
             filled: true,
-            fillColor: Theme.of(context).cardColor,
+            fillColor: colors.card,
             prefixIcon: Icon(Icons.attach_money, color: colors.primary),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: colors.textSub.withValues(alpha: 0.2))),
           ),
@@ -321,7 +321,7 @@ class _PaymentViewState extends State<PaymentView> {
             height: 150,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
+              color: colors.card,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: colors.textSub.withValues(alpha: 0.1)),
             ),

@@ -38,7 +38,7 @@ class RegisterView extends StatelessWidget {
                       // زر الوضع الليلي (يسار الشاشة)
                       Container(
                         decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
+                          color: colors.card,
                           shape: BoxShape.circle,
                         ),
                         child: IconButton(
@@ -53,7 +53,7 @@ class RegisterView extends StatelessWidget {
                       // زر الرجوع (متجاوب مع الاتجاه)
                       Container(
                         decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
+                          color: colors.card,
                           shape: BoxShape.circle,
                         ),
                         child: IconButton(
@@ -117,7 +117,7 @@ class RegisterView extends StatelessWidget {
                     hintText: AppLocalizations.of(context)!.enterFullName,
                     controller: viewModel.nameController,
                     icon: Icons.person,
-                    fillColor: Theme.of(context).cardColor,
+                    fillColor: colors.card,
                   ),
                   const SizedBox(height: 16),
 
@@ -128,7 +128,7 @@ class RegisterView extends StatelessWidget {
                     hintText: 'example@email.com',
                     controller: viewModel.emailController,
                     icon: Icons.email_outlined,
-                    fillColor: Theme.of(context).cardColor,
+                    fillColor: colors.card,
                   ),
                   const SizedBox(height: 16),
 
@@ -140,7 +140,7 @@ class RegisterView extends StatelessWidget {
                     controller: viewModel.passwordController,
                     icon: Icons.lock_outline,
                     isPassword: true,
-                    fillColor: Theme.of(context).cardColor,
+                    fillColor: colors.card,
                   ),
                   const SizedBox(height: 16),
 
@@ -155,7 +155,7 @@ class RegisterView extends StatelessWidget {
                     controller: viewModel.confirmPasswordController,
                     icon: Icons.lock_outline,
                     isPassword: true,
-                    fillColor: Theme.of(context).cardColor,
+                    fillColor: colors.card,
                   ),
 
                   const SizedBox(height: 20),
@@ -372,7 +372,7 @@ class RegisterView extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
+          color: context.qsColors.card,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: context.qsColors.textSub.withValues(alpha: 0.2)),
         ),

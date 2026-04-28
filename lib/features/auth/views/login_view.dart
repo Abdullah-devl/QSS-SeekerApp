@@ -88,7 +88,7 @@ class LoginView extends StatelessWidget {
                           padding: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
                             // نستخدم لون السطح (Card Color) من الثيم
-                            color: Theme.of(context).cardColor,
+                            color: colors.card,
                             borderRadius: BorderRadius.circular(24),
                             // ظل خفيف لإعطاء عمق للبطاقة
                             boxShadow: [
@@ -408,7 +408,7 @@ class LoginView extends StatelessWidget {
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 12),
         // الخلفية تتغير حسب الثيم
-        backgroundColor: Theme.of(context).cardColor,
+        backgroundColor: colors.card,
         side: BorderSide(color: colors.textSub.withValues(alpha: 0.2)),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),

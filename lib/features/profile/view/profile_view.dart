@@ -94,10 +94,7 @@ class ProfileView extends StatelessWidget {
                 ),
                 child: const ProviderWorksView(),
               ),
-              ChangeNotifierProvider(
-                create: (context) => ServicesViewModel(ProfileRepository(context.read<ApiService>())),
-                child: const ServicesView(),
-              ),
+              ServicesView(services: profile.mainServices),
               const Center(child: Text('التقييمات قريباً')),
               ChangeNotifierProvider(
                 create: (context) => ContactInfoViewModel(ProfileRepository(context.read<ApiService>())),

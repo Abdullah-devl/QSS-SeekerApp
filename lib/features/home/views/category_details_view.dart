@@ -206,7 +206,7 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
             width: 140,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
+              color: colors.card,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(

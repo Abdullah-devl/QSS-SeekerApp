@@ -81,7 +81,7 @@ class BeProviderView extends StatelessWidget {
                 child: Container(
                   height: 150,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
+                    color: colors.card,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: colors.primary.withValues(alpha: 0.1),
@@ -314,9 +314,7 @@ class BeProviderView extends StatelessWidget {
                         }
                       },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(
-                    0xFF539DB9,
-                  ), // لون أزرق سماوي مثل التصميم
+                  backgroundColor: colors.primary, // لون متجاوب من Palette
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -379,7 +377,7 @@ class BeProviderView extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: context.qsColors.card,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(

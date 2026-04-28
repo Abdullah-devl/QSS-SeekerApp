@@ -87,7 +87,7 @@ class _TermsViewState extends State<TermsView> {
                 margin: const EdgeInsets.symmetric(horizontal: 24),
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
+                  color: colors.card,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
@@ -143,7 +143,7 @@ class _TermsViewState extends State<TermsView> {
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: isDark ? Theme.of(context).cardColor : colors.primary.withValues(alpha: 0.05),
+                  color: isDark ? colors.card : colors.primary.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Row(
@@ -260,7 +260,7 @@ class _TermsViewState extends State<TermsView> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
-                      backgroundColor: Theme.of(context).cardColor,
+                      backgroundColor: colors.card,
                     ),
                     child: Text(
                       context.tr('cancel'),

@@ -86,15 +86,15 @@ class ContactInfoView extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: isWhatsApp
-                  ? Colors.green.withOpacity(0.1)
-                  : colors.primary.withOpacity(0.1),
+                  ? colors.success.withValues(alpha: 0.1)
+                  : colors.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
               isWhatsApp
                   ? Icons.message_rounded
                   : Icons.phone_forwarded_rounded,
-              color: isWhatsApp ? Colors.green : colors.primary,
+              color: isWhatsApp ? colors.success : colors.primary,
               size: 22,
             ),
           ),
@@ -142,7 +142,7 @@ class ContactInfoView extends StatelessWidget {
               if (isWhatsApp)
                 _buildCompactActionButton(
                   icon: Icons.message_rounded,
-                  color: Colors.green,
+                  color: colors.success,
                   onTap: () => _launchURL('https://wa.me/$completePhone'),
                 ),
               if (isCall)
@@ -269,9 +269,9 @@ class ContactInfoView extends StatelessWidget {
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: colors.card,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: colors.text.withOpacity(0.1)),
+                    border: Border.all(color: colors.text.withValues(alpha: 0.1)),
                   ),
                   child: Row(
                     children: [

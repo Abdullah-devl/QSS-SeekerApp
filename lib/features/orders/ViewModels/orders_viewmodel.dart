@@ -45,12 +45,8 @@ class OrdersViewModel extends ChangeNotifier {
         return b.createdAt!.compareTo(a.createdAt!);
       });
       _allOrders = fetchedOrders;
-      debugPrint(
-        '📦 ✅ تم جلب ${_allOrders.length} طلبات بنجاح مرتبة من الأحدث للأقدم.',
-      );
       _isLoading = false;
     } catch (e) {
-      debugPrint('❌ 📦 فشل جلب الطلبات في الـ ViewModel: $e');
       _isLoading = false;
       _errorMessage = e.toString();
     }
@@ -110,7 +106,6 @@ class OrdersViewModel extends ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      debugPrint('❌ فشل تحديث بيانات الطلب الفردي: $e');
     }
   }
 
@@ -136,9 +131,6 @@ class OrdersViewModel extends ChangeNotifier {
 
   // 🚀 إضافة مبلغ مدفوع
   Future<bool> addPaidAmount(String id, double amount) async {
-    debugPrint(
-      '🧪 [VIEWMODEL] Starting addPaidAmount for ID: $id with amount: $amount',
-    );
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -188,7 +180,6 @@ class OrdersViewModel extends ChangeNotifier {
       await refreshOrderDetail(id);
       return true;
     } catch (e) {
-      debugPrint('❌ فشل إكمال الطلب أو التقييم: $e');
       _errorMessage = e.toString();
       notifyListeners();
       return false;
@@ -218,7 +209,6 @@ class OrdersViewModel extends ChangeNotifier {
       );
       return true;
     } catch (e) {
-      debugPrint('❌ فشل إرسال الشكوى: $e');
       _errorMessage = e.toString();
       return false;
     } finally {

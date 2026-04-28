@@ -27,6 +27,7 @@ extension QSColorExt on BuildContext {
             success: CustomColor.darkSuccess,
             warning: CustomColor.darkWarning,
             info: CustomColor.darkInfo,
+            card: CustomColor.darkCard,
           )
         : const QSColors(
             text: CustomColor.lightText,
@@ -37,8 +38,9 @@ extension QSColorExt on BuildContext {
             accent: CustomColor.lightAccent,
             error: CustomColor.error,
             success: CustomColor.success,
-            warning: CustomColor.warning,
-            info: CustomColor.info,
+            warning: CustomColor.amber,
+            info: CustomColor.lightPrimary,
+            card: CustomColor.lightCard,
           );
   }
 }

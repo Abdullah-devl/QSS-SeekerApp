@@ -35,6 +35,9 @@ class QSColors {
   /// لون المعلومات (Info).
   final Color info;
 
+  /// لون البطاقات (Cards).
+  final Color card;
+
   /// 🏗️ البناء (Constructor): يتطلب تمرير جميع الألوان.
   const QSColors({
     required this.text,
@@ -47,5 +50,6 @@ class QSColors {
     required this.success,
     required this.warning,
     required this.info,
+    required this.card,
   });
 }

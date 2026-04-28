@@ -139,7 +139,7 @@ class SearchViewModel extends ChangeNotifier {
         timeLimit: const Duration(seconds: 5),
       );
     } catch (e) {
-      debugPrint('Silent Location Error: $e');
+      // Logic remains
     }
   }
 }

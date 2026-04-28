@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:seeker/core/routes/app_routes.dart';
 import 'package:seeker/core/utils/qs_alerts.dart';
+import 'package:seeker/core/services/notification_service.dart';
 import '../repositories/auth_repository.dart';
 
 /// 📂 اسم الملف: login_view_model.dart
@@ -46,6 +47,9 @@ class LoginViewModel extends ChangeNotifier {
       // 4. التحقق من حالة التفعيل
       if (context.mounted) {
         if (user.isVerified) {
+          // 🔔 إرسال توكن الإشعارات للسيرفر فور تسجيل الدخول
+          NotificationService().updateTokenToServer();
+
           // ✅ الحساب مفعل -> الذهاب للرئيسية
           Navigator.pushReplacementNamed(context, AppRoutes.home);
         } else {

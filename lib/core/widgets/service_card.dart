@@ -32,7 +32,7 @@ class ServiceCard extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 16),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
+              color: colors.card,
               borderRadius: BorderRadius.circular(20), // زوايا أكثر نعومة
               boxShadow: [
                 BoxShadow(
@@ -96,7 +96,7 @@ class ServiceCard extends StatelessWidget {
                           ),
                           child: Icon(
                             isFavorite ? Icons.favorite : Icons.favorite_border,
-                            color: isFavorite ? Colors.redAccent : colors.textSub.withValues(alpha: 0.4),
+                            color: isFavorite ? colors.error : colors.textSub.withValues(alpha: 0.4),
                             size: 18,
                           ),
                         ),
@@ -128,7 +128,7 @@ class ServiceCard extends StatelessWidget {
                           ),
                           Row(
                             children: [
-                              const Icon(Icons.star, color: Colors.amber, size: 14),
+                              Icon(Icons.star, color: colors.amber, size: 14),
                               const SizedBox(width: 4),
                               Text(
                                 service.rating.toString(),

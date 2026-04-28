@@ -253,7 +253,7 @@ class _CreateSystemComplaintViewState extends State<CreateSystemComplaintView> {
           fontSize: 14,
         ),
         filled: true,
-        fillColor: Theme.of(context).cardColor,
+        fillColor: colors.card,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: colors.textSub.withOpacity(0.1)),
@@ -271,7 +271,7 @@ class _CreateSystemComplaintViewState extends State<CreateSystemComplaintView> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.card,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: colors.textSub.withOpacity(0.1)),
       ),

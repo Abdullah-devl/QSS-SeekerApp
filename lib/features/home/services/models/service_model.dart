@@ -114,6 +114,8 @@
 //         rawImagePath.toString() != 'null') {
 //       finalImage = rawImagePath.startsWith('http')
 //           ? rawImagePath
+import 'package:seeker/core/network/api_endpoints.dart';
+
 import '../../models/service_schedule_model.dart';
 
 class ServiceModel {
@@ -124,14 +126,15 @@ class ServiceModel {
   final double rating;
   final String imageUrl;
   final String providerName;
-  final int providerId; 
+  final int providerId;
   final int categoryId;
   int? parentServiceId;
   bool isFavorite; // ❤️ حالة المفضلة
   final double? distance; // 📍 المسافة بالكيلومترات
   final bool isAvailableNow; // 🟢 متاح الآن
   List<ServiceModel> subServices;
-  final List<ServiceScheduleModel> schedules; // 📅 جدول المواعيد المتاح لهذه الخدمة
+  final List<ServiceScheduleModel>
+  schedules; // 📅 جدول المواعيد المتاح لهذه الخدمة
 
   ServiceModel({
     required this.id,
@@ -162,7 +165,7 @@ class ServiceModel {
         rawImagePath.length > 3) {
       finalImage = rawImagePath.startsWith('http')
           ? rawImagePath
-          : 'http://127.0.0.1:8000/storage/$rawImagePath';
+          : '${ApiEndpoints.storageBaseUrl}$rawImagePath';
     }
 
     // 2. استخراج الخدمات الفرعية
@@ -179,7 +182,9 @@ class ServiceModel {
     var rawSchedules = json['schedules'] ?? json['service_schedules'] ?? [];
     List<ServiceScheduleModel> parsedSchedules = [];
     if (rawSchedules is List) {
-      parsedSchedules = rawSchedules.map((e) => ServiceScheduleModel.fromJson(e)).toList();
+      parsedSchedules = rawSchedules
+          .map((e) => ServiceScheduleModel.fromJson(e))
+          .toList();
     }
 
     // 🚀 4. قراءة الـ parent_service_id بصرامة (الحل السحري)
@@ -198,7 +203,9 @@ class ServiceModel {
       categoryId: int.tryParse(json['category_id'].toString()) ?? 0,
 
       parentServiceId: pId, // إسناد القيمة الصارمة
-      isFavorite: json['is_favorite'] == true || json['is_favorite'] == 1, // قراءة حالة المفضلة
+      isFavorite:
+          json['is_favorite'] == true ||
+          json['is_favorite'] == 1, // قراءة حالة المفضلة
 
       price: double.tryParse(json['price'].toString()) ?? 0.0,
       rating:
@@ -207,10 +214,20 @@ class ServiceModel {
       imageUrl: finalImage,
       providerName:
           json['provider_name'] ?? json['provider']?['name'] ?? 'مزود خدمة',
-      providerId: int.tryParse((json['user_id'] ?? json['provider_id'] ?? json['provider']?['id'] ?? json['user']?['id'] ?? '0').toString()) ?? 0,
-      
+      providerId:
+          int.tryParse(
+            (json['user_id'] ??
+                    json['provider_id'] ??
+                    json['provider']?['id'] ??
+                    json['user']?['id'] ??
+                    '0')
+                .toString(),
+          ) ??
+          0,
+
       distance: double.tryParse(json['distance']?.toString() ?? ''),
-      isAvailableNow: json['is_available_now'] != false, // افتراضياً متاح إلا إذا ذكر العكس
+      isAvailableNow:
+          json['is_available_now'] != false, // افتراضياً متاح إلا إذا ذكر العكس
 
       subServices: parsedSubServices,
       schedules: parsedSchedules, // ✅ تم الإسناد هنا

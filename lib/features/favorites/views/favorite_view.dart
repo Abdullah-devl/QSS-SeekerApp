@@ -154,7 +154,7 @@ class FavoriteView extends StatelessWidget {
                   width: 55,
                   height: 55,
                   decoration: BoxDecoration(
-                    color: isSelected ? colors.primary : Theme.of(context).cardColor,
+                    color: isSelected ? colors.primary : colors.card,
                     shape: BoxShape.circle,
                     boxShadow: [
                       if (!isSelected)

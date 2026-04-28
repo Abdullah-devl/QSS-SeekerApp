@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:seeker/core/theme/qs_color_extension.dart';
 
 /// 📂 اسم الملف: custom_text_field.dart
 /// 📝 الوصف: ويدجت مخصص لحقول الإدخال النصي (Text Field).
@@ -49,6 +50,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.qsColors;
     // Directionality لتحديد اتجاه النص (يمين لليسار RTL بما أن التطبيق عربي)
     return Directionality(
       textDirection: TextDirection.rtl,
@@ -90,7 +92,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
             filled: true,
             // لون الخلفية: إما المحدد أو لون افتراضي شفاف داكن قليلاً
-            fillColor: widget.fillColor ?? const Color.fromARGB(66, 0, 0, 0),
+            fillColor: widget.fillColor ?? colors.text.withValues(alpha: 0.05),
 
             // 🔹 الحدود في الحالة الطبيعية
             border: OutlineInputBorder(
@@ -101,23 +103,23 @@ class _CustomTextFieldState extends State<CustomTextField> {
             // 🔹 الحدود عند التركيز (Focus)
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
-              borderSide: const BorderSide(color: Colors.blue, width: 2),
+              borderSide: BorderSide(color: colors.primary, width: 2),
             ),
 
             // 🔹 الحدود عند وجود خطأ (Error) ولكن بدون تركيز
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
-              borderSide: const BorderSide(color: Colors.red, width: 1.5),
+              borderSide: BorderSide(color: colors.error, width: 1.5),
             ),
 
             // 🔹 الحدود عند وجود خطأ + تركيز
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
-              borderSide: const BorderSide(color: Colors.red, width: 2),
+              borderSide: BorderSide(color: colors.error, width: 2),
             ),
 
             // 🔹 تنسيق نص رسالة الخطأ
-            errorStyle: const TextStyle(color: Colors.red, fontSize: 13),
+            errorStyle: TextStyle(color: colors.error, fontSize: 13),
           ),
         ),
       ),

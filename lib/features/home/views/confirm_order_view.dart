@@ -83,7 +83,7 @@ class ConfirmOrderView extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.card,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(color: colors.text.withValues(alpha: 0.03), blurRadius: 15, offset: const Offset(0, 5)),
@@ -156,7 +156,7 @@ class ConfirmOrderView extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.card,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: colors.text.withValues(alpha: 0.05)),
       ),
@@ -197,7 +197,7 @@ class ConfirmOrderView extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
+          color: colors.card,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: vm.selectedLatitude != null ? colors.primary.withValues(alpha: 0.3) : colors.text.withValues(alpha: 0.05)),
         ),
@@ -289,7 +289,7 @@ class ConfirmOrderView extends StatelessWidget {
         const SizedBox(height: 16),
         Container(
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
+            color: colors.card,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Column(
@@ -363,7 +363,7 @@ class ConfirmOrderView extends StatelessWidget {
             hintText: context.tr('notes_hint'),
             hintStyle: TextStyle(color: colors.textSub, fontSize: 12),
             filled: true,
-            fillColor: Theme.of(context).cardColor,
+            fillColor: colors.card,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
           ),
         ),
@@ -376,7 +376,7 @@ class ConfirmOrderView extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.card,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         boxShadow: [BoxShadow(color: colors.text.withValues(alpha: 0.05), blurRadius: 20, offset: const Offset(0, -5))],
       ),

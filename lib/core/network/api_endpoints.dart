@@ -141,4 +141,20 @@ class ApiEndpoints {
 
   /// 🚨 روابط شكاوى النظام.
   static String get systemComplaints => "$baseUrl/system-complaints";
+
+  // ===========================================================================
+  // 🔔 روابط الإشعارات (Notifications Endpoints)
+  // ===========================================================================
+
+  /// 🔑 رابط تخزين توكن الإشعارات (FCM Token).
+  static String get storeToken => "$baseUrl/store-token";
+
+  /// 📜 رابط جلب قائمة الإشعارات.
+  static String get notifications => "$baseUrl/notifications";
+
+  /// ✅ رابط تمييز إشعار معين كمقروء.
+  static String markNotificationRead(String id) => "$baseUrl/notifications/$id/read";
+
+  /// ✅ رابط تمييز جميع الإشعارات كمقروءة.
+  static String get markAllNotificationsRead => "$baseUrl/notifications/read-all";
 }

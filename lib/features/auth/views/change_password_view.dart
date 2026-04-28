@@ -110,7 +110,7 @@ class ChangePasswordView extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(32),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
+                    color: colors.card,
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:seeker/core/services/notification_service.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/routes/app_routes.dart';
 import 'package:seeker/core/storage/token_storage.dart';
@@ -29,6 +30,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
   /// 🚪 عملية تسجيل الخروج
   Future<void> _logout() async {
     try {
+      // 🔔 إزالة توكن الإشعارات من السيرفر قبل تسجيل الخروج
+      final notificationService = NotificationService();
+      await notificationService.deleteTokenOnLogout();
+
+      if (!mounted) return;
       final authRepo = context.read<AuthRepository>();
       await authRepo.logout();
       if (mounted) {
@@ -371,7 +377,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
         alignment: Alignment.centerLeft,
         child: Container(
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
+            color: colors.card,
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(

@@ -4,6 +4,7 @@ import 'phone_model.dart';
 import 'bank_model.dart';
 import 'work_model.dart';
 import 'dart:developer' as developer;
+import 'package:seeker/features/home/services/models/service_model.dart';
 
 /// 📂 اسم الملف: profile_model.dart
 /// 📝 الوصف: نموذج بيانات الملف الشخصي (Profile) متوافق مع استجابة الباك إند.
@@ -31,6 +32,7 @@ class ProfileModel {
   final int yearsExperience;
   final List<WorkModel> previousWorks;
   final bool isAvailable;
+  final List<ServiceModel> mainServices;
 
   // 📞 بيانات التواصل الإضافية والحسابات البنكية من الباك إند
   final List<PhoneModel> phones;
@@ -61,6 +63,7 @@ class ProfileModel {
     this.yearsExperience = 0,
     this.previousWorks = const [],
     this.isAvailable = true,
+    this.mainServices = const [],
     this.phones = const [],
     this.banks = const [],
     this.latitude,
@@ -160,6 +163,24 @@ class ProfileModel {
           }
         }
         return works;
+      }(),
+      mainServices: () {
+        final List<ServiceModel> services = [];
+        final dynamic rawServices = profileData['main_services'] ?? 
+                                    profileData['mainServices'] ?? 
+                                    profileData['services'] ??
+                                    userJson['main_services'] ??
+                                    userJson['services'] ??
+                                    json['main_services'] ??
+                                    json['services'];
+        if (rawServices is List) {
+          for (final s in rawServices) {
+            if (s is Map) {
+              services.add(ServiceModel.fromJson(Map<String, dynamic>.from(s)));
+            }
+          }
+        }
+        return services;
       }(),
       isAvailable: profileData['is_available'] == 1 || profileData['is_available'] == true,
       phones: () {

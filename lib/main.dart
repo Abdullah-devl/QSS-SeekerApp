@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:seeker/core/services/notification_service.dart';
 
 // --- Imports --- (استيراد الملفات اللازمة)
 import 'package:seeker/core/routes/app_routes.dart';
@@ -65,7 +67,10 @@ import 'package:seeker/features/payment/viewmodels/payment_viewmodel.dart';
 import 'package:seeker/features/profile/repositories/profile_repository.dart';
 import 'package:seeker/features/profile/viewmodels/profile_view_model.dart';
 
-// Search Feature
+// Notifications Feature
+import 'package:seeker/features/notifications/repositories/notification_repository.dart';
+import 'package:seeker/features/notifications/viewmodels/notification_view_model.dart';
+import 'package:seeker/features/notifications/views/notifications_view.dart';
 import 'package:seeker/features/search/repositories/search_repository.dart';
 import 'package:seeker/features/search/viewmodels/search_viewmodel.dart';
 // import 'package:seeker/features/search/views/search_view.dart';
@@ -82,6 +87,13 @@ void main() async {
 
   // 📦 تهيئة Hive للتخزين المحلي
   await Hive.initFlutter();
+
+  // 🔥 تهيئة Firebase
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint('❌ Firebase Initialization Error: $e');
+  }
 
   HttpOverrides.global = BadCertificateHttpOverrides();
 
@@ -148,6 +160,11 @@ void main() async {
         // 👤 ProfileRepository
         ProxyProvider<ApiService, ProfileRepository>(
           update: (_, apiService, __) => ProfileRepository(apiService),
+        ),
+
+        // 🔔 NotificationRepository
+        ProxyProvider<ApiService, NotificationRepository>(
+          update: (_, apiService, __) => NotificationRepository(apiService),
         ),
 
         // ⚙️ SettingsRepository
@@ -252,14 +269,56 @@ void main() async {
             context.read<SettingsRepository>(),
           ),
         ),
+
+        // 🔔 Notification ViewModel
+        ChangeNotifierProvider<NotificationViewModel>(
+          create: (context) => NotificationViewModel(
+            context.read<NotificationRepository>(),
+          ),
+        ),
       ],
       child: const MyApp(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    // 🔔 تهيئة خدمة الإشعارات بعد بناء الواجهة
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      print('🚩 [MAIN]: Initializing NotificationService...');
+      try {
+        final notificationRepo = context.read<NotificationRepository>();
+        await NotificationService().initialize(notificationRepo);
+        
+        // الاستماع لتيار الإشعارات للتوجيه الذكي
+        NotificationService().notificationStream.listen((data) {
+          _handleNotificationNavigation(data);
+        });
+      } catch (e) {
+        print('❌ [MAIN]: Error initializing NotificationService: $e');
+      }
+    });
+  }
+
+  void _handleNotificationNavigation(Map<String, dynamic> data) {
+    final type = data['type'];
+    final requestId = data['request_id'];
+
+    if (type != null && requestId != null) {
+      // توجيه المستخدم لصفحة تفاصيل الطلب (مثال)
+      // Navigator.pushNamed(context, AppRoutes.orderDetail, arguments: requestId);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -313,6 +372,7 @@ class MyApp extends StatelessWidget {
             },
             AppRoutes.beProvider: (context) => const BeProviderView(),
             AppRoutes.changePassword: (context) => const ChangePasswordView(),
+            '/notifications': (context) => const NotificationsView(),
             AppRoutes.privacyPolicy: (context) => ChangeNotifierProvider(
               create: (context) => PolicyViewModel(
                 context.read<SettingsRepository>(),

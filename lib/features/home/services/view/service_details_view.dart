@@ -116,7 +116,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
           IconButton(
             icon: Icon(
               isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: isFavorite ? Colors.redAccent : colors.text,
+              color: isFavorite ? colors.error : colors.text,
             ),
             onPressed: () {
               favVm.toggleFavorite(service);
@@ -144,7 +144,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
       height: 200,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.card,
         borderRadius: BorderRadius.circular(20),
         image: imageUrl.isNotEmpty ? DecorationImage(image: NetworkImage(imageUrl), fit: BoxFit.cover) : null,
       ),
@@ -168,18 +168,18 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    Text(AppLocalizations.of(context)!.availableNow, style: TextStyle(color: Colors.greenAccent[700], fontWeight: FontWeight.bold, fontSize: 12)),
+                    Text(AppLocalizations.of(context)!.availableNow, style: TextStyle(color: colors.success, fontWeight: FontWeight.bold, fontSize: 12)),
                     Container(margin: const EdgeInsets.symmetric(horizontal: 8), height: 12, width: 1, color: colors.textSub.withOpacity(0.3)),
                     Text('120 ${AppLocalizations.of(context)!.customerReviews}', style: TextStyle(color: colors.textSub, fontSize: 12)),
                     const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(color: Colors.amber.withOpacity(0.1), borderRadius: BorderRadius.circular(6)),
+                      decoration: BoxDecoration(color: colors.warning.withOpacity(0.1), borderRadius: BorderRadius.circular(6)),
                       child: Row(
                         children: [
-                          Text(service.rating > 0 ? service.rating.toString() : AppLocalizations.of(context)!.newService, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.amber)),
+                          Text(service.rating > 0 ? service.rating.toString() : AppLocalizations.of(context)!.newService, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: colors.warning)),
                           const SizedBox(width: 4),
-                          const Icon(Icons.star, color: Colors.amber, size: 12),
+                          Icon(Icons.star, color: colors.warning, size: 12),
                         ],
                       ),
                     ),
@@ -206,7 +206,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.card,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: colors.text.withOpacity(0.05)),
       ),
@@ -283,7 +283,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
+              color: colors.card,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: colors.text.withOpacity(0.05)),
             ),
@@ -388,7 +388,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                           const Icon(Icons.keyboard_arrow_down_rounded, size: 10, color: Colors.grey),
                           Text(schedule.toTime, style: TextStyle(fontSize: 10, color: colors.text)),
                         ] else
-                          Text(context.tr('closed'), style: TextStyle(fontSize: 12, color: Colors.redAccent.withOpacity(0.7), fontWeight: FontWeight.bold)),
+                          Text(context.tr('closed'), style: TextStyle(fontSize: 12, color: colors.error.withOpacity(0.7), fontWeight: FontWeight.bold)),
                       ],
                     ),
                   );
@@ -407,7 +407,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.card,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: colors.text.withOpacity(0.05)),
       ),
@@ -443,7 +443,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
+              color: colors.card,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: colors.text.withOpacity(0.05)),
             ),
@@ -459,13 +459,13 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                const Row(
+                Row(
                   children: [
-                    Icon(Icons.star, color: Colors.amber, size: 16),
-                    Icon(Icons.star, color: Colors.amber, size: 16),
-                    Icon(Icons.star, color: Colors.amber, size: 16),
-                    Icon(Icons.star, color: Colors.amber, size: 16),
-                    Icon(Icons.star, color: Colors.amber, size: 16),
+                    Icon(Icons.star, color: colors.warning, size: 16),
+                    Icon(Icons.star, color: colors.warning, size: 16),
+                    Icon(Icons.star, color: colors.warning, size: 16),
+                    Icon(Icons.star, color: colors.warning, size: 16),
+                    Icon(Icons.star, color: colors.warning, size: 16),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -485,7 +485,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.card,
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))],
       ),
       child: SafeArea(

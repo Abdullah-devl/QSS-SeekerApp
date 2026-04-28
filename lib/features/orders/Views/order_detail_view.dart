@@ -180,7 +180,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
             width: 120, // زيادة العرض
             margin: const EdgeInsets.only(left: 12),
             decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
+              color: colors.card,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(color: colors.text.withOpacity(0.05), blurRadius: 10),
@@ -265,7 +265,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.card,
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(color: colors.text.withOpacity(0.04), blurRadius: 20),
@@ -591,7 +591,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
     final colors = context.qsColors;
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.card,
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
@@ -1198,7 +1198,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.card,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         boxShadow: [
           BoxShadow(

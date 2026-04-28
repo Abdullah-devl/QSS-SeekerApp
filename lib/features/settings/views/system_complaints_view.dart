@@ -185,23 +185,23 @@ class _SystemComplaintsViewState extends State<SystemComplaintsView> {
     String text;
     switch (status) {
       case 'pending':
-        color = Colors.orange;
+        color = colors.amber;
         text = l10n.statusPending;
         break;
       case 'in_progress':
-        color = Colors.blue;
+        color = colors.primary;
         text = l10n.statusInProgress;
         break;
       case 'resolved':
-        color = Colors.green;
+        color = colors.success;
         text = l10n.statusResolved;
         break;
       case 'rejected':
-        color = Colors.red;
+        color = colors.error;
         text = l10n.statusRejected;
         break;
       case 'closed':
-        color = Colors.grey;
+        color = colors.textSub;
         text = l10n.statusClosed;
         break;
       default:

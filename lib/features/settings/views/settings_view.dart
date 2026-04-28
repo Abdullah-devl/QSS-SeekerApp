@@ -96,7 +96,7 @@ class _SettingsViewState extends State<SettingsView> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
+                  color: colors.card,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
@@ -405,7 +405,7 @@ class _SettingsViewState extends State<SettingsView> {
                     ? () => Navigator.pushNamed(context, AppRoutes.login)
                     : _logout,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).cardColor,
+                  backgroundColor: colors.card,
                   // ✅ تغيير اللون: أزرق للدخول، أحمر للخروج
                   foregroundColor: userRole == 'guest'
                       ? colors.text
@@ -494,7 +494,7 @@ class _SettingsViewState extends State<SettingsView> {
   Widget _buildSettingsContainer(BuildContext context, List<Widget> children) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: context.qsColors.card,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(

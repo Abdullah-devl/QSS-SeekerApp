@@ -6,6 +6,7 @@ import 'package:seeker/core/theme/qs_colors.dart'; // Import QSColors definition
 import 'package:seeker/features/home/models/category_model.dart';
 import 'package:seeker/features/home/services/models/service_model.dart';
 import 'package:seeker/features/home/viewmodels/home_view_model.dart';
+import 'package:seeker/features/notifications/viewmodels/notification_view_model.dart';
 import 'package:seeker/features/home/views/home_drawer.dart';
 import 'package:seeker/features/home/widgets/custom_nav_bar.dart'; // Import CustomNavBar
 import 'package:seeker/features/orders/ViewModels/orders_viewmodel.dart';
@@ -13,6 +14,7 @@ import 'package:seeker/features/search/viewmodels/search_viewmodel.dart';
 import 'package:seeker/features/search/views/search_view.dart';
 import 'package:seeker/features/settings/views/settings_view.dart'; // Import SettingsView
 import 'package:seeker/core/network/api_endpoints.dart';
+import 'package:seeker/core/services/notification_service.dart';
 
 import '../services/viewmodels/service_details_view_model.dart';
 
@@ -234,11 +236,60 @@ class _HomeViewState extends State<HomeView> {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
+              color: context.qsColors.card,
               shape: BoxShape.circle,
             ),
             child: Icon(Icons.menu, color: context.qsColors.text),
           ),
+        ),
+
+        const SizedBox(width: 12),
+        // زر الإشعارات (الجرس)
+        Consumer<NotificationViewModel>(
+          builder: (context, notificationVm, _) {
+            return InkWell(
+              onTap: () {
+                Navigator.pushNamed(context, '/notifications');
+              },
+              child: Stack(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: context.qsColors.card,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.notifications_none_rounded, color: context.qsColors.text),
+                  ),
+                  if (notificationVm.unreadCount > 0)
+                    Positioned(
+                      right: 4,
+                      top: 4,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: context.qsColors.error,
+                          shape: BoxShape.circle,
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 16,
+                          minHeight: 16,
+                        ),
+                        child: Text(
+                          '${notificationVm.unreadCount}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 8,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            );
+          },
         ),
 
         const Spacer(),
@@ -379,8 +430,8 @@ class _HomeViewState extends State<HomeView> {
   Widget _buildSearchBar(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: context.qsColors.primary,
-        borderRadius: BorderRadius.circular(16),
+        color: context.qsColors.card,
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: context.qsColors.text.withValues(alpha: 0.05),
@@ -653,23 +704,19 @@ class _HomeViewState extends State<HomeView> {
     // تنظيف الرابط من المسافات الزائدة
     String rawPath = cat.iconPath.trim();
 
-    debugPrint('--------------------------------------------------');
-    debugPrint('🔍 Debugging Image Path for Category: ${cat.name}');
-    debugPrint('📥 Raw Path from API: "$rawPath"');
+    // تنظيف الرابط من المسافات الزائدة
+    cat.iconPath.trim();
 
     // 1. إذا كان الرابط كاملاً من الإنترنت
     if (rawPath.startsWith('http') || rawPath.startsWith('https')) {
       imageUrl = rawPath;
-      debugPrint('✅ Is Full URL: Yes');
     }
     // 2. إذا كان الرابط محلياً (Asset) يبدأ بـ assets
     else if (rawPath.startsWith('assets/')) {
-      debugPrint('📂 Is Local Asset: Yes');
       return Image.asset(
         rawPath,
         fit: BoxFit.contain,
         errorBuilder: (_, __, ___) {
-          debugPrint('❌ Failed to load local asset: $rawPath');
           return Icon(Icons.category, color: context.qsColors.textSub);
         },
       );
@@ -681,25 +728,17 @@ class _HomeViewState extends State<HomeView> {
           ? ApiEndpoints.storageBaseUrl
           : '${ApiEndpoints.storageBaseUrl}/';
 
-      debugPrint('🌐 Base URL: $basePath');
-
       String imagePath = rawPath.startsWith('/')
           ? rawPath.substring(1)
           : rawPath;
 
       imageUrl = '$basePath$imagePath';
-      debugPrint('🔗 Constructed URL: $imageUrl');
     }
-
-    debugPrint('🖼️ Final Image URL to Load: $imageUrl');
-    debugPrint('--------------------------------------------------');
 
     return Image.network(
       imageUrl,
       fit: BoxFit.contain,
       errorBuilder: (context, error, stackTrace) {
-        // طباعة الخطأ لمعرفة السبب
-        debugPrint('❌ Image Error for $imageUrl: $error');
         return Container(
           color: context.qsColors.background,
           child: Icon(Icons.broken_image, color: context.qsColors.textSub),

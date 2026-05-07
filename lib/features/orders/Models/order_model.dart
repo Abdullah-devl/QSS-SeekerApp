@@ -44,16 +44,10 @@ class OrderBond {
   });
 
   factory OrderBond.fromJson(Map<String, dynamic> json) {
-    String image = json['image_path'] ?? '';
-    // إضافة الرابط الأساسي إذا كان المسار نسبياً
-    if (image.isNotEmpty && !image.startsWith('http')) {
-      image = "${ApiEndpoints.storageBaseUrl}$image";
-    }
-
     return OrderBond(
       id: json['id']?.toString() ?? '',
       bondNumber: json['bond_number']?.toString() ?? '---',
-      imagePath: image,
+      imagePath: ApiEndpoints.getImageUrl(json['image_path']),
       amount: double.tryParse(json['amount']?.toString() ?? '0') ?? 0.0,
     );
   }
@@ -181,11 +175,15 @@ class OrderModel {
 
     // استخراج السندات
     final List rawBonds = json['bonds'] ?? json['receipts'] ?? [];
-    List<OrderBond> bonds = rawBonds.map((e) => OrderBond.fromJson(Map<String, dynamic>.from(e))).toList();
+    List<OrderBond> bonds = rawBonds
+        .map<OrderBond>((e) => OrderBond.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
 
     // استخراج الحسابات البنكية للمزود
     final List rawBanks = providerData['banks'] ?? providerData['bank_accounts'] ?? [];
-    List<BankModel> providerBanks = rawBanks.map((e) => BankModel.fromJson(Map<String, dynamic>.from(e))).toList();
+    List<BankModel> providerBanks = rawBanks
+        .map<BankModel>((e) => BankModel.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
 
     if (providerBanks.isEmpty && providerData.isNotEmpty) {
       providerBanks = BankModel.getMockBanks();
@@ -206,14 +204,14 @@ class OrderModel {
     return OrderModel(
       id: json['id']?.toString() ?? '',
       customerName: userData['name'] ?? 'عميل',
-      customerImage: userData['avatar'] ?? userData['image_path'] ?? '',
+      customerImage: ApiEndpoints.getImageUrl(userData['avatar'] ?? userData['image_path']),
       customerPhone: userData['phone'] ?? userData['mobile'] ?? '',
       providerName: providerData['name'] ?? 'مزود الخدمة',
-      providerImage: providerData['avatar'] ?? providerData['image_path'] ?? '',
+      providerImage: ApiEndpoints.getImageUrl(providerData['avatar'] ?? providerData['image_path']),
       providerPhone: providerData['phone'] ?? providerData['mobile'] ?? '',
       providerEmail: providerData['email'] ?? '',
       serviceName: mainServiceName,
-      mainServiceImage: mainServiceImage,
+      mainServiceImage: ApiEndpoints.getImageUrl(mainServiceImage),
       mainServicePrice: mainServicePrice,
       price: double.tryParse(json['total_price']?.toString() ?? '0') ?? 0.0,
       oldPrice: json['old_price'] != null ? double.tryParse(json['old_price'].toString()) : null,

@@ -2,16 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/core/routes/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart'; // ✅ تمت الإضافة
 import 'package:seeker/core/theme/qs_colors.dart'; // Import QSColors definition
 import 'package:seeker/features/home/models/category_model.dart';
 import 'package:seeker/features/home/services/models/service_model.dart';
 import 'package:seeker/features/home/viewmodels/home_view_model.dart';
+import 'package:seeker/features/home/models/advertisement_model.dart'; // ✅ تمت الإضافة
 import 'package:seeker/features/notifications/viewmodels/notification_view_model.dart';
 import 'package:seeker/features/home/views/home_drawer.dart';
 import 'package:seeker/features/home/widgets/custom_nav_bar.dart'; // Import CustomNavBar
 import 'package:seeker/features/orders/ViewModels/orders_viewmodel.dart';
 import 'package:seeker/features/search/viewmodels/search_viewmodel.dart';
 import 'package:seeker/features/search/views/search_view.dart';
+import 'package:seeker/features/home/viewmodels/category_details_view_model.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/home/views/category_details_view.dart'; // ✅ تمت الإضافة
 import 'package:seeker/features/settings/views/settings_view.dart'; // Import SettingsView
 import 'package:seeker/core/network/api_endpoints.dart';
 import 'package:seeker/core/services/notification_service.dart';
@@ -20,12 +24,14 @@ import '../services/viewmodels/service_details_view_model.dart';
 
 import '../services/view/service_details_view.dart';
 import 'package:seeker/features/home/repositories/home_repository.dart';
+import 'package:seeker/features/home/repositories/advertisement_repository.dart'; // ✅ تمت الإضافة
 import 'package:seeker/features/favorites/views/favorite_view.dart';
 import 'package:seeker/features/favorites/viewmodels/favorite_view_model.dart';
 import 'package:seeker/core/widgets/service_card.dart';
 import 'package:seeker/l10n/app_localizations.dart';
 import 'package:seeker/features/orders/Views/orders_view.dart';
-import 'package:seeker/features/profile/viewmodels/profile_view_model.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/profile/viewmodels/profile_view_model.dart';
+import 'package:seeker/features/home/widgets/advertisement_carousel.dart'; // ✅ تمت الإضافة
 
 
 class HomeView extends StatefulWidget {
@@ -38,18 +44,120 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _popupShown = false; // منع تكرار ظهور الإعلان المنبثق
 
   @override
   void initState() {
     super.initState();
     // 🔄 تحميل البيانات عند فتح الصفحة
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<HomeViewModel>().loadHomeData();
+      final homeVm = context.read<HomeViewModel>();
+      homeVm.loadHomeData().then((_) {
+        _checkAndShowPopupAd();
+      });
       // 🚀 جلب الطلبات لتحديث العداد في القائمة الجانبية (Drawer)
       context.read<OrdersViewModel>().fetchOrders();
       // 🚀 جلب بيانات الملف الشخصي الحية للترحيب بالاسم الصحيح
       context.read<ProfileViewModel>().fetchProfile();
     });
+  }
+
+  /// 👁️ التحقق من وجود إعلان منبثق وعرضه
+  void _checkAndShowPopupAd() {
+    final viewModel = context.read<HomeViewModel>();
+    if (viewModel.popupAds.isNotEmpty && !_popupShown) {
+      setState(() => _popupShown = true);
+      _showAdPopup(viewModel.popupAds.first);
+    }
+  }
+
+  /// 📢 عرض الإعلان المنبثق في Dialog
+  void _showAdPopup(AdvertisementModel ad) {
+    // تتبع المشاهدة
+    context.read<HomeViewModel>().trackAdView(ad.id);
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Stack(
+          alignment: Alignment.topRight,
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+                _handleAdNavigation(ad);
+              },
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: Image.network(ad.imageUrl, fit: BoxFit.contain),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.close, color: Colors.white, size: 30),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 🚀 منطق التوجيه للإعلان
+  void _handleAdNavigation(AdvertisementModel ad) {
+    debugPrint('📢 [Popup Ad Tap]: ID=${ad.id}, Type=${ad.targetType}, TargetId=${ad.targetId}');
+    context.read<HomeViewModel>().trackAdClick(ad.id);
+    final homeRepo = context.read<HomeRepository>();
+    final String target = ad.targetType.toLowerCase().trim();
+
+    if (target == 'service' && ad.targetId != null) {
+      debugPrint('🚀 Fetching Service for Navigation: ${ad.targetId}');
+      homeRepo.fetchServiceById(ad.targetId!).then((service) {
+        if (mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChangeNotifierProvider(
+                create: (context) => ServiceDetailsViewModel(homeRepo),
+                child: ServiceDetailsView(initialService: service),
+              ),
+            ),
+          );
+        }
+      }).catchError((e) => debugPrint('❌ Error fetching service: $e'));
+    } else if (target == 'category' && ad.targetId != null) {
+      debugPrint('🚀 Fetching Categories for Navigation: ${ad.targetId}');
+      homeRepo.fetchCategories().then((categories) {
+        final category = categories.firstWhere((c) => c.id == ad.targetId);
+        if (mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChangeNotifierProvider(
+                create: (context) => CategoryDetailsViewModel(
+                  homeRepo,
+                  context.read<AdvertisementRepository>(),
+                ),
+                child: CategoryDetailsView(category: category),
+              ),
+            ),
+          );
+        }
+      }).catchError((e) => debugPrint('❌ Error fetching categories: $e'));
+    } else if (target == 'external' && ad.externalLink != null && ad.externalLink!.isNotEmpty) {
+      debugPrint('🚀 Opening External Link: ${ad.externalLink}');
+      final url = Uri.parse(ad.externalLink!.trim());
+      canLaunchUrl(url).then((can) {
+        if (can) {
+          launchUrl(url, mode: LaunchMode.externalApplication);
+        } else {
+          debugPrint('❌ Cannot launch URL: ${ad.externalLink}');
+        }
+      }).catchError((e) => debugPrint('❌ URL Launch Error: $e'));
+    } else {
+      debugPrint('ℹ️ No navigation action for target: $target');
+    }
   }
 
   /// 🏗️ دالة بناء الواجهة
@@ -162,10 +270,12 @@ class _HomeViewState extends State<HomeView> {
               const SizedBox(height: 24),
 
               // ===========================================
-              // 3️⃣ البانر (عرض ترويجي خاص)
+              // 3️⃣ البانر (إعلانات ديناميكية)
               // ===========================================
-              _buildPromoBanner(),
-              const SizedBox(height: 24),
+              if (viewModel.carouselAds.isNotEmpty) ...[
+                AdvertisementCarousel(advertisements: viewModel.carouselAds),
+                const SizedBox(height: 24),
+              ],
 
               // ===========================================
               // 4️⃣ قسم التصنيفات (Categories)
@@ -179,11 +289,11 @@ class _HomeViewState extends State<HomeView> {
               const SizedBox(height: 24),
 
               // ===========================================
-              // 5️⃣ قسم الأكثر طلباً (Popular Services)
+              // 5️⃣ قسم الموصى بها (Recommended Services)
               // ===========================================
-              _buildSectionTitle(AppLocalizations.of(context)!.mostPopular),
+              _buildSectionTitle(AppLocalizations.of(context)!.recommendedServices),
               const SizedBox(height: 16),
-              _buildPopularServicesList(viewModel.popularServices),
+              _buildRecommendedServicesList(viewModel.recommendedServices),
 
               // مساحة إضافية في الأسفل لتجنب تغطية المحتوى بالـ NavBar
               const SizedBox(height: 100),
@@ -491,105 +601,7 @@ class _HomeViewState extends State<HomeView> {
   // ---------------------------------------------------------------------------
   // 3️⃣ البانر الترويجي (Promo Banner Component)
   // ---------------------------------------------------------------------------
-  Widget _buildPromoBanner() {
-    return Container(
-      width: double.infinity,
-      height: 200, // ✅ ارتفاع ثابت لتجنب مشاكل العرض (Overflow)
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: LinearGradient(
-          colors: [
-            context.qsColors.primary,
-            context.qsColors.secondary,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: context.qsColors.primary.withValues(alpha: 0.2),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          // طبقة تدرج لوني لإبراز النصوص
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              gradient: LinearGradient(
-                colors: [
-                  context.qsColors.text.withValues(alpha: 0.8),
-                  Colors.transparent,
-                ],
-                begin: Alignment.centerRight,
-                end: Alignment.centerLeft,
-              ),
-            ),
-          ),
-
-          // محتوى البانر
-          Positioned(
-            right: 20,
-            top: 20,
-            bottom: 20,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // شارة "عرض خاص" small badge
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: context.qsColors.success, // أخضر متجاوب
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    AppLocalizations.of(context)!.specialOffer,
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  AppLocalizations.of(context)!.cleaningDiscount,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  AppLocalizations.of(context)!.getShinier,
-                  style: TextStyle(color: Colors.white70, fontSize: 12),
-                ),
-                const SizedBox(height: 12),
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: context.qsColors.primary,
-                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 8,
-                    ),
-                  ),
-                  child: Text(AppLocalizations.of(context)!.bookNow),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // تم حذف _buildPromoBanner بطلب من المستخدم لعدم عرض بيانات ثابتة
 
   // 📝 عنوان القسم مع زر "عرض الكل"
   Widget _buildSectionTitle(String title, {VoidCallback? onSeeAll}) {
@@ -647,12 +659,14 @@ class _HomeViewState extends State<HomeView> {
                 Container(
                   width: 70,
                   height: 70,
-                  padding: const EdgeInsets.all(7),
                   decoration: BoxDecoration(
                     color: bgColor,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: _buildCategoryImage(cat),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: _buildCategoryImage(cat),
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -668,9 +682,9 @@ class _HomeViewState extends State<HomeView> {
   }
 
   // ---------------------------------------------------------------------------
-  // 5️⃣ قائمة الخدمات الأكثر طلباً (Popular Services List)
+  // 5️⃣ قائمة الخدمات الموصى بها (Recommended Services List)
   // ---------------------------------------------------------------------------
-  Widget _buildPopularServicesList(List<ServiceModel> services) {
+  Widget _buildRecommendedServicesList(List<ServiceModel> services) {
     return Column(
       children: services.map((service) {
         return ServiceCard(
@@ -699,45 +713,19 @@ class _HomeViewState extends State<HomeView> {
   // 🖼️ معالجة صور التصنيفات (Image Handling)
   // ---------------------------------------------------------------------------
   Widget _buildCategoryImage(CategoryModel cat) {
-    String imageUrl;
-
-    // تنظيف الرابط من المسافات الزائدة
-    String rawPath = cat.iconPath.trim();
-
-    // تنظيف الرابط من المسافات الزائدة
-    cat.iconPath.trim();
-
-    // 1. إذا كان الرابط كاملاً من الإنترنت
-    if (rawPath.startsWith('http') || rawPath.startsWith('https')) {
-      imageUrl = rawPath;
-    }
-    // 2. إذا كان الرابط محلياً (Asset) يبدأ بـ assets
-    else if (rawPath.startsWith('assets/')) {
+    if (cat.iconPath.startsWith('assets/')) {
       return Image.asset(
-        rawPath,
-        fit: BoxFit.contain,
+        cat.iconPath,
+        fit: BoxFit.cover,
         errorBuilder: (_, __, ___) {
           return Icon(Icons.category, color: context.qsColors.textSub);
         },
       );
     }
-    // 3. أي حالة أخرى، نعتبرها مساراً من السيرفر ونقوم بدمجها مع BaseURL
-    else {
-      // نتأكد أننا لا نكرر الـ slash
-      String basePath = ApiEndpoints.storageBaseUrl.endsWith('/')
-          ? ApiEndpoints.storageBaseUrl
-          : '${ApiEndpoints.storageBaseUrl}/';
-
-      String imagePath = rawPath.startsWith('/')
-          ? rawPath.substring(1)
-          : rawPath;
-
-      imageUrl = '$basePath$imagePath';
-    }
 
     return Image.network(
-      imageUrl,
-      fit: BoxFit.contain,
+      cat.iconPath,
+      fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) {
         return Container(
           color: context.qsColors.background,

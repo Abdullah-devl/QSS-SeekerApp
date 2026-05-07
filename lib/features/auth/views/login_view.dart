@@ -257,7 +257,7 @@ class LoginView extends StatelessWidget {
                                 context,
                                 icon: Icons.g_mobiledata_rounded,
                                 label: 'Google',
-                                onTap: () {},
+                                onTap: () => viewModel.loginWithGoogle(context),
                                 isGoogle: true,
                               ),
                             ),

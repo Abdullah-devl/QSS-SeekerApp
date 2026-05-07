@@ -46,7 +46,21 @@ class _SplashViewState extends State<SplashView> {
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, AppRoutes.welcome);
       } else if (hasToken || isGuest) {
-        // 2️⃣ المستخدم مسجل دخول سابقاً (لديه توكن) أو زائر -> نذهب للرئيسية (Home)
+        // 2️⃣ المستخدم مسجل دخول سابقاً (لديه توكن) أو زائر
+        
+        // إذا كان مسجل دخول وليس زائراً، نتحقق من الموافقة على السياسة
+        if (hasToken && !isGuest) {
+          final isPolicyAgreed = await tokenStorage.isPolicyAgreed();
+          if (!isPolicyAgreed) {
+            // غير موافق -> نوجهه لصفحة السياسة
+            if (!mounted) return;
+            Navigator.pushReplacementNamed(context, AppRoutes.privacyPolicy);
+            return;
+          }
+        }
+        
+        // موافق أو زائر -> نذهب للرئيسية (Home)
+        if (!mounted) return;
         Navigator.pushReplacementNamed(context, AppRoutes.home);
       } else {
         // 3️⃣ مستخدم عاد للتطبيق ولكنه غير مسجل دخول -> نذهب لتسجيل الدخول (Login)

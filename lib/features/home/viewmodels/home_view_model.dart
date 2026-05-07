@@ -5,6 +5,8 @@ import 'package:seeker/core/storage/token_storage.dart';
 import '../repositories/home_repository.dart';
 import '../models/category_model.dart';
 import '../services/models/service_model.dart';
+import '../models/advertisement_model.dart';
+import '../repositories/advertisement_repository.dart';
 
 /// 🧠 اسم الملف: home_view_model.dart
 /// 📝 الوصف: مسؤول عن إدارة حالة ومنطق الصفحة الرئيسية.
@@ -12,11 +14,11 @@ import '../services/models/service_model.dart';
 /// يتعامل مع تحميل البيانات، تحديث الموقع، وإدارة حالات التحميل والأخطاء.
 
 class HomeViewModel extends ChangeNotifier {
-  final HomeRepository
-  _homeRepository; // مستودع البيانات لجلب التصنيفات والخدمات
+  final HomeRepository _homeRepository;
+  final AdvertisementRepository _advertisementRepository; // المستودع الخاص بالإعلانات
   final TokenStorage _tokenStorage; // للوصول لبيانات المستخدم المخزنة محلياً
 
-  HomeViewModel(this._homeRepository, this._tokenStorage);
+  HomeViewModel(this._homeRepository, this._advertisementRepository, this._tokenStorage);
 
   // ---------------------------------------------------------------------------
   // 📊 المتغيرات (State)
@@ -24,7 +26,9 @@ class HomeViewModel extends ChangeNotifier {
 
   // قوائم البيانات
   List<CategoryModel> _categories = [];
-  List<ServiceModel> _popularServices = [];
+  List<ServiceModel> _recommendedServices = [];
+  List<AdvertisementModel> _carouselAds = []; // إعلانات البانر المتحرك
+  List<AdvertisementModel> _popupAds = []; // الإعلانات المنبثقة
 
   // حالات التحميل والأخطاء
   bool _isLoading = false;
@@ -38,7 +42,9 @@ class HomeViewModel extends ChangeNotifier {
 
   // Getters للوصول للمتغيرات من الواجهة
   List<CategoryModel> get categories => _categories;
-  List<ServiceModel> get popularServices => _popularServices;
+  List<ServiceModel> get recommendedServices => _recommendedServices;
+  List<AdvertisementModel> get carouselAds => _carouselAds;
+  List<AdvertisementModel> get popupAds => _popupAds;
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
   String get userName => _userName;
@@ -83,16 +89,22 @@ class HomeViewModel extends ChangeNotifier {
         _role = 'guest';
       }
 
-      // 2. جلب التصنيفات والخدمات من السيرفر بالتوازي لتقليل وقت الانتظار
+      // 2. جلب التصنيفات والخدمات والإعلانات من السيرفر بالتوازي
+      String userType = _role == 'guest' ? 'all' : (_role == 'provider' ? 'provider' : 'client');
+      
       final results = await Future.wait([
         _homeRepository.fetchCategories(),
-        _homeRepository.fetchPopularServices(),
+        _homeRepository.fetchRecommendedServices(),
+        _advertisementRepository.fetchAdvertisements(userType),
       ]);
-      // print(results);
 
-      // 3. تحديث القوائم بالبيانات القادمة
+      // 3. تحديث القوائم بالبيانات القادمة وتصنيف الإعلانات
       _categories = results[0] as List<CategoryModel>;
-      _popularServices = results[1] as List<ServiceModel>;
+      _recommendedServices = results[1] as List<ServiceModel>;
+      
+      final allAds = results[2] as List<AdvertisementModel>;
+      _carouselAds = allAds.where((ad) => ad.type == 'carousel' || ad.type == 'banner').toList();
+      _popupAds = allAds.where((ad) => ad.type == 'popup').toList();
     } catch (e) {
       _errorMessage = e.toString();
     } finally {
@@ -171,5 +183,19 @@ class HomeViewModel extends ChangeNotifier {
       _isLocationLoading = false;
       notifyListeners();
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // 📢 تتبع الإعلانات (Ad Tracking)
+  // ---------------------------------------------------------------------------
+
+  /// تتبع مشاهدة الإعلان
+  void trackAdView(int adId) {
+    _advertisementRepository.trackView(adId);
+  }
+
+  /// تتبع النقر على الإعلان
+  void trackAdClick(int adId) {
+    _advertisementRepository.trackClick(adId);
   }
 }

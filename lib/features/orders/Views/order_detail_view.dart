@@ -875,9 +875,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                             (order.mainServiceImage != null &&
                                 order.mainServiceImage!.isNotEmpty)
                             ? DecorationImage(
-                                image: NetworkImage(
-                                  "${ApiEndpoints.storageBaseUrl}${order.mainServiceImage}",
-                                ),
+                                image: NetworkImage(order.mainServiceImage!),
                                 fit: BoxFit.cover,
                               )
                             : null,
@@ -1186,6 +1184,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
     OrdersViewModel viewModel,
     OrderModel order,
   ) {
+    final colors = context.qsColors;
     // 🚦 زر الإلغاء (يظهر فقط إذا لم يكتمل الطلب ولم يُلغى)
     final bool canCancel =
         order.status != 'canceled' &&

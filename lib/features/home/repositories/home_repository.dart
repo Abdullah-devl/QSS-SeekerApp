@@ -36,6 +36,7 @@
 // }
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'dart:developer' as developer;
 import '../../../../core/network/api_service.dart';
 import '../../../../core/network/api_endpoints.dart';
@@ -65,10 +66,10 @@ class HomeRepository {
       final Response response = await _apiService.get(ApiEndpoints.categories);
 
       if (response.statusCode == 200) {
-        // developer.log(
-        //   '📦 Raw Categories Data: ${response.data}',
-        //   name: 'HomeRepository',
-        // );
+        developer.log(
+          '📦 Raw Categories Data: ${response.data}',
+          name: 'HomeRepository',
+        );
 
         // التعامل مع هيكلية البيانات المختلفة المحتملة من السيرفر
         final dynamic data = response.data;
@@ -122,6 +123,30 @@ class HomeRepository {
       }
     } catch (e) {
       // تفشل بصمت وترجع قائمة فارغة
+      return [];
+    }
+  }
+
+  // ===========================================================================
+  // ✨ جلب الخدمات الموصى بها (Recommended Services)
+  // ===========================================================================
+
+  /// يقوم بجلب قائمة الخدمات الموصى بها (أفضل الخدمات).
+  Future<List<ServiceModel>> fetchRecommendedServices({int limit = 10}) async {
+    try {
+      final Response response = await _apiService.get(
+        ApiEndpoints.recommendedServices,
+        queryParameters: {'limit': limit},
+      );
+      if (response.statusCode == 200) {
+        // نتوقع أن تكون البيانات مصفوفة مباشرة أو داخل مفتاح 'data'
+        final dynamic rawData = response.data;
+        final List<dynamic> data = (rawData is Map) ? (rawData['data'] ?? []) : (rawData as List? ?? []);
+        return data.map((json) => ServiceModel.fromJson(json as Map<String, dynamic>)).toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
       return [];
     }
   }

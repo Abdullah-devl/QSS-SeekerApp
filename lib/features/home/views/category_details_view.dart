@@ -9,7 +9,11 @@ import '../models/category_model.dart';
 import '../services/models/service_model.dart';
 import '../repositories/home_repository.dart';
 import '../viewmodels/category_details_view_model.dart';
-import 'package:seeker/core/routes/app_routes.dart'; // ✅ إضافة الاستيراد المفقود
+import 'package:seeker/core/routes/app_routes.dart';
+import 'package:url_launcher/url_launcher.dart'; // ✅ تمت الإضافة
+import '../models/advertisement_model.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/home/repositories/advertisement_repository.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/home/widgets/advertisement_carousel.dart';
 
 /// 📂 اسم الملف: category_details_view.dart
 /// 📝 الوصف: صفحة تفاصيل التصنيف بالتصميم الأفقي الأنيق ومتوافقة مع الثيم الخاص (qsColors).
@@ -98,7 +102,7 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
                   if (data.services.isNotEmpty) ...[
                     _buildSectionTitle('الخدمات المتاحة', colors),
                     const SizedBox(height: 12),
-                    _buildServicesList(data.services, colors),
+                    _buildServicesList(data.services, colors, vm),
                   ] else ...[
                     Center(
                       child: Padding(
@@ -264,15 +268,24 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
     );
   }
 
-  /// 🛠️ قائمة الخدمات (Vertical) باستخدام ServiceCard
+  /// 🛠️ قائمة الخدمات (Vertical) مع دعم إدخال إعلان عشوائي
   Widget _buildServicesList(
     List<ServiceModel> services,
     dynamic colors,
+    CategoryDetailsViewModel vm,
   ) {
-    return Column(
-      children: services.map((service) {
-        return ServiceCard(
-          service: service,
+    List<Widget> items = [];
+
+    for (int i = 0; i < services.length; i++) {
+      // إذا وصلنا للموقع المختار للإعلان، نقوم بإدخاله
+      if (vm.sectionAd != null && vm.adPosition == i) {
+        items.add(_buildSectionAdCard(vm.sectionAd!, colors));
+        items.add(const SizedBox(height: 16));
+      }
+
+      items.add(
+        ServiceCard(
+          service: services[i],
           onTap: () {
             Navigator.push(
               context,
@@ -281,16 +294,145 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
                   create: (context) => ServiceDetailsViewModel(
                     context.read<HomeRepository>(),
                   ),
-                  child: ServiceDetailsView(initialService: service),
+                  child: ServiceDetailsView(initialService: services[i]),
                 ),
               ),
             );
           },
           onFavoriteToggle: () {
-            context.read<FavoriteViewModel>().toggleFavorite(service);
+            context.read<FavoriteViewModel>().toggleFavorite(services[i]);
           },
-        );
-      }).toList(),
+        ),
+      );
+    }
+
+    return Column(children: items);
+  }
+
+  /// 📢 كارد الإعلان الخاص بالأقسام (Section Ad)
+  Widget _buildSectionAdCard(AdvertisementModel ad, dynamic colors) {
+    // تتبع المشاهدة عند بناء الكارد
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<CategoryDetailsViewModel>().trackAdView(ad.id);
+    });
+
+    return GestureDetector(
+      onTap: () {
+        context.read<CategoryDetailsViewModel>().trackAdClick(ad.id);
+        _handleAdNavigation(ad);
+      },
+      child: Container(
+        width: double.infinity,
+        height: 150,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          image: DecorationImage(
+            image: NetworkImage(ad.imageUrl),
+            fit: BoxFit.cover,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              begin: Alignment.bottomRight,
+              colors: [
+                Colors.black.withValues(alpha: 0.6),
+                Colors.transparent,
+              ],
+            ),
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: colors.primary,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Text(
+                  'إعلان ممول',
+                  style: TextStyle(color: Colors.white, fontSize: 10),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                ad.title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
+  }
+
+  /// 🚀 نفس منطق التوجيه الموجود في الصفحة الرئيسية
+  void _handleAdNavigation(AdvertisementModel ad) {
+    debugPrint('📢 [Section Ad Tap]: ID=${ad.id}, Type=${ad.targetType}, TargetId=${ad.targetId}');
+    final homeRepo = context.read<HomeRepository>();
+    final String target = ad.targetType.toLowerCase().trim();
+
+    if (target == 'service' && ad.targetId != null) {
+      debugPrint('🚀 Fetching Service for Navigation: ${ad.targetId}');
+      homeRepo.fetchServiceById(ad.targetId!).then((service) {
+        if (mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChangeNotifierProvider(
+                create: (context) => ServiceDetailsViewModel(homeRepo),
+                child: ServiceDetailsView(initialService: service),
+              ),
+            ),
+          );
+        }
+      }).catchError((e) => debugPrint('❌ Error fetching service: $e'));
+    } else if (target == 'category' && ad.targetId != null) {
+      debugPrint('🚀 Fetching Categories for Navigation: ${ad.targetId}');
+      homeRepo.fetchCategories().then((categories) {
+        final category = categories.firstWhere((c) => c.id == ad.targetId);
+        if (mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChangeNotifierProvider(
+                create: (context) => CategoryDetailsViewModel(
+                  homeRepo,
+                  context.read<AdvertisementRepository>(),
+                ),
+                child: CategoryDetailsView(category: category),
+              ),
+            ),
+          );
+        }
+      }).catchError((e) => debugPrint('❌ Error fetching categories: $e'));
+    } else if (target == 'external' && ad.externalLink != null && ad.externalLink!.isNotEmpty) {
+      debugPrint('🚀 Opening External Link: ${ad.externalLink}');
+      final url = Uri.parse(ad.externalLink!.trim());
+      canLaunchUrl(url).then((can) {
+        if (can) {
+          launchUrl(url, mode: LaunchMode.externalApplication);
+        } else {
+          debugPrint('❌ Cannot launch URL: ${ad.externalLink}');
+        }
+      }).catchError((e) => debugPrint('❌ URL Launch Error: $e'));
+    } else {
+      debugPrint('ℹ️ No navigation action for target: $target');
+    }
   }
 }

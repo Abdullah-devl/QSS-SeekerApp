@@ -144,7 +144,21 @@ class MyProfileView extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 24),
+
+                // 💰 عرض رصيد النقاط
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildPointsStat(
+                      label: 'رصيد النقاط',
+                      value: (profile.bonusPoints + profile.paidPoints).toStringAsFixed(0),
+                      icon: Icons.stars_rounded,
+                      colors: colors,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
 
                 const Divider(height: 40),
 
@@ -173,27 +187,7 @@ class MyProfileView extends StatelessWidget {
                   colors: colors,
                 ),
                 
-                const SizedBox(height: 48),
-                
-                // زر تسجيل الخروج
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      // TODO: تنفيذ تسجيل الخروج
-                    },
-                    icon: Icon(Icons.logout_rounded, color: colors.error),
-                    label: Text(
-                      l10n.logout,
-                      style: TextStyle(color: colors.error, fontWeight: FontWeight.bold),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      side: BorderSide(color: colors.error),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    ),
-                  ),
-                ),
+                const SizedBox(height: 24),
               ],
             ),
           ),
@@ -267,6 +261,56 @@ class MyProfileView extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildPointsStat({
+    required String label,
+    required String value,
+    required IconData icon,
+    required dynamic colors,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      decoration: BoxDecoration(
+        color: colors.card,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: colors.text.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(color: colors.primary.withValues(alpha: 0.1)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.orange.shade700, size: 24),
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: colors.text,
+                ),
+              ),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: colors.textSub,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

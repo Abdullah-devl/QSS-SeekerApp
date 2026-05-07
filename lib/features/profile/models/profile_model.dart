@@ -23,6 +23,7 @@ class ProfileModel {
   final DateTime? providerVerifiedUntil;
   final double bonusPoints;
   final double paidPoints;
+  final String? address;
 
   // 🎨 حقول جدول profiles
   final String jobTitle;
@@ -56,6 +57,7 @@ class ProfileModel {
     this.providerVerifiedUntil,
     required this.bonusPoints,
     required this.paidPoints,
+    this.address,
     this.jobTitle = '',
     this.bio = '',
     this.avatarUrl = '',
@@ -92,9 +94,7 @@ class ProfileModel {
                   profileData['avatar'] ?? 
                   userJson['image_url'] ?? 
                   userJson['avatar'] ?? '';
-      if (val == null || val.toString().isEmpty || val.toString() == 'null') return '';
-      final url = val.toString();
-      return url.startsWith('http') ? url : '${ApiEndpoints.domain}$url';
+      return ApiEndpoints.getImageUrl(val?.toString());
     }
 
     // 🔍 البحث عن المعرف (ID) - الأولوية لمعرف المستخدم الفعلي
@@ -144,6 +144,7 @@ class ProfileModel {
           double.tryParse(userJson['bonus_points']?.toString() ?? '0') ?? 0.0,
       paidPoints:
           double.tryParse(userJson['paid_points']?.toString() ?? '0') ?? 0.0,
+      address: userJson['address'] ?? profileData['address'] ?? json['address'],
 
       jobTitle: profileData['job_title'] ?? userJson['job_title'] ?? 'فني محترف',
       bio: profileData['bio'] ?? userJson['bio'] ?? '',

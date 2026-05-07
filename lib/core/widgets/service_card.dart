@@ -115,17 +115,7 @@ class ServiceCard extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: colors.primary.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              AppLocalizations.of(context)!.specialOffer, // مثال لتاق القسم
-                              style: TextStyle(color: colors.primary, fontSize: 10, fontWeight: FontWeight.bold),
-                            ),
-                          ),
+                          const SizedBox(), // مساحة فارغة بدلاً من تاق العرض الخاص
                           Row(
                             children: [
                               Icon(Icons.star, color: colors.amber, size: 14),
@@ -159,7 +149,7 @@ class ServiceCard extends StatelessWidget {
                         children: [
                           Icon(Icons.person_outline, size: 12, color: colors.textSub),
                           const SizedBox(width: 4),
-                          Expanded(
+                          Flexible(
                             child: Text(
                               service.providerName,
                               style: TextStyle(color: colors.textSub, fontSize: 11),
@@ -167,6 +157,14 @@ class ServiceCard extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
+                          if (service.isProviderVerified) ...[
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.verified,
+                              size: 14,
+                              color: colors.primary, // أو استخدم لون التوثيق الخاص بك
+                            ),
+                          ],
                         ],
                       ),
                       const SizedBox(height: 12),

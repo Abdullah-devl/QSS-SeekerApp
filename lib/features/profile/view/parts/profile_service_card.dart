@@ -110,7 +110,7 @@ class ProfileServiceCard extends StatelessWidget {
                     children: [
                       Icon(Icons.person_outline, size: 12, color: colors.textSub),
                       const SizedBox(width: 4),
-                      Expanded(
+                      Flexible(
                         child: Text(
                           service.providerName,
                           style: TextStyle(color: colors.textSub, fontSize: 11),
@@ -118,6 +118,14 @@ class ProfileServiceCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      if (service.isProviderVerified) ...[
+                        const SizedBox(width: 4),
+                        Icon(
+                          Icons.verified,
+                          size: 14,
+                          color: colors.primary,
+                        ),
+                      ],
                     ],
                   ),
                   const SizedBox(height: 12),

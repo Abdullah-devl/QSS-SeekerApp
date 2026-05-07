@@ -15,6 +15,23 @@ class TokenStorage {
   static const String _userAddressKey = 'user_address';
   static const String _userIdKey = 'user_id';
   static const String _languageKey = 'app_language';
+  static const String _policyAgreedKey = 'is_policy_agreed';
+
+  // ===========================================================================
+  // 📜 إدارة الموافقة على السياسة
+  // ===========================================================================
+
+  /// 💾 حفظ حالة الموافقة على السياسة
+  Future<void> savePolicyAgreement(bool agreed) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_policyAgreedKey, agreed);
+  }
+
+  /// 📤 استرجاع حالة الموافقة على السياسة
+  Future<bool> isPolicyAgreed() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_policyAgreedKey) ?? false;
+  }
 
   // ===========================================================================
   // 🌍 إدارة اللغة
@@ -97,6 +114,12 @@ class TokenStorage {
       'phone': prefs.getString(_userPhoneKey),
       'address': prefs.getString(_userAddressKey),
     };
+  }
+
+  /// 📤 استرجاع دور المستخدم فقط
+  Future<String?> getRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_userRoleKey);
   }
 
   /// 🗑️ مسح جميع بيانات المستخدم (الاسم، الدور، والـ Token).

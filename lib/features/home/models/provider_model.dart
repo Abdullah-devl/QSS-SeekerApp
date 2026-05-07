@@ -29,6 +29,8 @@
 /// 📂 اسم الملف: provider_model.dart
 /// 📝 الوصف: نموذج بيانات مقدم الخدمة (Provider).
 
+import 'package:seeker/core/network/api_endpoints.dart';
+
 class ProviderModel {
   final int id;
   final String name;
@@ -50,11 +52,7 @@ class ProviderModel {
     String finalImage = '';
 
     // 2. 🚀 حارس البوابة (الشرط الذكي)
-    if (rawImagePath.toString().trim().isNotEmpty && rawImagePath.toString() != 'null') {
-      finalImage = rawImagePath.startsWith('http') 
-          ? rawImagePath 
-          : 'http://127.0.0.1:8000/storage/$rawImagePath';
-    }
+    finalImage = ApiEndpoints.getImageUrl(rawImagePath);
 
     return ProviderModel(
       id: json['id'] ?? 0,

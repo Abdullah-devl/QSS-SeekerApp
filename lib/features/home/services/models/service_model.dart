@@ -114,6 +114,7 @@
 //         rawImagePath.toString() != 'null') {
 //       finalImage = rawImagePath.startsWith('http')
 //           ? rawImagePath
+// import 'package:flutter/foundation.dart';
 import 'package:seeker/core/network/api_endpoints.dart';
 
 import '../../models/service_schedule_model.dart';
@@ -125,16 +126,29 @@ class ServiceModel {
   final double price;
   final double rating;
   final String imageUrl;
-  final String providerName;
+  String providerName;
   final int providerId;
   final int categoryId;
   int? parentServiceId;
   bool isFavorite; // ❤️ حالة المفضلة
   final double? distance; // 📍 المسافة بالكيلومترات
   final bool isAvailableNow; // 🟢 متاح الآن
+  bool isVerified; // ✅ هل المزود موثق؟
+  DateTime? verifiedUntil; // 📅 تاريخ انتهاء التوثيق
   List<ServiceModel> subServices;
   final List<ServiceScheduleModel>
   schedules; // 📅 جدول المواعيد المتاح لهذه الخدمة
+
+  /// 🛡️ Getter للتحقق من أن التوثيق لا يزال سارياً
+  /// إذا كان تاريخ التوثيق ساري (اليوم أو مستقبلاً) فالمزود موثق
+  bool get isProviderVerified {
+    if (verifiedUntil == null) return isVerified;
+    
+    // مقارنة التاريخ (بدون الساعات) مع تاريخ اليوم
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    return verifiedUntil!.isAtSameMomentAs(today) || verifiedUntil!.isAfter(today);
+  }
 
   ServiceModel({
     required this.id,
@@ -150,23 +164,29 @@ class ServiceModel {
     this.isFavorite = false,
     this.distance,
     this.isAvailableNow = true,
+    this.isVerified = false,
+    this.verifiedUntil,
     this.subServices = const [],
     this.schedules = const [],
   });
+
+  /// 🛡️ تحديث بيانات المزود (الاسم + التوثيق) بعد جلبها من السيرفر
+  void updateProviderInfo({
+    String? name,
+    bool? verified,
+    DateTime? verifiedDate,
+  }) {
+    if (name != null && name.isNotEmpty) providerName = name;
+    if (verified != null) isVerified = verified;
+    if (verifiedDate != null) verifiedUntil = verifiedDate;
+  }
 
   factory ServiceModel.fromJson(Map<String, dynamic> json) {
     // 1. معالجة مسار الصورة
     String rawImagePath = (json['image_path'] ?? json['image_url'] ?? '')
         .toString()
         .trim();
-    String finalImage = '';
-    if (rawImagePath.isNotEmpty &&
-        rawImagePath != 'null' &&
-        rawImagePath.length > 3) {
-      finalImage = rawImagePath.startsWith('http')
-          ? rawImagePath
-          : '${ApiEndpoints.storageBaseUrl}$rawImagePath';
-    }
+    String finalImage = ApiEndpoints.getImageUrl(rawImagePath);
 
     // 2. استخراج الخدمات الفرعية
     var rawSubServices =
@@ -208,8 +228,10 @@ class ServiceModel {
           json['is_favorite'] == 1, // قراءة حالة المفضلة
 
       price: double.tryParse(json['price'].toString()) ?? 0.0,
-      rating:
-          double.tryParse((json['rating_avg'] ?? json['rating']).toString()) ??
+      rating: double.tryParse((json['avg_rating'] ??
+              json['rating_avg'] ??
+              json['rating'])
+          .toString()) ??
           0.0,
       imageUrl: finalImage,
       providerName:
@@ -228,6 +250,25 @@ class ServiceModel {
       distance: double.tryParse(json['distance']?.toString() ?? ''),
       isAvailableNow:
           json['is_available_now'] != false, // افتراضياً متاح إلا إذا ذكر العكس
+
+      // 🛡️ استخراج بيانات التوثيق من كل الأماكن الممكنة
+      isVerified: json['is_verified'] == true ||
+          json['is_verified'] == 1 ||
+          json['verification_provider'] == 1 ||
+          json['verification_provider'] == true ||
+          json['provider']?['verification_provider'] == 1 ||
+          json['provider']?['verification_provider'] == true ||
+          json['user']?['verification_provider'] == 1 ||
+          json['user']?['verification_provider'] == true,
+      verifiedUntil: () {
+        final dateStr = (json['verified_until']?.toString() ??
+            json['provider_verified_until']?.toString() ??
+            json['provider']?['provider_verified_until']?.toString() ??
+            json['user']?['provider_verified_until']?.toString() ??
+            '');
+        if (dateStr.isEmpty || dateStr.contains('0000-00-00')) return null;
+        return DateTime.tryParse(dateStr);
+      }(),
 
       subServices: parsedSubServices,
       schedules: parsedSchedules, // ✅ تم الإسناد هنا

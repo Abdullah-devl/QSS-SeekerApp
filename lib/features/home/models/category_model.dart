@@ -27,6 +27,8 @@
 // }
 /// 📂 اسم الملف: category_model.dart
 /// 📝 الوصف: نموذج بيانات التصنيفات (Categories).
+import 'dart:developer' as developer;
+import 'package:seeker/core/network/api_endpoints.dart';
 
 class CategoryModel {
   final int id;
@@ -39,6 +41,7 @@ class CategoryModel {
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
     // 1. محاولة استخراج مسار الصورة من عدة مفاتيح محتملة
     String rawImagePath =
+        json['image_url'] ??
         json['icon_path'] ??
         json['image_path'] ??
         json['image'] ??
@@ -48,12 +51,13 @@ class CategoryModel {
     String finalImage = '';
 
     // 2. 🚀 حارس البوابة (الشرط الذكي) لمنع الروابط المكسورة
-    if (rawImagePath.toString().trim().isNotEmpty &&
-        rawImagePath.toString() != 'null') {
-      finalImage = rawImagePath.startsWith('http')
-          ? rawImagePath
-          : 'http://127.0.0.1:8000/storage/$rawImagePath';
-    }
+    finalImage = ApiEndpoints.getImageUrl(rawImagePath);
+
+    // 3. طباعة للتأكد من الرابط النهائي (Debug)
+    developer.log(
+      '📁 Category URL for [${json['name']}]: $finalImage',
+      name: 'CategoryModel',
+    );
 
     return CategoryModel(
       id: json['id'] ?? 0,

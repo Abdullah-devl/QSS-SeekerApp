@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:seeker/core/routes/app_routes.dart';
 import 'package:seeker/core/utils/qs_alerts.dart';
 import 'package:seeker/core/services/notification_service.dart';
+import 'package:seeker/core/storage/token_storage.dart';
 import '../repositories/auth_repository.dart';
 
 /// 📂 اسم الملف: login_view_model.dart
@@ -13,8 +14,9 @@ import '../repositories/auth_repository.dart';
 
 class LoginViewModel extends ChangeNotifier {
   final AuthRepository authRepository;
+  final TokenStorage tokenStorage;
 
-  LoginViewModel({required this.authRepository});
+  LoginViewModel({required this.authRepository, required this.tokenStorage});
 
   // 📝 الكونترولرز للتحكم في الحقول النصية
   final TextEditingController emailController = TextEditingController();
@@ -50,8 +52,20 @@ class LoginViewModel extends ChangeNotifier {
           // 🔔 إرسال توكن الإشعارات للسيرفر فور تسجيل الدخول
           NotificationService().updateTokenToServer();
 
-          // ✅ الحساب مفعل -> الذهاب للرئيسية
-          Navigator.pushReplacementNamed(context, AppRoutes.home);
+          // ✅ الحساب مفعل -> التحقق من الموافقة على السياسة (سيرفر أو محلي)
+          bool isAgreedLocally = await tokenStorage.isPolicyAgreed();
+          
+          if (user.seekerPolicy || isAgreedLocally) {
+            // تفريغ الستاك وجعل الرئيسية هي الجذر
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              AppRoutes.home,
+              (route) => false,
+            );
+          } else {
+            // غير موافق -> التوجه لصفحة السياسة
+            Navigator.pushReplacementNamed(context, AppRoutes.privacyPolicy);
+          }
         } else {
           // ⚠️ الحساب غير مفعل -> الذهاب لصفحة التفعيل
           QSAlerts.showWarning(context, 'الرجاء تفعيل حسابك أولاً');
@@ -74,6 +88,49 @@ class LoginViewModel extends ChangeNotifier {
     }
   }
 
+  /// 🌐 دالة تسجيل الدخول عبر جوجل.
+  Future<void> loginWithGoogle(BuildContext context) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final user = await authRepository.loginWithGoogle();
+
+      if (context.mounted) {
+        if (user.isVerified) {
+          // 🔔 تحديث توكن الإشعارات
+          NotificationService().updateTokenToServer();
+
+          // ✅ التحقق من السياسة
+          bool isAgreedLocally = await tokenStorage.isPolicyAgreed();
+          
+          if (user.seekerPolicy || isAgreedLocally) {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              AppRoutes.home,
+              (route) => false,
+            );
+          } else {
+            Navigator.pushReplacementNamed(context, AppRoutes.privacyPolicy);
+          }
+        } else {
+          QSAlerts.showWarning(context, 'الرجاء تفعيل حسابك أولاً');
+          Navigator.pushNamed(context, AppRoutes.verifyEmail, arguments: user.email);
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        // إذا ألغى المستخدم الدخول فلا نعرض رسالة خطأ، عدا ذلك نعرضها
+        if (!e.toString().contains('إلغاء')) {
+          QSAlerts.showError(context, e.toString().replaceAll('Exception: ', ''));
+        }
+      }
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
   /// 👤 دالة الدخول كزائر.
   Future<void> loginAsGuest(BuildContext context) async {
     _isLoading = true;
@@ -82,7 +139,11 @@ class LoginViewModel extends ChangeNotifier {
     try {
       await authRepository.loginAsGuest();
       if (context.mounted) {
-        Navigator.pushReplacementNamed(context, AppRoutes.home);
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRoutes.home,
+          (route) => false,
+        );
       }
     } catch (e) {
       if (context.mounted) {

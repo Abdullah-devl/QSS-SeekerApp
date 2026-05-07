@@ -11,6 +11,7 @@ class UserModel {
   final String? phone; // رقم الهاتف
   final String? address; // العنوان
   final bool isVerified; // هل الحساب مفعل؟
+  final bool seekerPolicy; // هل وافق على سياسة طالب الخدمة؟
 
   /// 🏗️ البناء (Constructor)
   UserModel({
@@ -22,23 +23,23 @@ class UserModel {
     this.phone,
     this.address,
     this.isVerified = false,
+    this.seekerPolicy = false,
   });
 
   /// 🔄 تحويل الـ JSON إلى كائن UserModel.
   /// [json]: خريطة البيانات القادمة من الـ API.
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    final userJson = json['user'] ?? json;
     return UserModel(
-      id: json['user']['id'], // استخراج المعرف من داخل كائن user
-      name: json['user']['name'], // استخراج الاسم
-      email: json['user']['email'], // استخراج البريد
-      role: json['user']['role'], // استخراج الدور
-      phone: json['user']['phone'], // استخراج الهاتف
-      address: json['user']['address'], // استخراج العنوان
+      id: userJson['id'], // استخراج المعرف من داخل كائن user
+      name: userJson['name'], // استخراج الاسم
+      email: userJson['email'], // استخراج البريد
+      role: userJson['role'], // استخراج الدور
+      phone: userJson['phone'], // استخراج الهاتف
+      address: userJson['address'], // استخراج العنوان
       token: json['token'], // استخراج التوكن (قد يكون خارج كائن user)
-      isVerified:
-          // json['user']['email_verified_at'] !=
-          // null, // التحقق مما إذا كان التاريخ موجوداً
-          json['email_verified'] ?? false,
+      isVerified: json['email_verified'] ?? false,
+      seekerPolicy: userJson['seeker_policy'] == 1 || userJson['seeker_policy'] == true,
     );
   }
 }

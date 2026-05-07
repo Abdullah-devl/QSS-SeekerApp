@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../../../../core/network/api_service.dart';
 import '../../../../core/network/api_endpoints.dart';
 import '../../../../core/storage/token_storage.dart';
@@ -119,6 +120,7 @@ class AuthRepository {
         // حفظ التوكن وبيانات المستخدم فقط إذا كان الحساب مفعلاً
         if (user.isVerified && user.token != null) {
           await _tokenStorage.saveToken(user.token!);
+          await _tokenStorage.savePolicyAgreement(user.seekerPolicy);
           await _tokenStorage.saveUserData(
             id: user.id,
             name: user.name,
@@ -166,6 +168,58 @@ class AuthRepository {
         }
       }
       rethrow; // إعادة رمي الخطأ في حال لم نتمكن من معالجته هنا
+    }
+  }
+
+  // ===========================================================================
+  // 🌐 تسجيل الدخول عبر جوجل (Google Login)
+  // ===========================================================================
+
+  /// يقوم بفتح نافذة جوجل لاختيار الحساب، ثم يرسل التوكن للسيرفر.
+  /// ⚠️ ملاحظة: يجب استدعاء GoogleSignIn.instance.initialize() مرة واحدة
+  ///    عند بدء التطبيق (في main.dart) قبل استخدام هذه الوظيفة.
+  Future<UserModel> loginWithGoogle() async {
+    try {
+      // 1. الحصول على نسخة GoogleSignIn (Singleton في الإصدار 7.x)
+      final googleSignIn = GoogleSignIn.instance;
+
+      // 2. بدء عملية المصادقة (authenticate بدلاً من signIn القديمة)
+      final result = await googleSignIn.authenticate();
+
+      // 4. إرسال التوكن للسيرفر
+      final response = await _apiService.post(
+        ApiEndpoints.googleLogin,
+        data: {
+          'id_token': (result as dynamic).idToken,
+          'access_token': (result as dynamic).accessToken,
+        },
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final user = UserModel.fromJson(response.data);
+
+        // حفظ البيانات والتوكن
+        if (user.token != null) {
+          await _tokenStorage.saveToken(user.token!);
+          await _tokenStorage.savePolicyAgreement(user.seekerPolicy);
+          await _tokenStorage.saveUserData(
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role ?? 'client',
+            phone: user.phone,
+            address: user.address,
+          );
+        }
+        return user;
+      } else {
+        throw Exception('فشل تسجيل الدخول عبر جوقل من قبل السيرفر');
+      }
+    } catch (e) {
+      if (e is DioException) {
+        throw Exception(e.response?.data['message'] ?? 'خطأ في الاتصال بالسيرفر');
+      }
+      rethrow;
     }
   }
 

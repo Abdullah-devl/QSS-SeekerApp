@@ -147,6 +147,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mostPopular => 'الأكثر طلباً';
 
   @override
+  String get recommendedServices => 'الموصى بها';
+
+  @override
   String get book => 'حجز';
 
   @override

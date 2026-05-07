@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:seeker/core/services/notification_service.dart';
 
 // --- Imports --- (استيراد الملفات اللازمة)
@@ -30,13 +31,17 @@ import 'package:seeker/features/intro/welcome_view.dart';
 import 'package:seeker/features/auth/views/terms_view.dart';
 import 'package:seeker/features/auth/viewmodel/change_password_view_model.dart'; // ✅ تمت الإضافة
 import 'package:seeker/features/auth/views/change_password_view.dart'; // ✅ تمت الإضافة
-import 'package:seeker/features/settings/repositories/settings_repository.dart'; // ✅ تمت الإضافة
-import 'package:seeker/features/settings/viewmodels/policy_view_model.dart'; // ✅ تمت الإضافة
-import 'package:seeker/features/settings/viewmodels/system_complaints_view_model.dart'; // ✅ تمت الإضافة
-import 'package:seeker/features/settings/views/privacy_policy_view.dart'; // ✅ تمت الإضافة
-import 'package:seeker/features/settings/views/system_complaints_view.dart'; // ✅ تمت الإضافة
-import 'package:seeker/features/settings/views/create_system_complaint_view.dart'; // ✅ تمت الإضافة
-import 'package:seeker/features/settings/views/settings_view.dart'; // ✅ تمت الإضافة
+import 'package:seeker/features/settings/repositories/settings_repository.dart';
+import 'package:seeker/features/settings/viewmodels/policy_view_model.dart';
+import 'package:seeker/features/settings/views/privacy_policy_view.dart';
+import 'package:seeker/features/settings/views/settings_view.dart';
+
+// Complaints Feature
+import 'package:seeker/features/complaints/repositories/complaints_repository.dart';
+import 'package:seeker/features/complaints/viewmodels/system_complaints_viewmodel.dart';
+import 'package:seeker/features/complaints/viewmodels/order_complaints_viewmodel.dart';
+import 'package:seeker/features/complaints/viewmodels/submit_complaint_viewmodel.dart';
+import 'package:seeker/features/complaints/views/complaints_hub_view.dart';
 // import 'package:seeker/features/profile/view/profile_view.dart';
 import 'package:seeker/features/profile/view/my_profile_view.dart'; // ✅ تمت الإضافة
 import 'package:seeker/features/home/views/category_details_view.dart'; // ✅ تمت الإضافة
@@ -45,6 +50,7 @@ import 'package:seeker/features/home/models/category_model.dart'; // ✅ تمت 
 // Repositories
 import 'package:seeker/features/auth/repositories/auth_repository.dart';
 import 'package:seeker/features/home/repositories/home_repository.dart';
+import 'package:seeker/features/home/repositories/advertisement_repository.dart'; // ✅ تمت الإضافة
 import 'package:seeker/features/home/viewmodels/home_view_model.dart';
 // Be Provider Feature
 import 'package:seeker/features/beProvider/repositories/be_provider_repository.dart'; // ✅ تمت الإضافة
@@ -73,7 +79,13 @@ import 'package:seeker/features/notifications/viewmodels/notification_view_model
 import 'package:seeker/features/notifications/views/notifications_view.dart';
 import 'package:seeker/features/search/repositories/search_repository.dart';
 import 'package:seeker/features/search/viewmodels/search_viewmodel.dart';
-// import 'package:seeker/features/search/views/search_view.dart';
+// Points Feature
+import 'package:seeker/features/points/repositories/points_repository.dart';
+import 'package:seeker/features/points/viewmodels/points_viewmodel.dart';
+import 'package:seeker/features/points/views/points_management_view.dart';
+import 'package:seeker/features/points/views/points_packages_view.dart';
+import 'package:seeker/features/points/views/my_packages_view.dart';
+// import 'package:seeker/features/points/views/submit_points_payment_view.dart';
 import 'dart:io';
 
 import 'package:seeker/l10n/app_localizations.dart';
@@ -93,6 +105,13 @@ void main() async {
     await Firebase.initializeApp();
   } catch (e) {
     debugPrint('❌ Firebase Initialization Error: $e');
+  }
+
+  // 🌐 تهيئة GoogleSignIn (مطلوب في الإصدار 7.x)
+  try {
+    await GoogleSignIn.instance.initialize();
+  } catch (e) {
+    debugPrint('❌ GoogleSignIn Initialization Error: $e');
   }
 
   HttpOverrides.global = BadCertificateHttpOverrides();
@@ -127,6 +146,11 @@ void main() async {
         // HomeRepository يعتمد على ApiService فقط
         ProxyProvider<ApiService, HomeRepository>(
           update: (_, apiService, __) => HomeRepository(apiService),
+        ),
+
+        // AdvertisementRepository يعتمد على ApiService فقط
+        ProxyProvider<ApiService, AdvertisementRepository>(
+          update: (_, apiService, __) => AdvertisementRepository(apiService),
         ),
 
         // BeProviderRepository يعتمد على ApiService فقط
@@ -167,9 +191,19 @@ void main() async {
           update: (_, apiService, __) => NotificationRepository(apiService),
         ),
 
+        // 💰 PointsRepository
+        ProxyProvider<ApiService, PointsRepository>(
+          update: (_, apiService, __) => PointsRepository(apiService),
+        ),
+
         // ⚙️ SettingsRepository
         ProxyProvider<ApiService, SettingsRepository>(
           update: (_, apiService, __) => SettingsRepository(apiService),
+        ),
+
+        // 🛡️ ComplaintsRepository
+        ProxyProvider<ApiService, ComplaintsRepository>(
+          update: (_, apiService, __) => ComplaintsRepository(apiService),
         ),
 
         // ----------------------------------------------------------
@@ -180,8 +214,10 @@ void main() async {
 
         // Login ViewModel - يحتاج AuthRepository
         ChangeNotifierProvider<LoginViewModel>(
-          create: (context) =>
-              LoginViewModel(authRepository: context.read<AuthRepository>()),
+          create: (context) => LoginViewModel(
+            authRepository: context.read<AuthRepository>(),
+            tokenStorage: context.read<TokenStorage>(),
+          ),
         ),
 
         // Welcome ViewModel - لإدارة صفحة الترحيب
@@ -193,10 +229,11 @@ void main() async {
               RegisterViewModel(authRepository: context.read<AuthRepository>()),
         ),
 
-        // Home ViewModel - يحتاج HomeRepository و TokenStorage
+        // Home ViewModel - يحتاج HomeRepository و AdvertisementRepository و TokenStorage
         ChangeNotifierProvider<HomeViewModel>(
           create: (context) => HomeViewModel(
             context.read<HomeRepository>(),
+            context.read<AdvertisementRepository>(), // ✅ تمت الإضافة
             context.read<TokenStorage>(),
           ),
         ),
@@ -263,17 +300,32 @@ void main() async {
           ),
         ),
 
-        // System Complaints ViewModel
+        // 🛡️ Complaints ViewModels
         ChangeNotifierProvider<SystemComplaintsViewModel>(
           create: (context) => SystemComplaintsViewModel(
-            context.read<SettingsRepository>(),
+            context.read<ComplaintsRepository>(),
           ),
         ),
-
+        ChangeNotifierProvider<OrderComplaintsViewModel>(
+          create: (context) => OrderComplaintsViewModel(
+            context.read<ComplaintsRepository>(),
+          ),
+        ),
+        ChangeNotifierProvider<SubmitComplaintViewModel>(
+          create: (context) => SubmitComplaintViewModel(
+            context.read<ComplaintsRepository>(),
+          ),
+        ),
         // 🔔 Notification ViewModel
         ChangeNotifierProvider<NotificationViewModel>(
           create: (context) => NotificationViewModel(
             context.read<NotificationRepository>(),
+          ),
+        ),
+        // 💰 Points ViewModel
+        ChangeNotifierProvider<PointsViewModel>(
+          create: (context) => PointsViewModel(
+            context.read<PointsRepository>(),
           ),
         ),
       ],
@@ -366,6 +418,7 @@ class _MyAppState extends State<MyApp> {
               return ChangeNotifierProvider(
                 create: (context) => CategoryDetailsViewModel(
                   context.read<HomeRepository>(),
+                  context.read<AdvertisementRepository>(),
                 ),
                 child: CategoryDetailsView(category: category),
               );
@@ -379,18 +432,12 @@ class _MyAppState extends State<MyApp> {
               ),
               child: const PrivacyPolicyView(),
             ),
-            AppRoutes.systemComplaints: (context) => ChangeNotifierProvider(
-              create: (context) => SystemComplaintsViewModel(
-                context.read<SettingsRepository>(),
-              ),
-              child: const SystemComplaintsView(),
-            ),
-            AppRoutes.createSystemComplaint: (context) => ChangeNotifierProvider(
-              create: (context) => SystemComplaintsViewModel(
-                context.read<SettingsRepository>(),
-              ),
-              child: const CreateSystemComplaintView(),
-            ),
+            AppRoutes.systemComplaints: (context) => const ComplaintsView(),
+
+            // 💰 مسارات النقاط
+            AppRoutes.pointsManagement: (context) => const PointsManagementView(),
+            AppRoutes.availablePackages: (context) => const PointsPackagesView(),
+            AppRoutes.myPackages: (context) => const MyPackagesView(),
           },
         );
       },

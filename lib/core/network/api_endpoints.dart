@@ -7,13 +7,30 @@ class ApiEndpoints {
   /// يتم استخدامه كأساس لجميع الروابط الأخرى.
   // static String get domain => "http://10.0.2.2:8000";
   // static String get domain => "http://192.168.137.59 :8000";
-  static String get domain => "http://127.0.0.1:8000";
+  static String get domain => "https://qss-back-end.onrender.com";
   // static String get domain => "http://192.168.43.245:8000";
   // static String get domain => "http://localhost:8000/api";
 
   /// 🗄️ رابط التخزين (Storage).
   /// يستخدم للوصول إلى الملفات والصور المخزنة على السيرفر.
   static String get storageBaseUrl => "$domain/storage/";
+
+  /// 🖼️ دالة مساعدة لمعالجة روابط الصور.
+  /// تتأكد من إضافة الرابط الأساسي إذا كان المسار نسبياً.
+  static String getImageUrl(String? path) {
+    if (path == null || path.isEmpty || path == 'null') return '';
+    if (path.startsWith('http') || path.startsWith('assets/')) return path;
+    
+    // تنظيف المسار من السلاش في البداية
+    String cleanPath = path.startsWith('/') ? path.substring(1) : path;
+    
+    // 🚀 إذا كان المسار يبدأ بـ "storage/" بالفعل، نقوم بدمجه مع الدومين فقط لتجنب التكرار
+    if (cleanPath.startsWith('storage/')) {
+      return "$domain/$cleanPath";
+    }
+    
+    return "$storageBaseUrl$cleanPath";
+  }
 
   /// 🔗 الرابط الأساسي للـ API (Base URL).
   /// يحتوي على المنطق لتحديد الرابط المناسب بناءً على بيئة التشغيل.
@@ -46,6 +63,9 @@ class ApiEndpoints {
   static String get resendVerificationCode =>
       "$baseUrl/resend-verification-code";
 
+  /// 🌐 رابط تسجيل الدخول عبر جوجل.
+  static String get googleLogin => "$baseUrl/auth/google/callback";
+
   // ===========================================================================
   // 🏠 روابط الصفحة الرئيسية (Home Endpoints)
   // ===========================================================================
@@ -58,6 +78,22 @@ class ApiEndpoints {
 
   /// ⭐ رابط جلب الخدمات الشائعة (Popular Services).
   static String get popularServices => "$baseUrl/popular-services";
+
+  /// ✨ رابط جلب الخدمات الموصى بها (Recommended Services).
+  static String get recommendedServices => "$baseUrl/recommended-services";
+
+  // ===========================================================================
+  // 📢 روابط الإعلانات (Advertisements Endpoints)
+  // ===========================================================================
+
+  /// 📢 رابط جلب الإعلانات النشطة.
+  static String get advertisements => "$baseUrl/advertisements";
+
+  /// 👁️ رابط تتبع ظهور الإعلان.
+  static String trackAdView(int id) => "$baseUrl/advertisements/$id/view";
+
+  /// 🖱️ رابط تتبع النقر على الإعلان.
+  static String trackAdClick(int id) => "$baseUrl/advertisements/$id/click";
 
   /// 🔍 رابط البحث المتقدم عن الخدمات.
   static String get searchServices => "$baseUrl/services/search";
@@ -132,7 +168,14 @@ class ApiEndpoints {
   static String get requestComplaints => "$baseUrl/request-complaints";
 
   /// 💰 روابط الدفع والسداد.
+  /// 💰 روابط شحن وإدارة النقاط.
   static String get pointsBalance => "$baseUrl/points/balance";
+  static String get availablePointsPackages =>
+      "$baseUrl/available-points-packages";
+  static String get myPointsPackages => "$baseUrl/my-points-packages";
+  static String get subscribePointsPackage =>
+      "$baseUrl/subscribe-points-package";
+
   static String payByPoints(String id) => "$baseUrl/requests/$id/payByPoints";
   static String get requestBonds => "$baseUrl/request-bonds";
 
@@ -153,8 +196,10 @@ class ApiEndpoints {
   static String get notifications => "$baseUrl/notifications";
 
   /// ✅ رابط تمييز إشعار معين كمقروء.
-  static String markNotificationRead(String id) => "$baseUrl/notifications/$id/read";
+  static String markNotificationRead(String id) =>
+      "$baseUrl/notifications/$id/read";
 
   /// ✅ رابط تمييز جميع الإشعارات كمقروءة.
-  static String get markAllNotificationsRead => "$baseUrl/notifications/read-all";
+  static String get markAllNotificationsRead =>
+      "$baseUrl/notifications/read-all";
 }

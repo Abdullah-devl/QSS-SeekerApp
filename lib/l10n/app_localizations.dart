@@ -368,6 +368,12 @@ abstract class AppLocalizations {
   /// **'Most Popular'**
   String get mostPopular;
 
+  /// No description provided for @recommendedServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get recommendedServices;
+
   /// No description provided for @book.
   ///
   /// In en, this message translates to:

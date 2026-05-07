@@ -38,7 +38,7 @@ class QSAlerts {
       message: message,
       title: 'تنبيه',
       icon: Icons.warning_rounded,
-      color: context.qsColors.amber,
+      color: context.qsColors.warning,
     );
   }
 

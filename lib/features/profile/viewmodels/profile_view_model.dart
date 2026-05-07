@@ -60,7 +60,9 @@ class ProfileViewModel extends ChangeNotifier {
       List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks[0];
-        _address = "${place.street != null && place.street!.isNotEmpty ? place.street : ''} ${place.locality}, ${place.country}";
+        String city = place.locality ?? '';
+        String country = place.country ?? '';
+        _address = city.isNotEmpty ? "$city, $country" : country;
         _address = _address!.trim();
       }
     } catch (e) {

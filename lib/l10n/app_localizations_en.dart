@@ -147,6 +147,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mostPopular => 'Most Popular';
 
   @override
+  String get recommendedServices => 'Recommended';
+
+  @override
   String get book => 'Book';
 
   @override

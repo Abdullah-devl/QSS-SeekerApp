@@ -49,4 +49,10 @@ class AppRoutes {
 
   /// ➕ مسار صفحة إضافة شكوى جديدة
   static const String createSystemComplaint = 'create_system_complaint';
+
+  /// 💰 مسارات نظام النقاط
+  static const String pointsManagement = 'points_management';
+  static const String availablePackages = 'available_packages';
+  static const String myPackages = 'my_packages';
+  static const String submitPointsPayment = 'submit_points_payment';
 }

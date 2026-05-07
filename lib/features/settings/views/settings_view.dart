@@ -131,7 +131,7 @@ class _SettingsViewState extends State<SettingsView> {
                                   color: colors.text,
                                 ),
                               ),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 2),
                               Text(
                                 profile?.email ?? '...',
                                 style: TextStyle(
@@ -139,25 +139,40 @@ class _SettingsViewState extends State<SettingsView> {
                                   color: colors.textSub,
                                 ),
                               ),
-                              const SizedBox(height: 8),
+                              const SizedBox(height: 4),
+                              // 🏷️ وصف الدور (طالب خدمة / مزود خدمة)
                               Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: colors.success.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(20),
+                                  color: colors.primary.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
-                                  AppLocalizations.of(context)!.trustedCustomer,
+                                  userRole == 'provider' ? 'مزود خدمة' : 'طالب خدمة',
                                   style: TextStyle(
-                                    color: colors.success,
-                                    fontSize: 12,
+                                    fontSize: 11,
+                                    color: colors.primary,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
+                              const SizedBox(height: 8),
+                              // 💰 عرض رصيد النقاط في الإعدادات
+                              Row(
+                                children: [
+                                  Icon(Icons.stars_rounded, size: 14, color: Colors.orange.shade700),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'رصيد النقاط: ${((profile?.bonusPoints ?? 0) + (profile?.paidPoints ?? 0)).toStringAsFixed(0)}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: colors.text,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
                             ],
                           ),
                         ),
@@ -181,22 +196,6 @@ class _SettingsViewState extends State<SettingsView> {
                                       color: colors.primary,
                                     )
                                   : null,
-                            ),
-                            Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: BoxDecoration(
-                                color: colors.primary,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: colors.background,
-                                  width: 2,
-                                ),
-                              ),
-                              child: Icon(
-                                Icons.edit,
-                                size: 14,
-                                color: colors.background,
-                              ),
                             ),
                           ],
                         ),
@@ -237,9 +236,11 @@ class _SettingsViewState extends State<SettingsView> {
                 ),
                 _buildDivider(colors.textSub),
                 _buildSettingsTile(
-                  icon: Icons.account_balance_wallet_outlined,
-                  title: AppLocalizations.of(context)!.paymentMethods,
-                  onTap: () {},
+                  icon: Icons.monetization_on_outlined,
+                  title: 'شراء النقاط',
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutes.pointsManagement);
+                  },
                 ),
               ]),
               const SizedBox(height: 24),
@@ -384,8 +385,8 @@ class _SettingsViewState extends State<SettingsView> {
               ),
               _buildDivider(colors.textSub),
               _buildSettingsTile(
-                icon: Icons.report_problem_outlined,
-                title: AppLocalizations.of(context)!.sendSystemComplaint,
+                icon: Icons.feedback_outlined,
+                title: 'مركز الشكاوى والبلاغات',
                 onTap: () {
                   Navigator.pushNamed(context, AppRoutes.systemComplaints);
                 },

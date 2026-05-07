@@ -17,6 +17,7 @@ class ProfileRepository {
   Future<ProfileModel> fetchUserProfile(int userId) async {
     try {
       final Response response = await _apiService.get(ApiEndpoints.userProfile(userId));
+      developer.log('📡 [ProfileRepo] fetchUserProfile Response: ${response.data}');
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -40,6 +41,7 @@ class ProfileRepository {
   Future<ProfileModel> fetchMyProfile() async {
     try {
       final Response response = await _apiService.get(ApiEndpoints.myProfile);
+      developer.log('📡 [ProfileRepo] fetchMyProfile Response: ${response.data}');
 
       if (response.statusCode == 200) {
         final data = response.data;

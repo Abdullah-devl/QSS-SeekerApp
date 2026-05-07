@@ -52,4 +52,6 @@ class QSColors {
     required this.info,
     required this.card,
   });
+
+  Color? get amber => null;
 }

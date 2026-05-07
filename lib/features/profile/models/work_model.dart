@@ -15,13 +15,7 @@ class WorkModel {
     final rawImage = json['image_url'] ?? json['image'] ?? json['image_path'];
     if (rawImage != null && rawImage.toString().isNotEmpty) {
       final String imageStr = rawImage.toString();
-      if (imageStr.startsWith('http')) {
-        parsedImageUrl = imageStr;
-      } else {
-        // تنظيف المسار من أي سلاش زائد في البداية لضمان صحة الرابط مع الـ BaseUrl
-        final String cleanPath = imageStr.startsWith('/') ? imageStr.substring(1) : imageStr;
-        parsedImageUrl = '${ApiEndpoints.storageBaseUrl}$cleanPath';
-      }
+      parsedImageUrl = ApiEndpoints.getImageUrl(imageStr);
     }
 
     return WorkModel(

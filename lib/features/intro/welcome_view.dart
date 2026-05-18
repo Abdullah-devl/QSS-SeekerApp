@@ -24,185 +24,194 @@ class WelcomeView extends StatelessWidget {
     return Scaffold(
       backgroundColor: colors.background,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // ==========================================
-              // 1️⃣ زر تبديل الوضع الليلي (Dark Mode Toggle)
-              // ==========================================
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                  margin: const EdgeInsets.only(top: 16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: context.qsColors.text.withValues(alpha: 0.4),
-                        blurRadius: 60,
-                        offset: const Offset(0, 0),
-                      ),
-                    ],
-                  ),
-                  child: IconButton(
-                    icon: Icon(
-                      context.watch<ThemeProvider>().isDark
-                          ? Icons.light_mode
-                          : Icons.nightlight_round,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // ==========================================
+                // 1️⃣ زر تبديل الوضع الليلي (Dark Mode Toggle)
+                // ==========================================
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: context.qsColors.text.withValues(alpha: 0.4),
+                          blurRadius: 60,
+                          offset: const Offset(0, 0),
+                        ),
+                      ],
                     ),
-                    onPressed: context.read<ThemeProvider>().toggleTheme,
-                  ),
-                ),
-              ),
-
-              const Spacer(),
-
-              // ==========================================
-              // 2️⃣ شعار التطبيق (Logo)
-              // ==========================================
-              Center(
-                child: Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: colors.primary,
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: colors.primary.withValues(alpha: 0.4),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
+                    child: IconButton(
+                      icon: Icon(
+                        context.watch<ThemeProvider>().isDark
+                            ? Icons.light_mode
+                            : Icons.nightlight_round,
                       ),
-                    ],
-                  ),
-                  child: Icon(
-                    Icons.home_repair_service_rounded,
-                    size: 60,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 40),
-
-              // ==========================================
-              // 3️⃣ العنوان والوصف (Title & Description)
-              // ==========================================
-              Text(
-                'QuickServe',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: context.qsColors.text,
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              Text(
-                l10n.welcomeDescription,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: context.qsColors.textSub,
-                  height: 1.5,
-                ),
-              ),
-
-              const Spacer(flex: 2),
-
-              // ==========================================
-              // 4️⃣ أزرار الإجراءات (Buttons)
-              // ==========================================
-
-              // زر تسجيل الدخول
-              ElevatedButton(
-                onPressed: () {
-                  context.read<WelcomeViewModel>().login(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  elevation: 0,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                      size: 20,
+                      onPressed: context.read<ThemeProvider>().toggleTheme,
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      l10n.login,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 60),
+
+                // ==========================================
+                // 2️⃣ شعار التطبيق (Logo)
+                // ==========================================
+                Center(
+                  child: Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      color: colors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: colors.primary.withValues(alpha: 0.2),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) => Icon(
+                          Icons.home_repair_service_rounded,
+                          size: 60,
+                          color: colors.primary,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 40),
+
+                // ==========================================
+                // 3️⃣ العنوان والوصف (Title & Description)
+                // ==========================================
+                Text(
+                  'QuickServe',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: context.qsColors.text,
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                Text(
+                  l10n.welcomeDescription,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: context.qsColors.textSub,
+                    height: 1.5,
+                  ),
+                ),
+
+                const SizedBox(height: 80),
+
+                // ==========================================
+                // 4️⃣ أزرار الإجراءات (Buttons)
+                // ==========================================
+
+                // زر تسجيل الدخول
+                ElevatedButton(
+                  onPressed: () {
+                    context.read<WelcomeViewModel>().login(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.primary,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.login,
                         color: Colors.white,
+                        size: 20,
                       ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // زر إنشاء حساب جديد
-              ElevatedButton(
-                onPressed: () {
-                  context.read<WelcomeViewModel>().register(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.background,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.login,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
-                  side: BorderSide(color: colors.primary, width: 1.5),
-                  elevation: 0,
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.person_add_alt_1,
-                      color: colors.primary,
-                      size: 20,
+
+                const SizedBox(height: 16),
+
+                // زر إنشاء حساب جديد
+                ElevatedButton(
+                  onPressed: () {
+                    context.read<WelcomeViewModel>().register(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.background,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      l10n.createNewAccount,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                    side: BorderSide(color: colors.primary, width: 1.5),
+                    elevation: 0,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.person_add_alt_1,
                         color: colors.primary,
+                        size: 20,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.createNewAccount,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: colors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-              // ==========================================
-              // 5️⃣ الشروط والأحكام (Terms)
-              // ==========================================
-              Text(
-                l10n.termsAndConditions,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: context.qsColors.textSub),
-              ),
+                // ==========================================
+                // 5️⃣ الشروط والأحكام (Terms)
+                // ==========================================
+                Text(
+                  l10n.termsAndConditions,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 12, color: context.qsColors.textSub),
+                ),
 
-              const SizedBox(height: 24),
-            ],
+                const SizedBox(height: 24),
+              ],
+            ),
           ),
         ),
       ),

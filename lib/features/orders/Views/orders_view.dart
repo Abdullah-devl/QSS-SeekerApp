@@ -8,6 +8,8 @@ import '../ViewModels/orders_viewmodel.dart';
 import '../Models/order_model.dart';
 import 'order_detail_view.dart';
 import '../../../core/utils/qs_alerts.dart';
+import 'package:seeker/core/routes/app_routes.dart';
+import 'package:seeker/features/home/viewmodels/home_view_model.dart';
 
 class OrdersView extends StatefulWidget {
   const OrdersView({super.key});
@@ -40,6 +42,7 @@ class _OrdersBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final viewModel = Provider.of<OrdersViewModel>(context);
     final colors = context.qsColors;
+    final userRole = context.select<HomeViewModel, String>((vm) => vm.role);
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -56,32 +59,108 @@ class _OrdersBody extends StatelessWidget {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          _buildTabs(context, viewModel),
-          Divider(height: 1, thickness: 1, color: colors.textSub.withOpacity(0.1)),
-          Expanded(
-            child: viewModel.isLoading
-                ? Center(child: CircularProgressIndicator(color: colors.primary))
-                : viewModel.errorMessage != null
-                ? _buildErrorWidget(context, viewModel)
-                : RefreshIndicator(
-                    color: colors.primary,
-                    onRefresh: () => viewModel.fetchOrders(),
-                    child: viewModel.filteredOrders.isEmpty
-                        ? _buildEmptyState(context)
-                        : ListView.builder(
-                            padding: const EdgeInsets.only(top: 8, bottom: 100),
-                            itemCount: viewModel.filteredOrders.length,
-                            itemBuilder: (context, index) {
-                              return _OrderCardWidget(
-                                order: viewModel.filteredOrders[index],
-                              );
-                            },
+      body: userRole == 'guest'
+          ? _buildGuestPrompt(context, colors)
+          : Column(
+              children: [
+                _buildTabs(context, viewModel),
+                Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: colors.textSub.withOpacity(0.1),
+                ),
+                Expanded(
+                  child: viewModel.isLoading
+                      ? Center(
+                          child: CircularProgressIndicator(
+                            color: colors.primary,
                           ),
+                        )
+                      : viewModel.errorMessage != null
+                      ? _buildErrorWidget(context, viewModel)
+                      : RefreshIndicator(
+                          color: colors.primary,
+                          onRefresh: () => viewModel.fetchOrders(),
+                          child: viewModel.filteredOrders.isEmpty
+                              ? _buildEmptyState(context)
+                              : ListView.builder(
+                                  padding: const EdgeInsets.only(
+                                    top: 8,
+                                    bottom: 100,
+                                  ),
+                                  itemCount: viewModel.filteredOrders.length,
+                                  itemBuilder: (context, index) {
+                                    return _OrderCardWidget(
+                                      order: viewModel.filteredOrders[index],
+                                    );
+                                  },
+                                ),
+                        ),
+                ),
+              ],
+            ),
+    );
+  }
+
+  /// 🛠️ واجهة تظهر للزائر تطلب منه تسجيل الدخول
+  Widget _buildGuestPrompt(BuildContext context, dynamic colors) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: colors.primary.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.shopping_bag_outlined, size: 80, color: colors.primary),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'سجل دخولك الآن',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: colors.text,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'يرجى تسجيل الدخول لمتابعة طلباتك والوصول إلى سجل العمليات الخاصة بك.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: colors.textSub,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              height: 55,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, AppRoutes.login);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-          ),
-        ],
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'تسجيل الدخول',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

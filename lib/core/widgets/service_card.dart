@@ -121,7 +121,7 @@ class ServiceCard extends StatelessWidget {
                               Icon(Icons.star, color: colors.amber, size: 14),
                               const SizedBox(width: 4),
                               Text(
-                                service.rating.toString(),
+                                service.rating.toStringAsFixed(1),
                                 style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                               ),
                             ],

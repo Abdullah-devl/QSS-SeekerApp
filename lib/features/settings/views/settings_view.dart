@@ -254,20 +254,22 @@ class _SettingsViewState extends State<SettingsView> {
               colors.textSub,
             ),
             _buildSettingsContainer(context, [
-              Selector<SettingsViewModel, bool>(
-                selector: (context, vm) => vm.notificationsEnabled,
-                builder: (context, notificationsEnabled, child) {
-                  return _buildSwitchTile(
-                    icon: Icons.notifications_none,
-                    title: AppLocalizations.of(context)!.notifications,
-                    value: notificationsEnabled,
-                    onChanged: (val) => context
-                        .read<SettingsViewModel>()
-                        .toggleNotifications(val),
-                  );
-                },
-              ),
-              _buildDivider(colors.textSub),
+              if (userRole != 'guest') ...[
+                Selector<SettingsViewModel, bool>(
+                  selector: (context, vm) => vm.notificationsEnabled,
+                  builder: (context, notificationsEnabled, child) {
+                    return _buildSwitchTile(
+                      icon: Icons.notifications_none,
+                      title: AppLocalizations.of(context)!.notifications,
+                      value: notificationsEnabled,
+                      onChanged: (val) => context
+                          .read<SettingsViewModel>()
+                          .toggleNotifications(val),
+                    );
+                  },
+                ),
+                _buildDivider(colors.textSub),
+              ],
               _buildSwitchTile(
                 icon: isDark ? Icons.dark_mode : Icons.light_mode,
                 title: AppLocalizations.of(context)!.darkMode,
@@ -365,33 +367,35 @@ class _SettingsViewState extends State<SettingsView> {
             // =================================================================
             // 4. الدعم والمساعدة
             // =================================================================
-            _buildSectionTitle(
-              AppLocalizations.of(context)!.support,
-              colors.textSub,
-            ),
-            _buildSettingsContainer(context, [
-              _buildSettingsTile(
-                icon: Icons.help_outline,
-                title: AppLocalizations.of(context)!.helpCenter,
-                onTap: () {},
+            if (userRole != 'guest') ...[
+              _buildSectionTitle(
+                AppLocalizations.of(context)!.support,
+                colors.textSub,
               ),
-              _buildDivider(colors.textSub),
-              _buildSettingsTile(
-                icon: Icons.privacy_tip_outlined,
-                title: AppLocalizations.of(context)!.privacyPolicy,
-                onTap: () {
-                  Navigator.pushNamed(context, AppRoutes.privacyPolicy);
-                },
-              ),
-              _buildDivider(colors.textSub),
-              _buildSettingsTile(
-                icon: Icons.feedback_outlined,
-                title: 'مركز الشكاوى والبلاغات',
-                onTap: () {
-                  Navigator.pushNamed(context, AppRoutes.systemComplaints);
-                },
-              ),
-            ]),
+              _buildSettingsContainer(context, [
+                _buildSettingsTile(
+                  icon: Icons.help_outline,
+                  title: AppLocalizations.of(context)!.helpCenter,
+                  onTap: () {},
+                ),
+                _buildDivider(colors.textSub),
+                _buildSettingsTile(
+                  icon: Icons.privacy_tip_outlined,
+                  title: AppLocalizations.of(context)!.privacyPolicy,
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutes.privacyPolicy);
+                  },
+                ),
+                _buildDivider(colors.textSub),
+                _buildSettingsTile(
+                  icon: Icons.feedback_outlined,
+                  title: 'مركز الشكاوى والبلاغات',
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutes.systemComplaints);
+                  },
+                ),
+              ]),
+            ],
             const SizedBox(height: 30),
 
             // =================================================================

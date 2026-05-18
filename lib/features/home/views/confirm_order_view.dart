@@ -53,10 +53,6 @@ class ConfirmOrderView extends StatelessWidget {
                   _buildServiceCard(context, service, colors),
                   const SizedBox(height: 24),
 
-                   // 2️⃣ مربع بيانات طالب الخدمة
-                  _buildUserInfoSection(context, vm, colors),
-                  const SizedBox(height: 24),
-
                   // 📍 جديد: قسم اختيار الموقع
                   _buildLocationSection(context, vm, colors),
                   const SizedBox(height: 24),
@@ -67,14 +63,17 @@ class ConfirmOrderView extends StatelessWidget {
 
                   // 4️⃣ قسم الملاحظات
                   _buildNotesSection(context, vm, colors),
+                  const SizedBox(height: 24),
+
+                  // 🏁 5️⃣ بطاقة الفاتورة وتأكيد الحجز
+                  _buildBottomCheckoutBar(context, vm, colors),
                 ],
               ),
             ),
-            const SizedBox(height: 100), // مساحة للبار السفلي
+            const SizedBox(height: 20), // مساحة تنفس بسيطة أسفل الشاشة
           ],
         ),
       ),
-      bottomSheet: _buildBottomCheckoutBar(context, vm, colors),
     );
   }
 
@@ -151,33 +150,7 @@ class ConfirmOrderView extends StatelessWidget {
     );
   }
 
-  /// 👤 2. مربع بيانات العميل (Requester Info)
-  Widget _buildUserInfoSection(BuildContext context, ConfirmOrderViewModel vm, dynamic colors) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: colors.card,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colors.text.withValues(alpha: 0.05)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.person_pin_rounded, color: colors.primary),
-              const SizedBox(width: 10),
-              Text(context.tr('request_details_title'), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colors.text)),
-            ],
-          ),
-          const SizedBox(height: 20),
-          _buildTextField(vm.userNameController, context.tr('receiver_name'), Icons.person_outline, colors),
-          const SizedBox(height: 16),
-          _buildTextField(vm.userPhoneController, context.tr('phoneNumber'), Icons.phone_android_rounded, colors, keyboardType: TextInputType.phone),
-        ],
-      ),
-    );
-  }
+
 
   /// 📍 3. قسم اختيار الموقع من الخريطة
   Widget _buildLocationSection(BuildContext context, ConfirmOrderViewModel vm, dynamic colors) {
@@ -252,22 +225,7 @@ class ConfirmOrderView extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hint, IconData icon, dynamic colors, {TextInputType? keyboardType}) {
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      style: TextStyle(color: colors.text, fontSize: 14),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: TextStyle(color: colors.textSub, fontSize: 13),
-        prefixIcon: Icon(icon, color: colors.primary, size: 20),
-        filled: true,
-        fillColor: colors.primary.withValues(alpha: 0.05),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-        contentPadding: const EdgeInsets.symmetric(vertical: 16),
-      ),
-    );
-  }
+
 
   /// 🛠️ 3. قسم الخدمات الفرعية
   Widget _buildCustomizationSection(BuildContext context, ConfirmOrderViewModel vm, dynamic colors) {
@@ -374,11 +332,14 @@ class ConfirmOrderView extends StatelessWidget {
   /// 🏁 5. بار الدفع السفلي
   Widget _buildBottomCheckoutBar(BuildContext context, ConfirmOrderViewModel vm, dynamic colors) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: colors.card,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-        boxShadow: [BoxShadow(color: colors.text.withValues(alpha: 0.05), blurRadius: 20, offset: const Offset(0, -5))],
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: colors.text.withValues(alpha: 0.05)),
+        boxShadow: [
+          BoxShadow(color: colors.text.withValues(alpha: 0.02), blurRadius: 15, offset: const Offset(0, 5)),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

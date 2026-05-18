@@ -17,6 +17,7 @@ class SearchRepository {
     int? categoryId,
     double? minPrice,
     double? maxPrice,
+    bool? isVerified,
     double? lat,
     double? lng,
   }) async {
@@ -27,6 +28,7 @@ class SearchRepository {
       if (categoryId != null) queryParameters['category_id'] = categoryId;
       if (minPrice != null) queryParameters['min_price'] = minPrice;
       if (maxPrice != null) queryParameters['max_price'] = maxPrice;
+      if (isVerified == true) queryParameters['is_verified'] = 1;
       if (lat != null) queryParameters['lat'] = lat;
       if (lng != null) queryParameters['lng'] = lng;
 

@@ -19,6 +19,14 @@ class ApiEndpoints {
   /// تتأكد من إضافة الرابط الأساسي إذا كان المسار نسبياً.
   static String getImageUrl(String? path) {
     if (path == null || path.isEmpty || path == 'null') return '';
+    
+    // 🚀 إذا كان الرابط مدمجاً بشكل خاطئ من الباك إند بسبب دمج مسار الـ storage مع رابط خارجي كامل:
+    // مثال: https://qss-back-end.onrender.com/storage/https://lh3.googleusercontent.com/...
+    if (path.contains('/storage/http')) {
+      final int index = path.indexOf('/storage/http');
+      return path.substring(index + 9); // تخطي '/storage/' والبدء من 'http...'
+    }
+
     if (path.startsWith('http') || path.startsWith('assets/')) return path;
     
     // تنظيف المسار من السلاش في البداية

@@ -8,6 +8,7 @@ import 'package:seeker/features/home/services/viewmodels/service_details_view_mo
 import 'package:seeker/features/home/repositories/home_repository.dart';
 import 'package:seeker/features/search/viewmodels/search_viewmodel.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
+import 'package:seeker/features/beProvider/views/pick_location_view.dart';
 
 /// 📂 اسم الملف: search_view.dart
 /// 📝 الوصف: واجهة البحث المتقدم والفلترة.
@@ -333,6 +334,94 @@ class _SearchViewState extends State<SearchView> {
                         viewModel.setPriceRange(values.start, values.end);
                       });
                     },
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // ✅ فلتر الموثقين
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(
+                      'عرض الموثقين فقط',
+                      style: TextStyle(fontWeight: FontWeight.bold, color: colors.text),
+                    ),
+                    subtitle: Text(
+                      'عرض الخدمات التابعة لمزودين لديهم توثيق سارٍ',
+                      style: TextStyle(fontSize: 12, color: colors.textSub),
+                    ),
+                    activeColor: colors.primary,
+                    value: viewModel.isVerifiedOnly,
+                    onChanged: (val) {
+                      setModalState(() {
+                        viewModel.setVerifiedOnly(val);
+                      });
+                    },
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // 📍 اختيار الموقع من الخريطة
+                  Text(
+                    'موقع البحث',
+                    style: TextStyle(fontWeight: FontWeight.bold, color: colors.text),
+                  ),
+                  const SizedBox(height: 12),
+                  InkWell(
+                    onTap: () async {
+                      // فتح صفحة اختيار الموقع
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PickLocationView(),
+                        ),
+                      );
+
+                      if (result != null && result is Map) {
+                        setModalState(() {
+                          final latLng = result['latLng'];
+                          final address = result['address'];
+                          viewModel.setPickedLocation(
+                            latLng.latitude,
+                            latLng.longitude,
+                            address,
+                          );
+                        });
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: colors.card,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: viewModel.pickedLat != null 
+                              ? colors.primary 
+                              : colors.textSub.withValues(alpha: 0.1),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.map_rounded,
+                            color: viewModel.pickedLat != null ? colors.primary : colors.textSub,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              viewModel.pickedAddress ?? 'تحديد الموقع من الخريطة (اختياري)',
+                              style: TextStyle(
+                                color: viewModel.pickedLat != null ? colors.text : colors.textSub,
+                                fontSize: 14,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (viewModel.pickedLat != null)
+                            Icon(Icons.check_circle, color: colors.primary, size: 20),
+                        ],
+                      ),
+                    ),
                   ),
 
                   const SizedBox(height: 32),

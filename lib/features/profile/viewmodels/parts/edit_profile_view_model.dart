@@ -157,7 +157,7 @@ class EditProfileViewModel extends ChangeNotifier {
       // 1. تحديث الملف الشخصي الأساسي
       await _repository.updateProfile(
         profileId: profile.id,
-        name: nameController.text.trim(),
+        name: profile.role == 'provider' ? null : nameController.text.trim(),
         bio: bioController.text.trim(),
         avatarPath: _selectedImage?.path,
         latitude: _latitude,

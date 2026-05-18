@@ -41,23 +41,18 @@ class LoginView extends StatelessWidget {
                         const SizedBox(height: 20),
 
                         // 1️⃣ اللوجو (Logo)
-                        // تصميم مربع بحواف دائرية ولون خلفية شفاف
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: colors.primary.withValues(
-                              alpha: 0.1,
-                            ), // خلفية شفافة من لونك الأساسي
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Icon(
-                            Icons
-                                .construction, // أيقونة مؤقتة (يمكن تغييرها لصورة)
+                        Image.asset(
+                          'assets/images/logo.png',
+                          width: 120,
+                          height: 120,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(
+                            Icons.construction,
                             size: 40,
-                            color: colors.primary, // لونك الأساسي
                           ),
                         ),
+                        const SizedBox(height: 10),
 
                         const SizedBox(height: 24),
 

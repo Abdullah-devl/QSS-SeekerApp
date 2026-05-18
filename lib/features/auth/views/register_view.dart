@@ -71,18 +71,17 @@ class RegisterView extends StatelessWidget {
 
                   const SizedBox(height: 30),
 
-                  // 2️⃣ أيقونة المستخدم التعبيرية (Icon)
+                  // 2️⃣ شعار التطبيق (Logo)
                   Center(
-                    child: Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: colors.primary.withValues(alpha: 0.1), // لون خلفية سماوي فاتح متجاوب
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: Icon(
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) => Icon(
                         Icons.person_add_alt_1_rounded,
                         size: 40,
-                        color: colors.primary, // لون متجاوب
+                        color: colors.primary,
                       ),
                     ),
                   ),

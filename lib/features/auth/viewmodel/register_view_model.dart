@@ -81,11 +81,18 @@ class RegisterViewModel extends ChangeNotifier {
 
       // 6. في حال النجاح، التوجيه لصفحة التحقق من الإيميل (OTP)
       if (context.mounted) {
-        Navigator.pushReplacementNamed(
+        await QSAlerts.showSuccess(
           context,
-          AppRoutes.verifyEmail,
-          arguments: emailController.text.trim(),
+          'تم إنشاء الحساب بنجاح! الرجاء تفعيل بريدك الإلكتروني للمتابعة.',
         );
+        
+        if (context.mounted) {
+          Navigator.pushReplacementNamed(
+            context,
+            AppRoutes.verifyEmail,
+            arguments: emailController.text.trim(),
+          );
+        }
       }
     } catch (e) {
       // 7. معالجة الأخطاء وعرضها

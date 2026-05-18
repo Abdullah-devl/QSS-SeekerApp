@@ -45,32 +45,27 @@ class ApiService {
           final token = await _tokenStorage.getToken();
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
-            // 📝 طباعة جزء من الـ Token في الـ Console للتأكد.
-            // developer.log(
-            //   '🔑 Attached Token: Bearer ...${token.substring(token.length - 5)}',
-            //   name: 'ApiService',
-            // );
           }
 
           // 🚀 طباعة الرابط والبيانات المرسلة.
-          // developer.log(
-          //   '🚀 Sending [${options.method}] request to: ${options.uri}',
-          //   name: 'ApiService',
-          // );
-          // if (options.data != null) {
-          //   developer.log('📦 Request Data: ${options.data}', name: 'ApiService');
-          // }
+          developer.log(
+            '🚀 [${options.method}] ${options.uri}',
+            name: 'ApiService',
+          );
+          if (options.data != null) {
+            developer.log('📦 Request Data: ${options.data}', name: 'ApiService');
+          }
           return handler.next(options); // ✅ متابعة إرسال الطلب
         },
 
         // 📥 عند استقبال الرد (On Response)
         onResponse: (response, handler) {
           // ✅ طباعة تأكيد وصول الرد والبيانات المستلمة.
-          // developer.log(
-          //   '✅ Response received from: ${response.requestOptions.uri} [${response.statusCode}]',
-          //   name: 'ApiService',
-          // );
-          // developer.log('📥 Response Body: ${response.data}', name: 'ApiService');
+          developer.log(
+            '✅ [${response.statusCode}] ${response.requestOptions.uri}',
+            name: 'ApiService',
+          );
+          developer.log('📥 Response Body: ${response.data}', name: 'ApiService');
           
           return handler.next(response); // ✅ تمرير الرد للكود الذي طلبه
         },
@@ -83,15 +78,15 @@ class ApiService {
              serverMessage = e.response?.data['message'] ?? e.response?.data['error'];
           }
 
-          // developer.log(
-          //   '❌ Error on URL: ${e.requestOptions.uri}\n📩 Server Message: ${serverMessage ?? e.message}', 
-          //   name: 'ApiService', 
-          //   error: e
-          // );
+          developer.log(
+            '❌ [${e.response?.statusCode ?? "N/A"}] ${e.requestOptions.uri}\n📩 Server Message: ${serverMessage ?? e.message}', 
+            name: 'ApiService', 
+            error: e
+          );
           
-          // if (e.response?.data != null) {
-          //    developer.log('📥 Error Body: ${e.response?.data}', name: 'ApiService');
-          // }
+          if (e.response?.data != null) {
+             developer.log('📥 Error Body: ${e.response?.data}', name: 'ApiService');
+          }
 
           // ⚠️ التحقق مما إذا كان الخطأ بسبب انتهاء الصلاحية (401 Unauthorized).
           if (e.response?.statusCode == 401) {

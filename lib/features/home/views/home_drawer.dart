@@ -106,11 +106,6 @@ class _HomeDrawerState extends State<HomeDrawer> {
                             backgroundColor: colors.primary.withValues(
                               alpha: 0.1,
                             ),
-                            backgroundImage: const AssetImage(
-                              'assets/images/user_placeholder.png',
-                            ),
-                            onBackgroundImageError: (_, __) =>
-                                const Icon(Icons.person, size: 30),
                             child: Icon(
                               Icons.person,
                               size: 30,
@@ -237,7 +232,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       // 🛡️ شرط الصلاحيات: كارد الترويج يظهر فقط للأعضاء المسجلين
                       // if (userRole == 'seeker')
                       //   _buildPromoCard(context, colors),
-                      if (userRole != 'provider' && userRole == 'seeker')
+                      if (userRole != 'provider' && (userRole == 'seeker' || userRole == 'client'))
                         _buildPromoCard(context, colors),
                     ],
                   ),
@@ -289,6 +284,15 @@ class _HomeDrawerState extends State<HomeDrawer> {
                             ],
                           ),
                         ),
+                ),
+                // شعار التطبيق في الأسفل
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    height: 40,
+                    errorBuilder: (context, error, stackTrace) => const SizedBox(),
+                  ),
                 ),
                 // رقم الإصدار
                 Padding(

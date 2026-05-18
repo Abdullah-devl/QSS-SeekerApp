@@ -55,6 +55,7 @@ class EditProfileView extends StatelessWidget {
                   label: l10n.fullName,
                   icon: Icons.person_outline,
                   colors: colors,
+                  enabled: vm.profile.role != 'provider',
                 ),
                 const SizedBox(height: 16),
 
@@ -139,10 +140,12 @@ class EditProfileView extends StatelessWidget {
     required IconData icon,
     int maxLines = 1,
     required dynamic colors,
+    bool enabled = true,
   }) {
     return TextFormField(
       controller: controller,
       maxLines: maxLines,
+      enabled: enabled,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: colors.primary),

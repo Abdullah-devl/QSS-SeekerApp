@@ -17,6 +17,7 @@ import 'package:seeker/features/profile/requests/repository/request_repository.d
 import 'package:seeker/core/network/api_service.dart';
 import 'package:seeker/features/profile/viewmodels/profile_view_model.dart';
 import 'package:seeker/features/profile/repositories/profile_repository.dart';
+import 'package:seeker/features/profile/models/profile_model.dart';
 
 class ServiceDetailsView extends StatefulWidget {
   final ServiceModel initialService;
@@ -28,6 +29,8 @@ class ServiceDetailsView extends StatefulWidget {
 }
 
 class _ServiceDetailsViewState extends State<ServiceDetailsView> {
+  bool _showHiddenReviews = false;
+
   get lat => null;
   get lng => null;
 
@@ -64,12 +67,12 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
               children: [
                 _buildHeaderImage(service.imageUrl, colors),
                 _buildMainInfo(service, colors),
-                _buildProviderCard(service, colors),
+                _buildProviderCard(service, vm.providerProfile, colors),
                 _buildDivider(colors),
                 _buildDescription(service.description, colors),
-                _buildLocation(colors),
+                _buildLocation(vm.providerProfile, colors),
                 _buildWorkingHours(service, colors),
-                _buildReviews(colors),
+                _buildReviews(service, colors),
               ],
             ),
           );
@@ -122,18 +125,6 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
               favVm.toggleFavorite(service);
             },
           ),
-        IconButton(
-          icon: Icon(Icons.share_outlined, color: colors.text),
-          onPressed: () {
-            if (service != null) {
-              Share.share(context.tr('share_service_message', args: {
-                'title': service.title,
-                'provider': service.providerName,
-                'price': service.price.toInt().toString(),
-              }));
-            }
-          },
-        ),
       ],
     );
   }
@@ -170,14 +161,14 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                   children: [
                     Text(AppLocalizations.of(context)!.availableNow, style: TextStyle(color: colors.success, fontWeight: FontWeight.bold, fontSize: 12)),
                     Container(margin: const EdgeInsets.symmetric(horizontal: 8), height: 12, width: 1, color: colors.textSub.withOpacity(0.3)),
-                    Text('120 ${AppLocalizations.of(context)!.customerReviews}', style: TextStyle(color: colors.textSub, fontSize: 12)),
+                    Text('${service.reviewsCount} ${AppLocalizations.of(context)!.customerReviews}', style: TextStyle(color: colors.textSub, fontSize: 12)),
                     const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(color: colors.warning.withOpacity(0.1), borderRadius: BorderRadius.circular(6)),
                       child: Row(
                         children: [
-                          Text(service.rating > 0 ? service.rating.toString() : AppLocalizations.of(context)!.newService, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: colors.warning)),
+                          Text(service.rating > 0 ? service.rating.toStringAsFixed(1) : AppLocalizations.of(context)!.newService, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: colors.warning)),
                           const SizedBox(width: 4),
                           Icon(Icons.star, color: colors.warning, size: 12),
                         ],
@@ -201,7 +192,11 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
     );
   }
 
-  Widget _buildProviderCard(ServiceModel service, dynamic colors) {
+  Widget _buildProviderCard(ServiceModel service, ProfileModel? providerProfile, dynamic colors) {
+    final String jobTitle = (providerProfile != null && providerProfile.jobTitle.isNotEmpty)
+        ? providerProfile.jobTitle
+        : (Directionality.of(context) == TextDirection.rtl ? 'مزود خدمة' : 'Service Provider');
+
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(12),
@@ -212,18 +207,48 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
       ),
       child: Row(
         children: [
-          CircleAvatar(radius: 22, backgroundColor: colors.primary.withOpacity(0.1), child: Icon(Icons.person, color: colors.primary)),
+          CircleAvatar(
+            radius: 22,
+            backgroundColor: colors.primary.withOpacity(0.1),
+            backgroundImage: providerProfile != null && providerProfile.avatarUrl.isNotEmpty
+                ? NetworkImage(providerProfile.avatarUrl)
+                : null,
+            child: providerProfile == null || providerProfile.avatarUrl.isEmpty
+                ? Icon(Icons.person, color: colors.primary)
+                : null,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(service.providerName, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: colors.text)),
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        service.providerName,
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: colors.text),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (service.isProviderVerified) ...[
+                      const SizedBox(width: 4),
+                      Icon(Icons.verified, color: colors.primary, size: 14),
+                    ],
+                  ],
+                ),
                 const SizedBox(height: 2),
-                Text(AppLocalizations.of(context)!.yearsExperience(4), style: TextStyle(color: colors.textSub, fontSize: 11)),
+                Text(
+                  jobTitle,
+                  style: TextStyle(color: colors.textSub, fontSize: 11),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),
+          const SizedBox(width: 8),
           GestureDetector(
             onTap: () {
               Navigator.push(
@@ -240,11 +265,11 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
               );
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(color: colors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              decoration: BoxDecoration(color: colors.primary.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
               child: Text(
                 AppLocalizations.of(context)!.visitProfile,
-                style: TextStyle(color: colors.primary, fontWeight: FontWeight.bold, fontSize: 13),
+                style: TextStyle(color: colors.primary, fontWeight: FontWeight.bold, fontSize: 11),
               ),
             ),
           ),
@@ -270,8 +295,19 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
     );
   }
 
-  Widget _buildLocation(dynamic colors) {
-    const LatLng serviceLocation = LatLng(24.7136, 46.6753);
+  Widget _buildLocation(ProfileModel? providerProfile, dynamic colors) {
+    final double? provLat = providerProfile?.latitude;
+    final double? provLng = providerProfile?.longitude;
+    final bool hasCoords = provLat != null && provLng != null;
+
+    final LatLng serviceLocation = hasCoords
+        ? LatLng(provLat, provLng)
+        : const LatLng(24.7136, 46.6753);
+
+    final String displayAddress = (providerProfile != null && providerProfile.address != null && providerProfile.address!.isNotEmpty)
+        ? providerProfile.address!
+        : (Directionality.of(context) == TextDirection.rtl ? 'الموقع غير محدد من قبل مزود الخدمة' : 'Location not specified by provider');
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -289,23 +325,25 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
             ),
             child: Column(
               children: [
-                SizedBox(
-                  height: 150,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: IgnorePointer(
-                      ignoring: true,
-                      child: GoogleMap(
-                        initialCameraPosition: const CameraPosition(target: serviceLocation, zoom: 14.0),
-                        markers: {const Marker(markerId: MarkerId('service_marker'), position: serviceLocation)},
-                        zoomControlsEnabled: false,
-                        mapToolbarEnabled: false,
-                        myLocationButtonEnabled: false,
+                if (hasCoords) ...[
+                  SizedBox(
+                    height: 150,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: IgnorePointer(
+                        ignoring: true,
+                        child: GoogleMap(
+                          initialCameraPosition: CameraPosition(target: serviceLocation, zoom: 14.0),
+                          markers: {Marker(markerId: const MarkerId('service_marker'), position: serviceLocation)},
+                          zoomControlsEnabled: false,
+                          mapToolbarEnabled: false,
+                          myLocationButtonEnabled: false,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
+                  const SizedBox(height: 16),
+                ],
                 Row(
                   children: [
                     Container(
@@ -318,36 +356,93 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(context.tr('example_address_city'), style: TextStyle(fontWeight: FontWeight.bold, color: colors.text, fontSize: 14)),
-                          Text(context.tr('example_address_street'), style: TextStyle(color: colors.textSub, fontSize: 11)),
+                          Text(
+                            Directionality.of(context) == TextDirection.rtl ? 'عنوان مقدم الخدمة' : 'Provider Address',
+                            style: TextStyle(fontWeight: FontWeight.bold, color: colors.text, fontSize: 14),
+                          ),
+                          Text(displayAddress, style: TextStyle(color: colors.textSub, fontSize: 11)),
                         ],
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                GestureDetector(
-                  onTap: () async {
-                    final Uri googleMapsUrl = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
-                    if (await canLaunchUrl(googleMapsUrl)) {
-                      await launchUrl(googleMapsUrl, mode: LaunchMode.externalApplication);
-                    }
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(AppLocalizations.of(context)!.openInMaps, style: TextStyle(color: colors.primary, fontWeight: FontWeight.bold, fontSize: 13)),
-                      const SizedBox(width: 4),
-                      Icon(Icons.open_in_new, color: colors.primary, size: 14),
-                    ],
+                if (hasCoords) ...[
+                  const SizedBox(height: 16),
+                  GestureDetector(
+                    onTap: () async {
+                      final Uri googleMapsUrl = Uri.parse('https://www.google.com/maps/search/?api=1&query=$provLat,$provLng');
+                      if (await canLaunchUrl(googleMapsUrl)) {
+                        await launchUrl(googleMapsUrl, mode: LaunchMode.externalApplication);
+                      }
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(AppLocalizations.of(context)!.openInMaps, style: TextStyle(color: colors.primary, fontWeight: FontWeight.bold, fontSize: 13)),
+                        const SizedBox(width: 4),
+                        Icon(Icons.open_in_new, color: colors.primary, size: 14),
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  String _getTranslatedDay(BuildContext context, String day) {
+    final cleanDay = day.trim().toLowerCase();
+    final isAr = Directionality.of(context) == TextDirection.rtl;
+
+    if (isAr) {
+      switch (cleanDay) {
+        case 'saturday': return 'السبت';
+        case 'sunday': return 'الأحد';
+        case 'monday': return 'الإثنين';
+        case 'tuesday': return 'الثلاثاء';
+        case 'wednesday': return 'الأربعاء';
+        case 'thursday': return 'الخميس';
+        case 'friday': return 'الجمعة';
+        default: return day;
+      }
+    } else {
+      switch (cleanDay) {
+        case 'saturday': return 'Saturday';
+        case 'sunday': return 'Sunday';
+        case 'monday': return 'Monday';
+        case 'tuesday': return 'Tuesday';
+        case 'wednesday': return 'Wednesday';
+        case 'thursday': return 'Thursday';
+        case 'friday': return 'Friday';
+        default: return day;
+      }
+    }
+  }
+
+  String _formatTime(BuildContext context, String timeStr) {
+    if (timeStr.isEmpty) return timeStr;
+    try {
+      final parts = timeStr.split(':');
+      if (parts.length >= 2) {
+        int hour = int.parse(parts[0]);
+        int minute = int.parse(parts[1]);
+        
+        final isAr = Directionality.of(context) == TextDirection.rtl;
+        final period = hour >= 12 ? (isAr ? 'م' : 'PM') : (isAr ? 'ص' : 'AM');
+        
+        int displayHour = hour % 12;
+        if (displayHour == 0) displayHour = 12;
+        
+        final minuteStr = minute.toString().padLeft(2, '0');
+        return '$displayHour:$minuteStr $period';
+      }
+    } catch (e) {
+      // Fallback
+    }
+    return timeStr;
   }
 
   Widget _buildWorkingHours(ServiceModel service, dynamic colors) {
@@ -370,6 +465,10 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                 itemBuilder: (context, index) {
                   final schedule = service.schedules[index];
                   final isActive = schedule.isActive;
+                  final dayTranslated = _getTranslatedDay(context, schedule.day);
+                  final fromFormatted = _formatTime(context, schedule.fromTime);
+                  final toFormatted = _formatTime(context, schedule.toTime);
+
                   return Container(
                     width: 95,
                     padding: const EdgeInsets.symmetric(vertical: 12),
@@ -381,12 +480,12 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(schedule.day, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isActive ? colors.primary : colors.textSub)),
+                        Text(dayTranslated, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isActive ? colors.primary : colors.textSub)),
                         const SizedBox(height: 8),
                         if (isActive) ...[
-                          Text(schedule.fromTime, style: TextStyle(fontSize: 10, color: colors.text)),
+                          Text(fromFormatted, style: TextStyle(fontSize: 10, color: colors.text)),
                           const Icon(Icons.keyboard_arrow_down_rounded, size: 10, color: Colors.grey),
-                          Text(schedule.toTime, style: TextStyle(fontSize: 10, color: colors.text)),
+                          Text(toFormatted, style: TextStyle(fontSize: 10, color: colors.text)),
                         ] else
                           Text(context.tr('closed'), style: TextStyle(fontSize: 12, color: colors.error.withOpacity(0.7), fontWeight: FontWeight.bold)),
                       ],
@@ -430,9 +529,67 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
     );
   }
 
+  Widget _buildReviewCard(ReviewModel review, dynamic colors) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.card,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colors.text.withOpacity(0.05)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 18,
+                backgroundColor: colors.primary.withOpacity(0.1),
+                backgroundImage: review.reviewerImageUrl.isNotEmpty
+                    ? NetworkImage(review.reviewerImageUrl)
+                    : null,
+                child: review.reviewerImageUrl.isEmpty
+                    ? Icon(Icons.person, color: colors.primary, size: 20)
+                    : null,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  review.reviewerName,
+                  style: TextStyle(fontWeight: FontWeight.bold, color: colors.text, fontSize: 14),
+                ),
+              ),
+              Text(
+                _formatReviewDate(review.createdAt),
+                style: TextStyle(color: colors.textSub, fontSize: 11),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: List.generate(5, (index) {
+              return Icon(
+                index < review.rating ? Icons.star : Icons.star_border,
+                color: colors.warning,
+                size: 16,
+              );
+            }),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            review.comment,
+            style: TextStyle(color: colors.textSub, fontSize: 12, height: 1.6),
+          ),
+        ],
+      ),
+    );
+  }
 
+  Widget _buildReviews(ServiceModel service, dynamic colors) {
+    final visibleReviews = service.reviews.where((r) => !r.isHidden).toList();
+    final hiddenReviews = service.reviews.where((r) => r.isHidden).toList();
 
-  Widget _buildReviews(dynamic colors) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -440,45 +597,91 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
         children: [
           _buildSectionTitle(AppLocalizations.of(context)!.customerReviews, colors),
           const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: colors.card,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: colors.text.withOpacity(0.05)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    CircleAvatar(radius: 18, backgroundColor: colors.primary.withOpacity(0.1), child: Icon(Icons.person, color: colors.primary, size: 20)),
-                    const SizedBox(width: 12),
-                    Expanded(child: Text(context.tr('example_reviewer_name'), style: TextStyle(fontWeight: FontWeight.bold, color: colors.text, fontSize: 14))),
-                    Text(context.tr('example_review_time'), style: TextStyle(color: colors.textSub, fontSize: 11)),
-                  ],
+          
+          // 1. إذا كان المجموع الكلي فارغاً:
+          if (visibleReviews.isEmpty && hiddenReviews.isEmpty)
+            _buildEmptyState(
+              Directionality.of(context) == TextDirection.rtl ? 'لا توجد تقييمات حالية' : 'No reviews currently',
+              Icons.rate_review_outlined,
+              colors,
+            )
+          else ...[
+            // 2. عرض التقييمات الظاهرة (إن وجدت):
+            if (visibleReviews.isNotEmpty)
+              Column(
+                children: visibleReviews.map((r) => _buildReviewCard(r, colors)).toList(),
+              )
+            else
+              _buildEmptyState(
+                Directionality.of(context) == TextDirection.rtl ? 'لا توجد تقييمات عامة حالية' : 'No public reviews currently',
+                Icons.rate_review_outlined,
+                colors,
+              ),
+
+            // 3. عرض زر التحكم بالتقييمات المخفية (إن وجدت):
+            if (hiddenReviews.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Center(
+                child: TextButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      _showHiddenReviews = !_showHiddenReviews;
+                    });
+                  },
+                  icon: Icon(
+                    _showHiddenReviews ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                    color: colors.primary,
+                    size: 18,
+                  ),
+                  label: Text(
+                    _showHiddenReviews
+                        ? (Directionality.of(context) == TextDirection.rtl
+                            ? 'إخفاء التقييمات المخفية (${hiddenReviews.length})'
+                            : 'Hide Hidden Reviews (${hiddenReviews.length})')
+                        : (Directionality.of(context) == TextDirection.rtl
+                            ? 'إظهار التقييمات المخفية (${hiddenReviews.length})'
+                            : 'Show Hidden Reviews (${hiddenReviews.length})'),
+                    style: TextStyle(
+                      color: colors.primary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    backgroundColor: colors.primary.withOpacity(0.05),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Icon(Icons.star, color: colors.warning, size: 16),
-                    Icon(Icons.star, color: colors.warning, size: 16),
-                    Icon(Icons.star, color: colors.warning, size: 16),
-                    Icon(Icons.star, color: colors.warning, size: 16),
-                    Icon(Icons.star, color: colors.warning, size: 16),
-                  ],
+              ),
+              const SizedBox(height: 12),
+              
+              // 4. عرض التقييمات المخفية إذا تم تفعيل الخيار:
+              if (_showHiddenReviews)
+                Column(
+                  children: hiddenReviews.map((r) => _buildReviewCard(r, colors)).toList(),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  context.tr('example_review_content'),
-                  style: TextStyle(color: colors.textSub, fontSize: 12, height: 1.6),
-                ),
-              ],
-            ),
-          ),
+            ],
+          ],
         ],
       ),
     );
+  }
+
+  String _formatReviewDate(String dateStr) {
+    if (dateStr.isEmpty) return '';
+    try {
+      if (dateStr.contains(' ')) {
+        return dateStr.split(' ')[0];
+      }
+      final parsed = DateTime.tryParse(dateStr);
+      if (parsed != null) {
+        return '${parsed.year}-${parsed.month.toString().padLeft(2, '0')}-${parsed.day.toString().padLeft(2, '0')}';
+      }
+    } catch (_) {}
+    return dateStr;
   }
 
   Widget _buildBottomBar(ServiceModel service, dynamic colors, bool isDataLoading) {

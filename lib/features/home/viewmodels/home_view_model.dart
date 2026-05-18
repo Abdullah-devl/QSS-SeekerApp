@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:seeker/core/services/notification_service.dart';
 import 'package:seeker/core/storage/token_storage.dart';
 import '../repositories/home_repository.dart';
 import '../models/category_model.dart';
@@ -105,7 +106,17 @@ class HomeViewModel extends ChangeNotifier {
       final allAds = results[2] as List<AdvertisementModel>;
       _carouselAds = allAds.where((ad) => ad.type == 'carousel' || ad.type == 'banner').toList();
       _popupAds = allAds.where((ad) => ad.type == 'popup').toList();
+
+      // 🔔 إرسال توكن الإشعارات للسيرفر لضمان المزامنة
+      print('🔔 [HOME VM]: User Role is: $_role');
+      if (_role != 'guest' && _role != 'زائر') {
+        print('🚀 [HOME VM]: Triggering token update...');
+        NotificationService().updateTokenToServer();
+      } else {
+        print('ℹ️ [HOME VM]: Token update skipped (Guest Mode)');
+      }
     } catch (e) {
+      print('❌ [HOME VM]: Error loading home data: $e');
       _errorMessage = e.toString();
     } finally {
       _isLoading = false;

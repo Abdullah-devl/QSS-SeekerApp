@@ -337,12 +337,8 @@ class ConfirmOrderViewModel extends ChangeNotifier {
           .map((s) => {'id': s.id, 'quantity': s.quantity})
           .toList();
 
-      // دمج بيانات المستخدم (الاسم والهاتف) مع الملاحظات في حقل الرسالة
-      final combinedMessage = '''
-الاسم: ${userNameController.text}
-الهاتف: ${userPhoneController.text}
-ملاحظات: ${notesController.text}
-''';
+      // تمرير الملاحظات الإضافية فقط في الرسالة للباكيند
+      final combinedMessage = notesController.text;
 
       final success = await _repository.createServiceRequest(
         serviceId: mainService.id,

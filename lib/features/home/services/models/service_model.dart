@@ -136,8 +136,11 @@ class ServiceModel {
   bool isVerified; // ✅ هل المزود موثق؟
   DateTime? verifiedUntil; // 📅 تاريخ انتهاء التوثيق
   List<ServiceModel> subServices;
-  final List<ServiceScheduleModel>
-  schedules; // 📅 جدول المواعيد المتاح لهذه الخدمة
+  final List<ServiceScheduleModel> schedules; // 📅 جدول المواعيد المتاح لهذه الخدمة
+  final int reviewsCount; // 💬 عدد التقييمات
+  final List<ReviewModel>? _reviews; // 💬 قائمة التقييمات الحقيقية الخاصة
+
+  List<ReviewModel> get reviews => _reviews ?? const [];
 
   /// 🛡️ Getter للتحقق من أن التوثيق لا يزال سارياً
   /// إذا كان تاريخ التوثيق ساري (اليوم أو مستقبلاً) فالمزود موثق
@@ -168,7 +171,9 @@ class ServiceModel {
     this.verifiedUntil,
     this.subServices = const [],
     this.schedules = const [],
-  });
+    this.reviewsCount = 0,
+    List<ReviewModel>? reviews,
+  }) : _reviews = reviews ?? const [];
 
   /// 🛡️ تحديث بيانات المزود (الاسم + التوثيق) بعد جلبها من السيرفر
   void updateProviderInfo({
@@ -198,13 +203,42 @@ class ServiceModel {
           .toList();
     }
 
-    // 🕒 3. استخراج جدول المواعيد (Schedules)
+    // 🕒 3. استخراج جدول المواعيد (Schedules) وتسطيحه من قائمة الأيام المتداخلة
     var rawSchedules = json['schedules'] ?? json['service_schedules'] ?? [];
     List<ServiceScheduleModel> parsedSchedules = [];
     if (rawSchedules is List) {
-      parsedSchedules = rawSchedules
-          .map((e) => ServiceScheduleModel.fromJson(e))
-          .toList();
+      for (var scheduleJson in rawSchedules) {
+        if (scheduleJson is Map<String, dynamic>) {
+          final fromTime = scheduleJson['from'] ?? scheduleJson['start_time'] ?? '00:00';
+          final toTime = scheduleJson['to'] ?? scheduleJson['end_time'] ?? '00:00';
+          final isActive = (scheduleJson['is_active'] == 1 || scheduleJson['is_active'] == true);
+          
+          final rawDays = scheduleJson['days'];
+          if (rawDays is List) {
+            for (var dayJson in rawDays) {
+              if (dayJson is Map<String, dynamic>) {
+                final dayName = dayJson['day']?.toString() ?? '';
+                parsedSchedules.add(ServiceScheduleModel(
+                  id: int.tryParse(dayJson['id']?.toString() ?? '') ?? 0,
+                  day: dayName,
+                  fromTime: fromTime,
+                  toTime: toTime,
+                  isActive: isActive,
+                ));
+              }
+            }
+          } else {
+            // Fallback if days list doesn't exist
+            parsedSchedules.add(ServiceScheduleModel(
+              id: int.tryParse(scheduleJson['id']?.toString() ?? '') ?? 0,
+              day: scheduleJson['day'] ?? scheduleJson['day_name'] ?? '',
+              fromTime: fromTime,
+              toTime: toTime,
+              isActive: isActive,
+            ));
+          }
+        }
+      }
     }
 
     // 🚀 4. قراءة الـ parent_service_id بصرامة (الحل السحري)
@@ -214,6 +248,17 @@ class ServiceModel {
         rawParent.toString().trim() != 'null' &&
         rawParent.toString().trim().isNotEmpty) {
       pId = int.tryParse(rawParent.toString());
+    }
+
+    // 💬 5. استخراج التقييمات (Reviews)
+    var rawReviews = json['reviews'] ?? [];
+    List<ReviewModel> parsedReviews = [];
+    if (rawReviews is List) {
+      for (var r in rawReviews) {
+        if (r is Map<String, dynamic>) {
+          parsedReviews.add(ReviewModel.fromJson(r));
+        }
+      }
     }
 
     return ServiceModel(
@@ -271,7 +316,43 @@ class ServiceModel {
       }(),
 
       subServices: parsedSubServices,
-      schedules: parsedSchedules, // ✅ تم الإسناد هنا
+      schedules: parsedSchedules,
+      reviewsCount: int.tryParse(json['reviews_count']?.toString() ?? '') ?? 0,
+      reviews: parsedReviews,
+    );
+  }
+}
+
+class ReviewModel {
+  final int id;
+  final int rating;
+  final String comment;
+  final String reviewerName;
+  final String reviewerImageUrl;
+  final String createdAt;
+  final bool isHidden; // 🔒 حالة إخفاء التقييم
+
+  ReviewModel({
+    required this.id,
+    required this.rating,
+    required this.comment,
+    required this.reviewerName,
+    required this.reviewerImageUrl,
+    required this.createdAt,
+    required this.isHidden,
+  });
+
+  factory ReviewModel.fromJson(Map<String, dynamic> json) {
+    final Map<String, dynamic> userJson = Map<String, dynamic>.from(json['user'] ?? {});
+    final rawUserImage = userJson['image_url'] ?? userJson['image_path'] ?? userJson['avatar'] ?? '';
+    return ReviewModel(
+      id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
+      rating: int.tryParse(json['rating']?.toString() ?? '') ?? 0,
+      comment: json['comment']?.toString() ?? '',
+      reviewerName: userJson['name']?.toString() ?? 'مستخدم',
+      reviewerImageUrl: ApiEndpoints.getImageUrl(rawUserImage.toString()),
+      createdAt: json['created_at']?.toString() ?? '',
+      isHidden: json['is_hidden'] == true || json['is_hidden'] == 1,
     );
   }
 }

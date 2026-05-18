@@ -79,45 +79,49 @@ class BeProviderView extends StatelessWidget {
               child: GestureDetector(
                 onTap: viewModel.pickImage,
                 child: Container(
-                  height: 150,
+                  height: 160,
+                  width: double.infinity, // يمتد على كامل عرض البطاقة
                   decoration: BoxDecoration(
                     color: colors.card,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: colors.primary.withValues(alpha: 0.1),
-                      width: 2,
+                      color: colors.primary.withValues(alpha: 0.15),
+                      width: 1.5,
                     ),
                   ),
                   child: viewModel.selectedImage != null
                       ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(16),
                           child: Image.file(
                             viewModel.selectedImage!,
                             width: double.infinity,
-                            fit: BoxFit.cover,
+                            height: double.infinity, // ملء الارتفاع بالكامل
+                            fit: BoxFit.cover, // تغطية كامل المساحة
                           ),
                         )
                       : Column(
                           mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Container(
-                              padding: const EdgeInsets.all(12),
+                              padding: const EdgeInsets.all(15),
                               decoration: BoxDecoration(
                                 color: colors.primary.withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
-                                Icons.camera_alt,
+                                Icons.add_a_photo_rounded,
                                 color: colors.primary,
-                                size: 30,
+                                size: 35,
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 12),
                             Text(
                               AppLocalizations.of(context)!.uploadIdCard,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: colors.text,
+                                fontSize: 15,
                               ),
                             ),
                             const SizedBox(height: 4),

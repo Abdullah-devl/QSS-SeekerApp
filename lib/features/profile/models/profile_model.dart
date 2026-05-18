@@ -89,6 +89,12 @@ class ProfileModel {
 
     // 🔍 البحث عن الصورة في كل الأماكن الممكنة
     String findAvatar() {
+      // 🚀 إذا كان المسار الأصلي للصورة هو رابط ويب كامل (رابط جوجل)، نستخدمه فوراً لتجنب الروابط المشوهة
+      final pathVal = profileData['image_path']?.toString() ?? '';
+      if (pathVal.startsWith('http')) {
+        return pathVal;
+      }
+
       final val = profileData['image_url'] ?? 
                   profileData['image_path'] ?? 
                   profileData['avatar'] ?? 
@@ -146,7 +152,7 @@ class ProfileModel {
           double.tryParse(userJson['paid_points']?.toString() ?? '0') ?? 0.0,
       address: userJson['address'] ?? profileData['address'] ?? json['address'],
 
-      jobTitle: profileData['job_title'] ?? userJson['job_title'] ?? 'فني محترف',
+      jobTitle: profileData['job_title'] ?? userJson['job_title'] ?? '',
       bio: profileData['bio'] ?? userJson['bio'] ?? '',
       avatarUrl: findAvatar(),
       completedJobs: profileData['completed_jobs'] ?? 0,

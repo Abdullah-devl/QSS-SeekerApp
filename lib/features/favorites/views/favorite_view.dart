@@ -10,6 +10,9 @@ import 'package:seeker/features/home/repositories/home_repository.dart';
 
 import 'package:seeker/l10n/app_localizations.dart';
 
+import 'package:seeker/core/routes/app_routes.dart';
+import 'package:seeker/features/home/viewmodels/home_view_model.dart';
+
 class FavoriteView extends StatelessWidget {
   const FavoriteView({super.key});
 
@@ -17,6 +20,7 @@ class FavoriteView extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.qsColors;
     final l10n = AppLocalizations.of(context)!;
+    final userRole = context.select<HomeViewModel, String>((vm) => vm.role);
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -31,84 +35,158 @@ class FavoriteView extends StatelessWidget {
             fontSize: 22,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications_none_rounded, color: colors.text),
-            onPressed: () {},
-          ),
-          const SizedBox(width: 8),
-        ],
       ),
-      body: Consumer<FavoriteViewModel>(
-        builder: (context, vm, child) {
-          if (vm.isLoading) {
-            return Center(child: CircularProgressIndicator(color: colors.primary));
-          }
+      body: userRole == 'guest'
+          ? _buildGuestPrompt(context, colors, l10n)
+          : Consumer<FavoriteViewModel>(
+              builder: (context, vm, child) {
+                if (vm.isLoading) {
+                  return Center(
+                    child: CircularProgressIndicator(color: colors.primary),
+                  );
+                }
 
-          if (vm.errorMessage != null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(vm.errorMessage!),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => vm.refreshFavorites(),
-                    child: Text(l10n.retry),
+                if (vm.errorMessage != null) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(vm.errorMessage!),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () => vm.refreshFavorites(),
+                          child: Text(l10n.retry),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return Column(
+                  children: [
+                    // 1️⃣ شريط الفلترة العلوي (Categories Filter)
+                    _buildCategoriesFilter(vm, colors),
+
+                    const SizedBox(height: 16),
+
+                    // 2️⃣ قائمة الخدمات المفضلة
+                    Expanded(
+                      child: vm.filteredFavorites.isEmpty
+                          ? Center(
+                              child: Text(
+                                l10n.no_results,
+                                style: TextStyle(color: colors.textSub),
+                              ),
+                            )
+                          : RefreshIndicator(
+                              color: colors.primary,
+                              onRefresh: () => vm.refreshFavorites(),
+                              child: ListView.builder(
+                                padding: const EdgeInsets.only(
+                                  left: 16,
+                                  right: 16,
+                                  top: 8,
+                                  bottom: 100,
+                                ),
+                                itemCount: vm.filteredFavorites.length,
+                                itemBuilder: (context, index) {
+                                  final service = vm.filteredFavorites[index];
+                                  return ServiceCard(
+                                    service: service,
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) =>
+                                                  ChangeNotifierProvider(
+                                                    create:
+                                                        (context) =>
+                                                            ServiceDetailsViewModel(
+                                                              context.read<
+                                                                HomeRepository
+                                                              >(),
+                                                            ),
+                                                    child: ServiceDetailsView(
+                                                      initialService: service,
+                                                    ),
+                                                  ),
+                                        ),
+                                      );
+                                    },
+                                    onFavoriteToggle:
+                                        () => vm.toggleFavorite(service),
+                                  );
+                                },
+                              ),
+                            ),
+                    ),
+                  ],
+                );
+              },
+            ),
+    );
+  }
+
+  /// 🛠️ واجهة تظهر للزائر تطلب منه تسجيل الدخول
+  Widget _buildGuestPrompt(BuildContext context, dynamic colors, dynamic l10n) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: colors.primary.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.favorite_border_rounded, size: 80, color: colors.primary),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'سجل دخولك الآن',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: colors.text,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'يرجى تسجيل الدخول لتتمكن من إضافة الخدمات إلى المفضلة والوصول إليها في أي وقت.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: colors.textSub,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 32),
+            SizedBox(
+              width: double.infinity,
+              height: 55,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, AppRoutes.login);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                ],
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'تسجيل الدخول',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
               ),
-            );
-          }
-
-          return Column(
-            children: [
-              // 1️⃣ شريط الفلترة العلوي (Categories Filter)
-              _buildCategoriesFilter(vm, colors),
-              
-              const SizedBox(height: 16),
-              
-              // 2️⃣ قائمة الخدمات المفضلة
-              Expanded(
-                child: vm.filteredFavorites.isEmpty
-                    ? Center(
-                        child: Text(
-                          l10n.no_results,
-                          style: TextStyle(color: colors.textSub),
-                        ),
-                      )
-                    : RefreshIndicator(
-                        color: colors.primary,
-                        onRefresh: () => vm.refreshFavorites(),
-                        child: ListView.builder(
-                          padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 100),
-                          itemCount: vm.filteredFavorites.length,
-                          itemBuilder: (context, index) {
-                            final service = vm.filteredFavorites[index];
-                            return ServiceCard(
-                              service: service,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ChangeNotifierProvider(
-                                      create: (context) => ServiceDetailsViewModel(
-                                        context.read<HomeRepository>(),
-                                      ),
-                                      child: ServiceDetailsView(initialService: service),
-                                    ),
-                                  ),
-                                );
-                              },
-                              onFavoriteToggle: () => vm.toggleFavorite(service),
-                            );
-                          },
-                        ),
-                      ),
-              ),
-            ],
-          );
-        },
+            ),
+          ],
+        ),
       ),
     );
   }

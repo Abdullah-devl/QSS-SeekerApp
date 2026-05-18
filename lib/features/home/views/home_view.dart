@@ -282,7 +282,6 @@ class _HomeViewState extends State<HomeView> {
               // ===========================================
               _buildSectionTitle(
                 AppLocalizations.of(context)!.categories,
-                onSeeAll: () {},
               ),
               const SizedBox(height: 16),
               _buildCategoriesList(viewModel.categories),
@@ -313,13 +312,19 @@ class _HomeViewState extends State<HomeView> {
     // نستخدم select للاستماع فقط للتغييرات في الاسم والموقع لتقليل إعادة البناء غير الضرورية
     final profileName = context.select<ProfileViewModel, String>((vm) => vm.profile?.name ?? '');
     final cachedName = context.select<HomeViewModel, String>((vm) => vm.userName);
+    // ✅ عرض الاسم الأول فقط لتجنب الاسم الطويل في الـ AppBar
+    String _extractFirstName(String fullName) {
+      if (fullName.isEmpty) return fullName;
+      return fullName.trim().split(' ').first;
+    }
+
     final String userName;
     if (profileName.isNotEmpty) {
-      userName = profileName;
+      userName = _extractFirstName(profileName);
     } else if (cachedName == 'Guest') {
       userName = AppLocalizations.of(context)!.guest;
     } else {
-      userName = cachedName;
+      userName = _extractFirstName(cachedName);
     }
     
     String currentAddress = context.select<HomeViewModel, String>(
@@ -338,7 +343,7 @@ class _HomeViewState extends State<HomeView> {
 
     return Row(
       children: [
-        // زر فتح القائمة الجانبية (Drawer)
+        // 1️⃣ زر فتح القائمة الجانبية (Drawer) - يكون في اليمين بالعربي واليسار بالإنجليزي (بداية الـ Row)
         InkWell(
           onTap: () {
             _scaffoldKey.currentState?.openDrawer();
@@ -353,8 +358,139 @@ class _HomeViewState extends State<HomeView> {
           ),
         ),
 
-        const SizedBox(width: 12),
-        // زر الإشعارات (الجرس)
+        // 2️⃣ معلومات المستخدم والموقع (في المنتصف دائماً)
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // زر تحديث الموقع
+              GestureDetector(
+                onTap: () async {
+                  // 📍 عند الضغط يتم تحديث الموقع وطلب الصلاحيات
+                  final error = await context
+                      .read<HomeViewModel>()
+                      .updateLocation();
+
+                  if (error != null && context.mounted) {
+                    // ✅ استخراج الرسالة المترجمة بناءً على الـ key الراجع من الـ ViewModel
+                    String translatedError;
+                    final l10n = AppLocalizations.of(context)!;
+
+                    switch (error) {
+                      case 'locationServiceDisabled':
+                        translatedError = l10n.locationServicesDisabled;
+                        break;
+                      case 'locationPermissionDenied':
+                        translatedError = l10n.locationPermissionsDenied;
+                        break;
+                      case 'locationPermissionForeverDenied':
+                        translatedError = l10n.locationPermissionForeverDenied;
+                        break;
+                      case 'locationUpdateFailed':
+                        translatedError = l10n.locationUpdateFailed;
+                        break;
+                      default:
+                        translatedError = error;
+                    }
+
+                    // عرض رسالة خطأ في حال الفشل
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text(
+                          l10n.alert,
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(fontFamily: 'Cairo'),
+                        ),
+                        content: Text(
+                          translatedError,
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(fontFamily: 'Cairo'),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text(
+                              l10n.ok,
+                              style: const TextStyle(fontFamily: 'Cairo'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.keyboard_arrow_down,
+                      color: context.qsColors.primary,
+                    ),
+                    // عرض مؤشر تحميل صغير عند جلب الموقع
+                    if (isLocationLoading)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 4),
+                        child: SizedBox(
+                          width: 12,
+                          height: 12,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      )
+                    else
+                      Text(
+                        currentAddress,
+                        style: TextStyle(
+                          color: context.qsColors.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    const SizedBox(width: 4),
+                    Icon(
+                      Icons.location_on,
+                      color: context.qsColors.primary,
+                      size: 18,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 4),
+              // الترحيب بالمستخدم
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(' 👋', style: TextStyle(fontSize: 20)),
+                  RichText(
+                    text: TextSpan(
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: context.qsColors.text,
+                        fontFamily: 'Cairo', // تأكيد استخدام خط Cairo
+                      ),
+                      children: [
+                        TextSpan(text: AppLocalizations.of(context)!.welcome),
+                        TextSpan(
+                          text: userName, // ✅ الاسم ديناميكي
+                          style: TextStyle(
+                            color: context.qsColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                AppLocalizations.of(context)!.lookingForService,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: context.qsColors.textSub, fontSize: 14),
+              ),
+            ],
+          ),
+        ),
+
+        // 3️⃣ زر الإشعارات (الجرس) - يكون في اليسار بالعربي واليمين بالإنجليزي (نهاية الـ Row)
         Consumer<NotificationViewModel>(
           builder: (context, notificationVm, _) {
             return InkWell(
@@ -401,135 +537,6 @@ class _HomeViewState extends State<HomeView> {
             );
           },
         ),
-
-        const Spacer(),
-
-        // معلومات المستخدم والموقع
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            // زر تحديث الموقع
-            GestureDetector(
-              onTap: () async {
-                // 📍 عند الضغط يتم تحديث الموقع وطلب الصلاحيات
-                final error = await context
-                    .read<HomeViewModel>()
-                    .updateLocation();
-
-                if (error != null && context.mounted) {
-                  // ✅ استخراج الرسالة المترجمة بناءً على الـ key الراجع من الـ ViewModel
-                  String translatedError;
-                  final l10n = AppLocalizations.of(context)!;
-
-                  switch (error) {
-                    case 'locationServiceDisabled':
-                      translatedError = l10n.locationServicesDisabled;
-                      break;
-                    case 'locationPermissionDenied':
-                      translatedError = l10n.locationPermissionsDenied;
-                      break;
-                    case 'locationPermissionForeverDenied':
-                      translatedError = l10n.locationPermissionForeverDenied;
-                      break;
-                    case 'locationUpdateFailed':
-                      translatedError = l10n.locationUpdateFailed;
-                      break;
-                    default:
-                      translatedError = error;
-                  }
-
-                  // عرض رسالة خطأ في حال الفشل
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text(
-                        l10n.alert,
-                        textAlign: TextAlign.right,
-                        style: const TextStyle(fontFamily: 'Cairo'),
-                      ),
-                      content: Text(
-                        translatedError,
-                        textAlign: TextAlign.right,
-                        style: const TextStyle(fontFamily: 'Cairo'),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: Text(
-                            l10n.ok,
-                            style: const TextStyle(fontFamily: 'Cairo'),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-              },
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.keyboard_arrow_down,
-                    color: context.qsColors.primary,
-                  ),
-                  // عرض مؤشر تحميل صغير عند جلب الموقع
-                  if (isLocationLoading)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 4),
-                      child: SizedBox(
-                        width: 12,
-                        height: 12,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    )
-                  else
-                    Text(
-                      currentAddress,
-                      style: TextStyle(
-                        color: context.qsColors.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  const SizedBox(width: 4),
-                  Icon(
-                    Icons.location_on,
-                    color: context.qsColors.primary,
-                    size: 18,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 4),
-            // الترحيب بالمستخدم
-            Row(
-              children: [
-                const Text(' 👋', style: TextStyle(fontSize: 20)),
-                RichText(
-                  text: TextSpan(
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: context.qsColors.text,
-                      fontFamily: 'Cairo', // تأكيد استخدام خط Cairo
-                    ),
-                    children: [
-                      TextSpan(text: AppLocalizations.of(context)!.welcome),
-                      TextSpan(
-                        text: userName, // ✅ الاسم ديناميكي
-                        style: TextStyle(
-                          color: context.qsColors.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            Text(
-              AppLocalizations.of(context)!.lookingForService,
-              style: TextStyle(color: context.qsColors.textSub, fontSize: 14),
-            ),
-          ],
-        ),
       ],
     );
   }
@@ -565,7 +572,7 @@ class _HomeViewState extends State<HomeView> {
         decoration: InputDecoration(
           hintText: AppLocalizations.of(context)!.searchHint,
           hintStyle: TextStyle(
-            color: context.qsColors.background.withValues(alpha: 0.7),
+            color: context.qsColors.text.withValues(alpha: 0.5),
             fontSize: 14,
           ),
           // زر الفلترة (يسار)
@@ -603,19 +610,11 @@ class _HomeViewState extends State<HomeView> {
   // ---------------------------------------------------------------------------
   // تم حذف _buildPromoBanner بطلب من المستخدم لعدم عرض بيانات ثابتة
 
-  // 📝 عنوان القسم مع زر "عرض الكل"
-  Widget _buildSectionTitle(String title, {VoidCallback? onSeeAll}) {
+  // 📝 عنوان القسم (العنوان على اليمين فقط، بدون زر "عرض الكل")
+  Widget _buildSectionTitle(String title) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        if (onSeeAll != null)
-          GestureDetector(
-            onTap: onSeeAll,
-            child: Text(
-              AppLocalizations.of(context)!.seeAll,
-              style: TextStyle(color: context.qsColors.primary, fontSize: 14),
-            ),
-          ),
         Text(
           title,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -632,7 +631,6 @@ class _HomeViewState extends State<HomeView> {
       height: 110,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        reverse: true, // لتبدأ القائمة من اليمين
         itemCount: categories.length,
         separatorBuilder: (_, __) => const SizedBox(width: 16),
         itemBuilder: (context, index) {

@@ -23,7 +23,14 @@ class SearchViewModel extends ChangeNotifier {
   int? _selectedCategoryId;
   double? _minPrice;
   double? _maxPrice;
-  Position? _currentPosition;
+  bool _isVerifiedOnly = false; // ✅ فلتر الموثقين
+  
+  // الموقع الجغرافي
+  Position? _currentPosition; // الموقع التلقائي (GPS)
+  double? _pickedLat;        // الموقع المختار يدوياً من الخريطة
+  double? _pickedLng;
+  String? _pickedAddress;
+  
   bool _shouldOpenFilters = false; // 🚩 علم لفتح الفلاتر تلقائياً
 
   // Getters
@@ -34,6 +41,10 @@ class SearchViewModel extends ChangeNotifier {
   int? get selectedCategoryId => _selectedCategoryId;
   double? get minPrice => _minPrice;
   double? get maxPrice => _maxPrice;
+  bool get isVerifiedOnly => _isVerifiedOnly;
+  double? get pickedLat => _pickedLat;
+  double? get pickedLng => _pickedLng;
+  String? get pickedAddress => _pickedAddress;
   bool get shouldOpenFilters => _shouldOpenFilters;
 
   // ---------------------------------------------------------------------------
@@ -70,6 +81,20 @@ class SearchViewModel extends ChangeNotifier {
     _maxPrice = max;
     notifyListeners();
   }
+  
+  /// تحديث فلتر الموثقين
+  void setVerifiedOnly(bool value) {
+    _isVerifiedOnly = value;
+    notifyListeners();
+  }
+
+  /// تحديث الموقع المختار يدوياً من الخريطة
+  void setPickedLocation(double? lat, double? lng, String? address) {
+    _pickedLat = lat;
+    _pickedLng = lng;
+    _pickedAddress = address;
+    notifyListeners();
+  }
 
   /// إعادة تعيين كافة الفلاتر
   void resetFilters() {
@@ -77,6 +102,10 @@ class SearchViewModel extends ChangeNotifier {
     _selectedCategoryId = null;
     _minPrice = null;
     _maxPrice = null;
+    _isVerifiedOnly = false;
+    _pickedLat = null;
+    _pickedLng = null;
+    _pickedAddress = null;
     _results = [];
     _errorMessage = null;
     notifyListeners();
@@ -108,8 +137,9 @@ class SearchViewModel extends ChangeNotifier {
         categoryId: _selectedCategoryId,
         minPrice: finalMin,
         maxPrice: finalMax,
-        lat: _currentPosition?.latitude,
-        lng: _currentPosition?.longitude,
+        isVerified: _isVerifiedOnly,
+        lat: _pickedLat ?? _currentPosition?.latitude,
+        lng: _pickedLng ?? _currentPosition?.longitude,
       );
     } catch (e) {
       _errorMessage = e.toString();

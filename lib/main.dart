@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:seeker/core/services/notification_service.dart';
 
 // --- Imports --- (استيراد الملفات اللازمة)
@@ -107,12 +106,7 @@ void main() async {
     debugPrint('❌ Firebase Initialization Error: $e');
   }
 
-  // 🌐 تهيئة GoogleSignIn (مطلوب في الإصدار 7.x)
-  try {
-    await GoogleSignIn.instance.initialize();
-  } catch (e) {
-    debugPrint('❌ GoogleSignIn Initialization Error: $e');
-  }
+
 
   HttpOverrides.global = BadCertificateHttpOverrides();
 
@@ -381,7 +375,7 @@ class _MyAppState extends State<MyApp> {
       builder: (context, themeProvider, _) {
         return MaterialApp
         (
-          title: 'Seeker App',
+          title: 'خدماتك',
           debugShowCheckedModeBanner: false,
 
           // 🌍 إعدادات اللغة (Localization)

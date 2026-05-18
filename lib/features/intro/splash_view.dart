@@ -82,17 +82,15 @@ class _SplashViewState extends State<SplashView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // شعار التطبيق (Container دائري مع أيقونة)
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: context.qsColors.primary,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Icon(
-                Icons.home_repair_service, // أيقونة تعبيرية عن الخدمات
+            // شعار التطبيق (صورة اللوجو كبيرة بدون خلفية)
+            Image.asset(
+              'assets/images/logo.png',
+              width: 180,
+              height: 180,
+              errorBuilder: (context, error, stackTrace) => Icon(
+                Icons.home_repair_service,
                 size: 80,
-                color: context.qsColors.background,
+                color: context.qsColors.primary,
               ),
             ),
             const SizedBox(height: 20),

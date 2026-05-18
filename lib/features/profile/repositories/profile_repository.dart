@@ -143,7 +143,7 @@ class ProfileRepository {
   /// 👤 تحديث بيانات الملف الشخصي.
   Future<void> updateProfile({
     required int profileId,
-    required String name,
+    String? name,
     required String bio,
     String? avatarPath,
     double? latitude,
@@ -154,9 +154,12 @@ class ProfileRepository {
       // ملاحظة: نستخدم POST مع _method=PUT لأن PHP لا يستقبل FormData في طلب PUT الحقيقي
       final Map<String, dynamic> data = {
         '_method': 'PUT',
-        'name': name,
         'bio': bio,
       };
+
+      if (name != null) {
+        data['name'] = name;
+      }
 
       if (avatarPath != null && avatarPath.isNotEmpty) {
         data['image'] = await MultipartFile.fromFile(

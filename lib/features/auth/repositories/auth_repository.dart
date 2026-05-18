@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../../../core/network/api_service.dart';
 import '../../../../core/network/api_endpoints.dart';
@@ -175,30 +176,41 @@ class AuthRepository {
   // 🌐 تسجيل الدخول عبر جوجل (Google Login)
   // ===========================================================================
 
-  /// يقوم بفتح نافذة جوجل لاختيار الحساب، ثم يرسل التوكن للسيرفر.
-  /// ⚠️ ملاحظة: يجب استدعاء GoogleSignIn.instance.initialize() مرة واحدة
-  ///    عند بدء التطبيق (في main.dart) قبل استخدام هذه الوظيفة.
   Future<UserModel> loginWithGoogle() async {
     try {
-      // 1. الحصول على نسخة GoogleSignIn (Singleton في الإصدار 7.x)
-      final googleSignIn = GoogleSignIn.instance;
+      // 1. إنشاء كائن GoogleSignIn مع الـ scopes المطلوبة (الإصدار 6.x)
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        scopes: ['email', 'profile'],
+        // serverClientId: Web Client ID لتوليد id_token يمكن التحقق منه في السيرفر
+        serverClientId: '507923305565-e3s7epoas985u037hbfb9kv4eefrhr9n.apps.googleusercontent.com',
+      );
 
-      // 2. بدء عملية المصادقة (authenticate بدلاً من signIn القديمة)
-      final result = await googleSignIn.authenticate();
+      // 2. فتح واجهة اختيار حساب جوجل
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
-      // 4. إرسال التوكن للسيرفر
+      if (googleUser == null) {
+        throw Exception('تم إلغاء عملية تسجيل الدخول بجوجل');
+      }
+
+      // 3. الحصول على التوكنات
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      final idToken = googleAuth.idToken;
+      final accessToken = googleAuth.accessToken;
+
+      // 4. إرسال التوكنات للسيرفر
       final response = await _apiService.post(
         ApiEndpoints.googleLogin,
         data: {
-          'id_token': (result as dynamic).idToken,
-          'access_token': (result as dynamic).accessToken,
+          'id_token': idToken,
+          if (accessToken != null) 'access_token': accessToken,
         },
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final user = UserModel.fromJson(response.data);
 
-        // حفظ البيانات والتوكن
+        // 💾 تخزين البيانات والتوكن فوراً (Store First)
         if (user.token != null) {
           await _tokenStorage.saveToken(user.token!);
           await _tokenStorage.savePolicyAgreement(user.seekerPolicy);
@@ -210,10 +222,12 @@ class AuthRepository {
             phone: user.phone,
             address: user.address,
           );
+          debugPrint('✅ Google Login: Data stored successfully.');
         }
+        
         return user;
       } else {
-        throw Exception('فشل تسجيل الدخول عبر جوقل من قبل السيرفر');
+        throw Exception('فشل تسجيل الدخول عبر جوجل من قبل السيرفر');
       }
     } catch (e) {
       if (e is DioException) {
@@ -317,12 +331,19 @@ class AuthRepository {
   /// يقوم بتسجيل الخروج من السيرفر ومسح البيانات المحلية.
   Future<void> logout() async {
     try {
-      // إبلاغ السيرفر بإلغاء التوكن
+      // 1. تسجيل الخروج من حساب جوجل (لإجبار النظام على إظهار قائمة الحسابات في المرة القادمة)
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      if (await googleSignIn.isSignedIn()) {
+        await googleSignIn.signOut();
+        debugPrint('🚪 Google Account signed out successfully.');
+      }
+
+      // 2. إبلاغ السيرفر بإلغاء التوكن
       await _apiService.post(ApiEndpoints.logout);
     } catch (e) {
       // نتجاهل الخطأ في حال فشل الطلب (مثلاً انقطاع النت)، لأن الهدف هو الخروج المحلي
     } finally {
-      // تنظيف البيانات المحلية دائماً حتى لو فشل الطلب
+      // 3. تنظيف البيانات المحلية دائماً حتى لو فشل الطلب
       await _tokenStorage.clearUserData();
     }
   }

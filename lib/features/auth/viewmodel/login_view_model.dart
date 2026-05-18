@@ -68,12 +68,14 @@ class LoginViewModel extends ChangeNotifier {
           }
         } else {
           // ⚠️ الحساب غير مفعل -> الذهاب لصفحة التفعيل
-          QSAlerts.showWarning(context, 'الرجاء تفعيل حسابك أولاً');
-          Navigator.pushNamed(
-            context,
-            AppRoutes.verifyEmail,
-            arguments: user.email,
-          );
+          await QSAlerts.showWarning(context, 'الرجاء تفعيل حسابك أولاً');
+          if (context.mounted) {
+            Navigator.pushNamed(
+              context,
+              AppRoutes.verifyEmail,
+              arguments: user.email,
+            );
+          }
         }
       }
     } catch (e) {
@@ -114,8 +116,10 @@ class LoginViewModel extends ChangeNotifier {
             Navigator.pushReplacementNamed(context, AppRoutes.privacyPolicy);
           }
         } else {
-          QSAlerts.showWarning(context, 'الرجاء تفعيل حسابك أولاً');
-          Navigator.pushNamed(context, AppRoutes.verifyEmail, arguments: user.email);
+          await QSAlerts.showWarning(context, 'الرجاء تفعيل حسابك أولاً');
+          if (context.mounted) {
+            Navigator.pushNamed(context, AppRoutes.verifyEmail, arguments: user.email);
+          }
         }
       }
     } catch (e) {

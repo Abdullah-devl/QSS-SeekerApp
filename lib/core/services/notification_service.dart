@@ -7,6 +7,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_app_installations/firebase_app_installations.dart';
 import 'package:seeker/features/notifications/repositories/notification_repository.dart';
 import 'dart:developer' as developer;
 
@@ -56,6 +57,7 @@ class NotificationService {
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
   NotificationRepository? _repository;
+  int _retryCount = 0; // عداد لمنع التكرار اللانهائي
   
   // تيار (Stream) للتحكم في التنقل عند الضغط على الإشعار
   final StreamController<Map<String, dynamic>> _notificationStreamController = StreamController<Map<String, dynamic>>.broadcast();
@@ -178,14 +180,16 @@ class NotificationService {
     }
 
     try {
-      print('⏳ [NOTIFICATION SERVICE]: Waiting for Firebase to stabilize...');
-      await Future.delayed(const Duration(seconds: 2));
+      // ⏳ انتظار أطول قليلاً لضمان استقرار خدمات فيربييس على الجهاز
+      print('⏳ [NOTIFICATION SERVICE]: Waiting for Firebase to stabilize (5s)...');
+      await Future.delayed(const Duration(seconds: 5));
 
       // محاولة الحصول على التوكن
       String? token = await _fcm.getToken();
       
       if (token != null) {
-        print('🚀 [NOTIFICATION SERVICE]: FCM Token Found: ${token.substring(0, 10)}...');
+        print('✅ [NOTIFICATION SERVICE]: FCM Token Found: ${token.substring(0, 10)}...');
+        _retryCount = 0; // نجاح! تصفير العداد
         await _repository?.storeToken(token);
       } else {
         print('❌ [NOTIFICATION SERVICE]: FCM Token is NULL from Firebase.');
@@ -194,17 +198,22 @@ class NotificationService {
       print('❌ [NOTIFICATION SERVICE]: Exception during token fetch: $e');
       
       if (e.toString().contains('FIS_AUTH_ERROR')) {
-        print('🔧 [FIX ATTEMPT]: FIS_AUTH_ERROR detected. Trying to delete token and retry...');
+        _retryCount++;
+        if (_retryCount > 3) {
+          print('🚫 [NOTIFICATION SERVICE]: Max retries reached (3). Stopping fix attempts.');
+          print('💡 [ACTION REQUIRED]: Please check Google Cloud Console -> API Restrictions.');
+          _retryCount = 0; 
+          return;
+        }
+
+        print('🔧 [FIX ATTEMPT #$_retryCount]: FIS_AUTH_ERROR detected. Trying a deep reset...');
         try {
-          await _fcm.deleteToken();
-          await Future.delayed(const Duration(seconds: 1));
-          String? newToken = await _fcm.getToken();
-          if (newToken != null) {
-             print('✅ [FIX SUCCESS]: New token generated after deletion: ${newToken.substring(0, 10)}...');
-             await _repository?.storeToken(newToken);
-          }
+          await FirebaseInstallations.instance.delete();
+          print('✅ [FIX]: Firebase Installation deleted. Retrying in 5s...');
+          await Future.delayed(const Duration(seconds: 5));
+          return updateTokenToServer(); // إعادة المحاولة
         } catch (retryError) {
-          print('❌ [FIX FAILED]: Could not recover from FIS_AUTH_ERROR: $retryError');
+          print('❌ [FIX FAILED]: Could not recover: $retryError');
         }
       }
     }

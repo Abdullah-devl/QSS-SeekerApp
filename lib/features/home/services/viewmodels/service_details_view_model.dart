@@ -96,7 +96,7 @@ class ServiceDetailsViewModel extends ChangeNotifier {
       
     } catch (e) {
       // لا نعين خطأ فادحاً لأننا نملك البيانات الأولية على الأقل
-      _errorMessage = 'تعذر تحديث بعض البيانات من الخادم.';
+      _errorMessage = 'errorServerUpdate';
       developer.log('❌ ServiceDetails: ViewModel Error: $e', name: 'ServiceDetails', error: e);
     } finally {
       _isLoading = false;

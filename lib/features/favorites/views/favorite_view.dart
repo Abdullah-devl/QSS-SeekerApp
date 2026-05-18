@@ -47,11 +47,16 @@ class FavoriteView extends StatelessWidget {
                 }
 
                 if (vm.errorMessage != null) {
+                  final errorText = vm.errorMessage == 'errorLoadingFavorites'
+                      ? l10n.errorLoadingFavorites
+                      : (vm.errorMessage == 'errorUpdatingFavorites'
+                          ? l10n.errorUpdatingFavorites
+                          : vm.errorMessage!);
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(vm.errorMessage!),
+                        Text(errorText),
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: () => vm.refreshFavorites(),
@@ -65,7 +70,7 @@ class FavoriteView extends StatelessWidget {
                 return Column(
                   children: [
                     // 1️⃣ شريط الفلترة العلوي (Categories Filter)
-                    _buildCategoriesFilter(vm, colors),
+                    _buildCategoriesFilter(context, vm, colors),
 
                     const SizedBox(height: 16),
 
@@ -146,7 +151,7 @@ class FavoriteView extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              'سجل دخولك الآن',
+              l10n.loginNowPrompt,
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -155,7 +160,7 @@ class FavoriteView extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'يرجى تسجيل الدخول لتتمكن من إضافة الخدمات إلى المفضلة والوصول إليها في أي وقت.',
+              l10n.favoriteGuestMessage,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -179,9 +184,9 @@ class FavoriteView extends StatelessWidget {
                   ),
                   elevation: 0,
                 ),
-                child: const Text(
-                  'تسجيل الدخول',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                child: Text(
+                  l10n.login,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -196,7 +201,8 @@ class FavoriteView extends StatelessWidget {
   // =========================================================================
 
   /// 🔘 شريط الفلترة العلوي
-  Widget _buildCategoriesFilter(FavoriteViewModel vm, dynamic colors) {
+  Widget _buildCategoriesFilter(BuildContext context, FavoriteViewModel vm, dynamic colors) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       height: 90,
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -251,7 +257,7 @@ class FavoriteView extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  category.name,
+                  category.id == 0 ? l10n.all : category.name,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,

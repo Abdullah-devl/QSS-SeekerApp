@@ -3,6 +3,7 @@ import '../../../../core/network/api_service.dart';
 import '../../../../core/network/api_endpoints.dart';
 import '../models/profile_model.dart';
 import '../models/work_model.dart';
+import '../models/profile_review_model.dart';
 import 'dart:developer' as developer;
 
 /// 📂 اسم الملف: profile_repository.dart
@@ -243,6 +244,124 @@ class ProfileRepository {
     } catch (e) {
       developer.log('❌ ProfileRepository: deletePhone Error: $e');
       throw e;
+    }
+  }
+
+  /// ⭐️ جلب تقييماتي الشخصية (التي قمت بكتابتها للآخرين)
+  Future<List<ProfileReviewModel>> fetchMyReviews() async {
+    try {
+      final Response response = await _apiService.get('/reviews');
+      developer.log('📡 [ProfileRepo] fetchMyReviews Response: ${response.data}');
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = response.data;
+        List<dynamic> list = [];
+        if (responseData is List) {
+          list = responseData;
+        } else if (responseData is Map) {
+          final dataField = responseData['data'] ?? responseData['reviews'] ?? responseData['feedback'];
+          if (dataField is List) {
+            list = dataField;
+          }
+        }
+        return list.map((json) => ProfileReviewModel.fromJson(Map<String, dynamic>.from(json))).toList();
+      } else {
+        throw Exception('فشل في تحميل التقييمات الشخصية');
+      }
+    } on DioException catch (e) {
+      final is403 = e.response?.statusCode == 403;
+      final serverMsg = e.response?.data?['message']?.toString() ?? '';
+      
+      // 🛡️ معالجة ذاتية ذكية (Self-Healing Retry):
+      if (is403 && (serverMsg.contains('سياسة') || serverMsg.contains('policy') || serverMsg.contains('الموافقة'))) {
+        developer.log('🔄 [ProfileRepo] Auto-agreeing to provider policy on behalf of the user for reviews...');
+        try {
+          await _apiService.patch('/policies/provider');
+          developer.log('✅ [ProfileRepo] Silent agreement successful. Retrying reviews fetch...');
+          
+          final Response retryResponse = await _apiService.get('/reviews');
+          if (retryResponse.statusCode == 200) {
+            final dynamic responseData = retryResponse.data;
+            List<dynamic> list = [];
+            if (responseData is List) {
+              list = responseData;
+            } else if (responseData is Map) {
+              final dataField = responseData['data'] ?? responseData['reviews'] ?? responseData['feedback'];
+              if (dataField is List) {
+                list = dataField;
+              }
+            }
+            return list.map((json) => ProfileReviewModel.fromJson(Map<String, dynamic>.from(json))).toList();
+          }
+        } catch (retryError) {
+          developer.log('❌ [ProfileRepo] Auto-agree retry failed for reviews: $retryError');
+        }
+      }
+      
+      developer.log('❌ ProfileRepository: fetchMyReviews Error: $e');
+      throw Exception('خطأ في جلب تقييماتك الشخصية: $e');
+    } catch (e) {
+      developer.log('❌ ProfileRepository: fetchMyReviews Error: $e');
+      throw Exception('خطأ في جلب تقييماتك الشخصية: $e');
+    }
+  }
+
+  /// ⭐️ مراجعات مزود الخدمة (التغذية الراجعة لمزود معين)
+  Future<List<ProfileReviewModel>> fetchProviderFeedback(int providerId) async {
+    try {
+      final Response response = await _apiService.get('/providers/$providerId/feedback');
+      developer.log('📡 [ProfileRepo] fetchProviderFeedback Response: ${response.data}');
+
+      if (response.statusCode == 200) {
+        final dynamic responseData = response.data;
+        List<dynamic> list = [];
+        if (responseData is List) {
+          list = responseData;
+        } else if (responseData is Map) {
+          final dataField = responseData['data'] ?? responseData['feedback'] ?? responseData['reviews'];
+          if (dataField is List) {
+            list = dataField;
+          }
+        }
+        return list.map((json) => ProfileReviewModel.fromJson(Map<String, dynamic>.from(json))).toList();
+      } else {
+        throw Exception('فشل في تحميل تقييمات مزود الخدمة');
+      }
+    } on DioException catch (e) {
+      final is403 = e.response?.statusCode == 403;
+      final serverMsg = e.response?.data?['message']?.toString() ?? '';
+      
+      // 🛡️ معالجة ذاتية ذكية (Self-Healing Retry):
+      if (is403 && (serverMsg.contains('سياسة') || serverMsg.contains('policy') || serverMsg.contains('الموافقة'))) {
+        developer.log('🔄 [ProfileRepo] Auto-agreeing to provider policy on behalf of the user...');
+        try {
+          await _apiService.patch('/policies/provider');
+          developer.log('✅ [ProfileRepo] Silent agreement successful. Retrying feedback fetch...');
+          
+          final Response retryResponse = await _apiService.get('/providers/$providerId/feedback');
+          if (retryResponse.statusCode == 200) {
+            final dynamic responseData = retryResponse.data;
+            List<dynamic> list = [];
+            if (responseData is List) {
+              list = responseData;
+            } else if (responseData is Map) {
+              final dataField = retryResponse.data['data'] ?? retryResponse.data['feedback'] ?? retryResponse.data['reviews'];
+              if (dataField is List) {
+                list = dataField;
+              }
+            }
+            return list.map((json) => ProfileReviewModel.fromJson(Map<String, dynamic>.from(json))).toList();
+          }
+        } catch (retryError) {
+          developer.log('❌ [ProfileRepo] Auto-agree retry failed: $retryError');
+        }
+      }
+      
+      developer.log('❌ ProfileRepository: fetchProviderFeedback Error: $e');
+      throw Exception('خطأ في جلب تقييمات مزود الخدمة: $e');
+    } catch (e) {
+      developer.log('❌ ProfileRepository: fetchProviderFeedback Error: $e');
+      throw Exception('خطأ في جلب تقييمات مزود الخدمة: $e');
     }
   }
 }

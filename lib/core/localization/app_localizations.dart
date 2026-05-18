@@ -142,6 +142,62 @@ extension LocalizationExt on BuildContext {
         return l.required_partial_percentage_label(args?['percentage'] ?? '0');
       case 'distance_away': 
         return l.distance_away(args?['distance'] ?? '');
+      case 'subCategories': return l.subCategories;
+      case 'recommendedProviders': return l.recommendedProviders;
+      case 'availableServices': return l.availableServices;
+      case 'noDataForCategory': return l.noDataForCategory;
+      case 'sponsoredAd': return l.sponsoredAd;
+      case 'locationNotSpecified': return l.locationNotSpecified;
+      case 'providerAddress': return l.providerAddress;
+      case 'noReviews': return l.noReviews;
+      case 'noPublicReviews': return l.noPublicReviews;
+      case 'hideHiddenReviews':
+        return l.hideHiddenReviews(args?['count'] ?? 0);
+      case 'showHiddenReviews':
+        return l.showHiddenReviews(args?['count'] ?? 0);
+      case 'unexpectedError': return l.unexpectedError;
+      case 'errorServerUpdate': return l.errorServerUpdate;
+      case 'notifications': return l.notifications;
+      case 'markAllAsRead': return l.markAllAsRead;
+      case 'all': return l.all;
+      case 'unread': return l.unread;
+      case 'read': return l.read;
+      case 'noNotifications': return l.noNotifications;
+      case 'close': return l.close;
+      case 'ordersGuestMessage': return l.ordersGuestMessage;
+      case 'selectReceiptImageError': return l.selectReceiptImageError;
+      case 'pointsManagementTitle': return l.pointsManagementTitle;
+      case 'myPackages': return l.myPackages;
+      case 'myPackagesSubtitle': return l.myPackagesSubtitle;
+      case 'pointsPackages': return l.pointsPackages;
+      case 'pointsPackagesSubtitle': return l.pointsPackagesSubtitle;
+      case 'buyNow': return l.buyNow;
+      case 'gift': return l.gift;
+      case 'errorLoadingPackages': return l.errorLoadingPackages;
+      case 'retry': return l.retry;
+      case 'noPackagesAvailable': return l.noPackagesAvailable;
+      case 'defaultPackageName': return l.defaultPackageName;
+      case 'approved': return l.approved;
+      case 'rejected': return l.rejected;
+      case 'pendingStatus': return l.pendingStatus;
+      case 'dateLabel': return l.dateLabel;
+      case 'noPurchasedPackages': return l.noPurchasedPackages;
+      case 'errorSelectingImage': return l.errorSelectingImage;
+      case 'enterBondNumberError': return l.enterBondNumberError;
+      case 'enterBankNameError': return l.enterBankNameError;
+      case 'attachBondImageError': return l.attachBondImageError;
+      case 'success': return l.success;
+      case 'rechargeRequestSubmittedSuccess': return l.rechargeRequestSubmittedSuccess;
+      case 'submitFailed': return l.submitFailed;
+      case 'confirmRechargeTitle': return l.confirmRechargeTitle;
+      case 'bondOrTransferNumber': return l.bondOrTransferNumber;
+      case 'enterBondNumberHint': return l.enterBondNumberHint;
+      case 'senderBankName': return l.senderBankName;
+      case 'bankNameExample': return l.bankNameExample;
+      case 'transferReceiptImage': return l.transferReceiptImage;
+      case 'sendRequest': return l.sendRequest;
+      case 'clickToUploadReceipt': return l.clickToUploadReceipt;
+      case 'pointsGainPrompt': return l.pointsGainPrompt(args?['count'] ?? 0);
       default:
         // إذا كان المفتاح غير موجود، نحاول استرجاع القيمة من AppLocalizations بشكل انعكاسي غير متوفر هنا
         // لذا سنعيد المفتاح نفسه كقيمة افتراضية

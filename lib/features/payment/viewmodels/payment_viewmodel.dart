@@ -77,9 +77,14 @@ class PaymentViewModel extends ChangeNotifier {
   }
 
   /// 📄 السداد بالسند
-  Future<bool> payByBond(String requestId, double amount) async {
+  Future<bool> payByBond(String requestId, double amount, String bondNumber) async {
+    if (bondNumber.trim().isEmpty) {
+      _errorMessage = "enterBondNumberError";
+      notifyListeners();
+      return false;
+    }
     if (_selectedImage == null) {
-      _errorMessage = "يرجى اختيار صورة الإيصال أولاً";
+      _errorMessage = "selectReceiptImageError";
       notifyListeners();
       return false;
     }
@@ -93,6 +98,7 @@ class PaymentViewModel extends ChangeNotifier {
         requestId: requestId,
         amount: amount,
         image: _selectedImage!,
+        bondNumber: bondNumber,
       );
       _isLoading = false;
       notifyListeners();

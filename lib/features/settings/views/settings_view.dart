@@ -163,7 +163,7 @@ class _SettingsViewState extends State<SettingsView> {
                                   Icon(Icons.stars_rounded, size: 14, color: Colors.orange.shade700),
                                   const SizedBox(width: 4),
                                   Text(
-                                    'رصيد النقاط: ${((profile?.bonusPoints ?? 0) + (profile?.paidPoints ?? 0)).toStringAsFixed(0)}',
+                                    'رصيد النقاط: ${(profile?.bonusPoints ?? 0).toStringAsFixed(0)}',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
@@ -373,12 +373,6 @@ class _SettingsViewState extends State<SettingsView> {
                 colors.textSub,
               ),
               _buildSettingsContainer(context, [
-                _buildSettingsTile(
-                  icon: Icons.help_outline,
-                  title: AppLocalizations.of(context)!.helpCenter,
-                  onTap: () {},
-                ),
-                _buildDivider(colors.textSub),
                 _buildSettingsTile(
                   icon: Icons.privacy_tip_outlined,
                   title: AppLocalizations.of(context)!.privacyPolicy,

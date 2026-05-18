@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/l10n/app_localizations.dart';
+import 'package:seeker/core/routes/app_routes.dart';
 import 'package:seeker/core/utils/qs_alerts.dart'; // ✅ تمت الإضافة
 import '../../../../core/theme/qs_color_extension.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -302,21 +303,52 @@ class BeProviderView extends StatelessWidget {
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
-                onPressed: viewModel.isLoading
-                    ? null
-                    : () async {
-                        final success = await viewModel.submitRequest();
-                        if (success && context.mounted) {
-                          QSAlerts.showSuccess(
-                            context,
-                            AppLocalizations.of(context)!.requestSentSuccess,
-                          );
-                          Navigator.pop(context);
-                        } else if (viewModel.errorMessage != null &&
-                            context.mounted) {
-                          QSAlerts.showError(context, viewModel.errorMessage!);
-                        }
-                      },
+                onPressed: () async {
+                  final l10n = AppLocalizations.of(context)!;
+                  // 1️⃣ التحقق من إدخال جميع الحقول الأساسية أولاً لتجنب إظهار الديالوجات دون داعٍ
+                  if (viewModel.nameController.text.isEmpty ||
+                      viewModel.descController.text.isEmpty ||
+                      viewModel.selectedImage == null ||
+                      viewModel.location.isEmpty) {
+                    QSAlerts.showWarning(context, l10n.beProviderValidation);
+                    return;
+                  }
+
+                  // 2️⃣ إظهار تنبيه تأكيد إرسال الطلب
+                  final confirmed = await QSAlerts.showConfirmJoinProvider(context);
+                  if (!confirmed) return;
+
+                  // 3️⃣ إظهار ديالوج التحميل الزجاجي الفاخر
+                  if (context.mounted) {
+                    QSAlerts.showLoading(context);
+                  }
+
+                  // 4️⃣ تنفيذ إرسال الطلب للسيرفر
+                  final success = await viewModel.submitRequest(context);
+
+                  // 5️⃣ إغلاق ديالوج التحميل
+                  if (context.mounted) {
+                    QSAlerts.hideLoading(context);
+                  }
+
+                  if (success && context.mounted) {
+                    // 6️⃣ إظهار أليارت النجاح الفخم والانتظار حتى يضغط المستخدم حسناً
+                    await QSAlerts.showSuccess(context, l10n.beProviderSubmitSuccess);
+                    
+                    // 7️⃣ التوجيه إلى الصفحة الرئيسية وتصفير الملاحة
+                    if (context.mounted) {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        AppRoutes.home,
+                        (route) => false,
+                      );
+                    }
+                  } else if (context.mounted) {
+                    // 8️⃣ إظهار أليارت الفشل بناءً على الرسالة الراجعة من الباك اند
+                    final errorMsg = viewModel.errorMessage ?? l10n.beProviderSubmitFailed;
+                    await QSAlerts.showError(context, errorMsg);
+                  }
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colors.primary, // لون متجاوب من Palette
                   shape: RoundedRectangleBorder(

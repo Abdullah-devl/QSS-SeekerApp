@@ -9,6 +9,7 @@ import '../viewmodels/order_complaints_viewmodel.dart';
 import '../models/request_complaint_model.dart';
 import '../../orders/views/order_detail_view.dart';
 import '../../orders/viewmodels/orders_viewmodel.dart';
+import 'package:seeker/l10n/app_localizations.dart';
   
 class OrderComplaintsListView extends StatefulWidget {
   const OrderComplaintsListView({super.key});
@@ -45,6 +46,7 @@ class _OrderComplaintsListViewState extends State<OrderComplaintsListView> {
   }
 
   Widget _buildBody(BuildContext context, OrderComplaintsViewModel vm, dynamic colors) {
+    final l10n = AppLocalizations.of(context)!;
     if (vm.isLoading) {
       return Center(child: CircularProgressIndicator(color: colors.primary));
     }
@@ -78,7 +80,7 @@ class _OrderComplaintsListViewState extends State<OrderComplaintsListView> {
     if (vm.complaints.isEmpty) {
       return Center(
         child: Text(
-          'لا توجد شكاوي طلبات حالياً.', // يمكن نقلها للترجمة لاحقاً
+          l10n.noOrderComplaints,
           style: TextStyle(color: colors.textSub, fontSize: 16),
         ),
       );
@@ -102,10 +104,21 @@ class _OrderComplaintsListViewState extends State<OrderComplaintsListView> {
 
   Widget _buildComplaintCard(
       BuildContext context, RequestComplaintModel complaint, dynamic colors) {
-    // تحديد لون وحالة الشكوى بناءً على الحالة (مثلاً: pending, resolved)
-    final bool isResolved = complaint.status == 'resolved';
-    final Color statusColor = isResolved ? colors.success : colors.warning;
-    final String statusText = isResolved ? 'محلولة' : 'قيد المعالجة';
+    final l10n = AppLocalizations.of(context)!;
+    // تحديد لون وحالة الشكوى بناءً على الحالة
+    final String statusText;
+    final Color statusColor;
+
+    if (complaint.status == 'resolved') {
+      statusColor = colors.success;
+      statusText = l10n.resolved;
+    } else if (complaint.status == 'closed') {
+      statusColor = colors.textSub;
+      statusText = l10n.closed;
+    } else {
+      statusColor = colors.warning;
+      statusText = l10n.pending;
+    }
 
     return Container(
       decoration: BoxDecoration(
@@ -131,7 +144,7 @@ class _OrderComplaintsListViewState extends State<OrderComplaintsListView> {
                   Icon(Icons.assignment_late_outlined, color: colors.primary, size: 20),
                   const SizedBox(width: 8),
                   Text(
-                    'رقم الطلب #${complaint.orderId ?? "غير متوفر"}',
+                    '${l10n.orderNo} #${complaint.orderId ?? "N/A"}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: colors.text,
@@ -186,8 +199,8 @@ class _OrderComplaintsListViewState extends State<OrderComplaintsListView> {
                           child: OrderDetailView(
                             order: OrderModel(
                               id: complaint.orderId.toString(),
-                              customerName: 'جاري التحميل...',
-                              serviceName: 'جاري التحميل...',
+                              customerName: l10n.loading,
+                              serviceName: l10n.loading,
                               customerImage: '',
                               customerPhone: '',
                               price: 0,
@@ -203,7 +216,7 @@ class _OrderComplaintsListViewState extends State<OrderComplaintsListView> {
                   },
                   icon: Icon(Icons.remove_red_eye_outlined, size: 16, color: colors.primary),
                   label: Text(
-                    'عرض الطلب',
+                    l10n.viewOrder,
                     style: TextStyle(color: colors.primary, fontWeight: FontWeight.bold),
                   ),
                   style: TextButton.styleFrom(

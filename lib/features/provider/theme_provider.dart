@@ -15,8 +15,12 @@ class ThemeProvider extends ChangeNotifier {
   /// 🌙 هل الثيم الحالي داكن؟
   bool get isDark => _themeMode == ThemeMode.dark;
 
-  ThemeProvider() {
-    loadTheme(); // تحميل الثيم المحفوظ عند إنشاء الكلاس
+  ThemeProvider({bool? initialDarkMode}) {
+    if (initialDarkMode != null) {
+      _themeMode = initialDarkMode ? ThemeMode.dark : ThemeMode.light;
+    } else {
+      loadTheme(); // تحميل الثيم المحفوظ عند إنشاء الكلاس
+    }
   }
 
   /// 📥 تحميل الثيم المحفوظ من الذاكرة المحلية.

@@ -1031,7 +1031,7 @@ abstract class AppLocalizations {
   /// No description provided for @location_label.
   ///
   /// In en, this message translates to:
-  /// **'Location'**
+  /// **'Service Location'**
   String get location_label;
 
   /// No description provided for @distance_away.
@@ -1529,7 +1529,7 @@ abstract class AppLocalizations {
   /// No description provided for @complaintDetailsHint.
   ///
   /// In en, this message translates to:
-  /// **'Explain the problem in detail here...'**
+  /// **'Please write in detail what happened with you...'**
   String get complaintDetailsHint;
 
   /// No description provided for @sending.
@@ -1541,7 +1541,7 @@ abstract class AppLocalizations {
   /// No description provided for @confirmSend.
   ///
   /// In en, this message translates to:
-  /// **'Confirm Send'**
+  /// **'Confirm Submission'**
   String get confirmSend;
 
   /// No description provided for @confirmSendMsg.
@@ -1631,19 +1631,19 @@ abstract class AppLocalizations {
   /// No description provided for @typePayment.
   ///
   /// In en, this message translates to:
-  /// **'Payment'**
+  /// **'Payment Issue'**
   String get typePayment;
 
   /// No description provided for @typeAccount.
   ///
   /// In en, this message translates to:
-  /// **'Account'**
+  /// **'Account & Privacy'**
   String get typeAccount;
 
   /// No description provided for @typeSuggestion.
   ///
   /// In en, this message translates to:
-  /// **'Suggestion'**
+  /// **'Suggestion or Improvement'**
   String get typeSuggestion;
 
   /// No description provided for @typeOther.
@@ -2035,6 +2035,744 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Activate Account'**
   String get activateAccount;
+
+  /// No description provided for @currentPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Password'**
+  String get currentPassword;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get newPassword;
+
+  /// No description provided for @confirmNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm New Password'**
+  String get confirmNewPassword;
+
+  /// No description provided for @updatePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Password'**
+  String get updatePassword;
+
+  /// No description provided for @updating.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating...'**
+  String get updating;
+
+  /// No description provided for @confirmChangePasswordMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to change your password? You will need to login again with the new password.'**
+  String get confirmChangePasswordMsg;
+
+  /// No description provided for @changePasswordSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'The process was completed successfully. The password has been changed.'**
+  String get changePasswordSuccess;
+
+  /// No description provided for @pleaseFillFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in all fields'**
+  String get pleaseFillFields;
+
+  /// No description provided for @passwordMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters'**
+  String get passwordMinLength;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @changePasswordFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to change password'**
+  String get changePasswordFailed;
+
+  /// No description provided for @pleaseActivateAccountFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Please activate your account first'**
+  String get pleaseActivateAccountFirst;
+
+  /// No description provided for @agreeToTermsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'You must agree to the terms and conditions'**
+  String get agreeToTermsRequired;
+
+  /// No description provided for @accountCreatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Account created successfully! Please activate your email to continue.'**
+  String get accountCreatedSuccess;
+
+  /// No description provided for @enterFullCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the full code'**
+  String get enterFullCode;
+
+  /// No description provided for @accountActivatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Account activated successfully!'**
+  String get accountActivatedSuccess;
+
+  /// No description provided for @resendWaitTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait {timer} seconds before resending'**
+  String resendWaitTimer(Object timer);
+
+  /// No description provided for @resendCodeSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Activation code resent successfully'**
+  String get resendCodeSuccess;
+
+  /// No description provided for @beProviderValidation.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in all fields, upload your ID card, and specify your location.'**
+  String get beProviderValidation;
+
+  /// No description provided for @beProviderSubmitSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your request to join as a service provider has been submitted successfully! Your details will be reviewed by the admin.'**
+  String get beProviderSubmitSuccess;
+
+  /// No description provided for @beProviderSubmitFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit request, please try again later'**
+  String get beProviderSubmitFailed;
+
+  /// No description provided for @errorSendingRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while sending the request: {error}'**
+  String errorSendingRequest(Object error);
+
+  /// No description provided for @complaintsHub.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaints & Reports Center'**
+  String get complaintsHub;
+
+  /// No description provided for @systemComplaintsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a technical issue or suggest improvements for the app'**
+  String get systemComplaintsDesc;
+
+  /// No description provided for @orderComplaintsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Complaints'**
+  String get orderComplaintsTitle;
+
+  /// No description provided for @orderComplaintsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Have a problem with a specific order? Submit a report and we will help you'**
+  String get orderComplaintsDesc;
+
+  /// No description provided for @noOrderComplaints.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no order complaints currently.'**
+  String get noOrderComplaints;
+
+  /// No description provided for @resolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get resolved;
+
+  /// No description provided for @orderNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Order No.'**
+  String get orderNo;
+
+  /// No description provided for @viewOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'View Order'**
+  String get viewOrder;
+
+  /// No description provided for @submitComplaintTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Order Complaint'**
+  String get submitComplaintTitle;
+
+  /// No description provided for @complaintCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Problem Category'**
+  String get complaintCategory;
+
+  /// No description provided for @complaintSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint Title'**
+  String get complaintSubject;
+
+  /// No description provided for @complaintSubjectHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., provider delay, bad behavior, price difference...'**
+  String get complaintSubjectHint;
+
+  /// No description provided for @sendComplaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Complaint'**
+  String get sendComplaint;
+
+  /// No description provided for @confirmComplaintTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Complaint Submission'**
+  String get confirmComplaintTitle;
+
+  /// No description provided for @confirmComplaintMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to submit a complaint for this order?'**
+  String get confirmComplaintMsg;
+
+  /// No description provided for @sentSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted Successfully'**
+  String get sentSuccessfully;
+
+  /// No description provided for @complaintSubmitSuccessMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Your complaint has been submitted successfully, we will review the order and contact you.'**
+  String get complaintSubmitSuccessMsg;
+
+  /// No description provided for @complaintSubmitFailedMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred during submission, please try again later.'**
+  String get complaintSubmitFailedMsg;
+
+  /// No description provided for @systemComplaintType.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Type'**
+  String get systemComplaintType;
+
+  /// No description provided for @systemComplaintSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Title'**
+  String get systemComplaintSubject;
+
+  /// No description provided for @systemComplaintDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Details'**
+  String get systemComplaintDetails;
+
+  /// No description provided for @systemComplaintSubjectHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., issue charging points, login error...'**
+  String get systemComplaintSubjectHint;
+
+  /// No description provided for @systemComplaintDetailsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Please write details of the issue you face clearly...'**
+  String get systemComplaintDetailsHint;
+
+  /// No description provided for @sendReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Report Now'**
+  String get sendReport;
+
+  /// No description provided for @confirmSystemReportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Submission'**
+  String get confirmSystemReportTitle;
+
+  /// No description provided for @confirmSystemReportMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to send this report to technical support?'**
+  String get confirmSystemReportMsg;
+
+  /// No description provided for @systemComplaintSubmitSuccessMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you, your report has been received and technical support team will review it as soon as possible.'**
+  String get systemComplaintSubmitSuccessMsg;
+
+  /// No description provided for @systemReportFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Submission Error'**
+  String get systemReportFailedTitle;
+
+  /// No description provided for @systemComplaintSubmitFailedMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'We apologize, an error occurred while trying to send the report. Please try again.'**
+  String get systemComplaintSubmitFailedMsg;
+
+  /// No description provided for @myTechnicalReports.
+  ///
+  /// In en, this message translates to:
+  /// **'System Complaints'**
+  String get myTechnicalReports;
+
+  /// No description provided for @addNewReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Complaint'**
+  String get addNewReport;
+
+  /// No description provided for @errorLoadingData.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while loading data'**
+  String get errorLoadingData;
+
+  /// No description provided for @noSystemReports.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no complaints submitted currently'**
+  String get noSystemReports;
+
+  /// No description provided for @typeTechnical.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical Issue'**
+  String get typeTechnical;
+
+  /// No description provided for @typeFinancialSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment & Points Operations'**
+  String get typeFinancialSystem;
+
+  /// No description provided for @typeBehavior.
+  ///
+  /// In en, this message translates to:
+  /// **'Bad behavior from provider'**
+  String get typeBehavior;
+
+  /// No description provided for @typeRequirements.
+  ///
+  /// In en, this message translates to:
+  /// **'Non-compliance with requirements'**
+  String get typeRequirements;
+
+  /// No description provided for @typeLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location Issue'**
+  String get typeLocation;
+
+  /// No description provided for @typeNoShow.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider no-show'**
+  String get typeNoShow;
+
+  /// No description provided for @searchByLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by Location'**
+  String get searchByLocation;
+
+  /// No description provided for @searchByLocationDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Show results near your current location or a specific location'**
+  String get searchByLocationDesc;
+
+  /// No description provided for @searchLocationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Location'**
+  String get searchLocationTitle;
+
+  /// No description provided for @pickOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Select location on map (Optional)'**
+  String get pickOnMap;
+
+  /// No description provided for @submitSystemComplaintTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit a System Complaint'**
+  String get submitSystemComplaintTitle;
+
+  /// No description provided for @pending.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get pending;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @loginNowPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Log In Now'**
+  String get loginNowPrompt;
+
+  /// No description provided for @favoriteGuestMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please log in to be able to add services to favorites and access them at any time.'**
+  String get favoriteGuestMessage;
+
+  /// No description provided for @errorLoadingFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while fetching favorites'**
+  String get errorLoadingFavorites;
+
+  /// No description provided for @errorUpdatingFavorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update favorites'**
+  String get errorUpdatingFavorites;
+
+  /// No description provided for @subCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Subcategories'**
+  String get subCategories;
+
+  /// No description provided for @recommendedProviders.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended Providers'**
+  String get recommendedProviders;
+
+  /// No description provided for @availableServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Services'**
+  String get availableServices;
+
+  /// No description provided for @noDataForCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'No data available for this category currently'**
+  String get noDataForCategory;
+
+  /// No description provided for @sponsoredAd.
+  ///
+  /// In en, this message translates to:
+  /// **'Sponsored'**
+  String get sponsoredAd;
+
+  /// No description provided for @locationNotSpecified.
+  ///
+  /// In en, this message translates to:
+  /// **'Location not specified by provider'**
+  String get locationNotSpecified;
+
+  /// No description provided for @providerAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider Address'**
+  String get providerAddress;
+
+  /// No description provided for @noReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'No reviews currently'**
+  String get noReviews;
+
+  /// No description provided for @noPublicReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'No public reviews currently'**
+  String get noPublicReviews;
+
+  /// No description provided for @hideHiddenReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Hidden Reviews ({count})'**
+  String hideHiddenReviews(int count);
+
+  /// No description provided for @showHiddenReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Hidden Reviews ({count})'**
+  String showHiddenReviews(int count);
+
+  /// No description provided for @unexpectedError.
+  ///
+  /// In en, this message translates to:
+  /// **'An unexpected error occurred while loading data'**
+  String get unexpectedError;
+
+  /// No description provided for @errorServerUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update some data from the server.'**
+  String get errorServerUpdate;
+
+  /// No description provided for @markAllAsRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all as read'**
+  String get markAllAsRead;
+
+  /// No description provided for @unread.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get unread;
+
+  /// No description provided for @read.
+  ///
+  /// In en, this message translates to:
+  /// **'Read'**
+  String get read;
+
+  /// No description provided for @noNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications currently'**
+  String get noNotifications;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @ordersGuestMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please log in to track your orders and access your transaction history.'**
+  String get ordersGuestMessage;
+
+  /// No description provided for @selectReceiptImageError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select the receipt image first'**
+  String get selectReceiptImageError;
+
+  /// No description provided for @pointsManagementTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Points Top-Up Management'**
+  String get pointsManagementTitle;
+
+  /// No description provided for @myPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'My Packages'**
+  String get myPackages;
+
+  /// No description provided for @myPackagesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Packages ordered and their status'**
+  String get myPackagesSubtitle;
+
+  /// No description provided for @pointsPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'Points Packages'**
+  String get pointsPackages;
+
+  /// No description provided for @pointsPackagesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse available packages to recharge points'**
+  String get pointsPackagesSubtitle;
+
+  /// No description provided for @buyNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy Now'**
+  String get buyNow;
+
+  /// No description provided for @gift.
+  ///
+  /// In en, this message translates to:
+  /// **'Gift'**
+  String get gift;
+
+  /// No description provided for @errorLoadingPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while loading packages'**
+  String get errorLoadingPackages;
+
+  /// No description provided for @noPackagesAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No packages available currently'**
+  String get noPackagesAvailable;
+
+  /// No description provided for @defaultPackageName.
+  ///
+  /// In en, this message translates to:
+  /// **'Points Package'**
+  String get defaultPackageName;
+
+  /// No description provided for @approved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get approved;
+
+  /// No description provided for @rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get rejected;
+
+  /// No description provided for @pendingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pendingStatus;
+
+  /// No description provided for @dateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get dateLabel;
+
+  /// No description provided for @noPurchasedPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'No purchased packages currently'**
+  String get noPurchasedPackages;
+
+  /// No description provided for @errorSelectingImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error selecting image'**
+  String get errorSelectingImage;
+
+  /// No description provided for @enterBondNumberError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the bond number'**
+  String get enterBondNumberError;
+
+  /// No description provided for @enterBankNameError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the bank name'**
+  String get enterBankNameError;
+
+  /// No description provided for @attachBondImageError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please attach the bond receipt image'**
+  String get attachBondImageError;
+
+  /// No description provided for @success.
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get success;
+
+  /// No description provided for @rechargeRequestSubmittedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Top-up request submitted successfully, it will be reviewed shortly'**
+  String get rechargeRequestSubmittedSuccess;
+
+  /// No description provided for @submitFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Submission failed'**
+  String get submitFailed;
+
+  /// No description provided for @confirmRechargeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Top-Up'**
+  String get confirmRechargeTitle;
+
+  /// No description provided for @bondOrTransferNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Bond / Transfer Number'**
+  String get bondOrTransferNumber;
+
+  /// No description provided for @enterBondNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter bond number here'**
+  String get enterBondNumberHint;
+
+  /// No description provided for @senderBankName.
+  ///
+  /// In en, this message translates to:
+  /// **'Sender Bank Name'**
+  String get senderBankName;
+
+  /// No description provided for @bankNameExample.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Al Rajhi Bank'**
+  String get bankNameExample;
+
+  /// No description provided for @transferReceiptImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer Receipt Image'**
+  String get transferReceiptImage;
+
+  /// No description provided for @clickToUploadReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Click to upload receipt image'**
+  String get clickToUploadReceipt;
+
+  /// No description provided for @pointsGainPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'You will get {count} points'**
+  String pointsGainPrompt(num count);
 }
 
 class _AppLocalizationsDelegate

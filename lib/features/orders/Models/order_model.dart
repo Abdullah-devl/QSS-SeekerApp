@@ -35,12 +35,18 @@ class OrderBond {
   final String bondNumber;
   final String imagePath;
   final double amount; // 💰 مبلغ السند
+  final String? status; // 📝 حالة السند
+  final String? createdAt; // 📅 تاريخ الإنشاء
+  final String? description; // 📝 وصف السند
 
   OrderBond({
     required this.id,
     required this.bondNumber,
     required this.imagePath,
     required this.amount,
+    this.status,
+    this.createdAt,
+    this.description,
   });
 
   factory OrderBond.fromJson(Map<String, dynamic> json) {
@@ -49,6 +55,9 @@ class OrderBond {
       bondNumber: json['bond_number']?.toString() ?? '---',
       imagePath: ApiEndpoints.getImageUrl(json['image_path']),
       amount: double.tryParse(json['amount']?.toString() ?? '0') ?? 0.0,
+      status: json['status']?.toString() ?? 'pending',
+      createdAt: json['created_at']?.toString() ?? '',
+      description: json['description']?.toString(),
     );
   }
 }
@@ -83,6 +92,7 @@ class OrderModel {
   final DateTime? createdAt; // 📅 تاريخ الإنشاء للفرز والدقة
   final bool providerFinished; // 👷 إشارة المزود بإنهاء العمل
   final Map<String, dynamic>? rawJson; // 🔍 الحزم الأصلية للتشخيص (Diagnostics)
+  final int? providerId; // 👨‍🔧 معرف المزود
 
   OrderModel({
     required this.id,
@@ -114,6 +124,7 @@ class OrderModel {
     this.createdAt,
     this.providerFinished = false,
     this.rawJson,
+    this.providerId,
   });
 
   // 🚀 حساب المبلغ المتبقي (محلياً)
@@ -126,9 +137,6 @@ class OrderModel {
 
     // استخراج بيانات المستخدم (طالب الخدمة)
     final userData = json['user'] ?? json['seeker'] ?? json['customer'] ?? {};
-
-    // استخراج بيانات المزود (إذا وجدت)
-    final providerData = json['provider'] ?? json['service_provider'] ?? {};
 
     // 🚀 استخراج الخدمات من القائمة الموحدة 'services' (كما يظهر في اللوك)
     final List allServices = json['services'] ?? [];
@@ -173,6 +181,30 @@ class OrderModel {
       }
     }
 
+    // 🚀 استخراج بيانات المزود (إذا وجدت)
+    Map<String, dynamic> providerData = json['provider'] ?? json['service_provider'] ?? {};
+
+    // 🛡️ طبقة حماية إضافية ذكية: إذا لم نجدها في الجذر، نحاول استخراجها من الخدمات المتاحة
+    if (providerData.isEmpty) {
+      if (allServices.isNotEmpty) {
+        final mainServiceJson = allServices.firstWhere(
+          (s) => s['type'] == 'main' || s['pivot']?['is_main'] == 1,
+          orElse: () => allServices[0],
+        );
+        if (mainServiceJson['provider'] != null) {
+          providerData = Map<String, dynamic>.from(mainServiceJson['provider']);
+        }
+      } else {
+        final List mainServiceLegacy = json['main_service'] ?? [];
+        if (mainServiceLegacy.isNotEmpty) {
+          final first = mainServiceLegacy[0];
+          if (first['provider'] != null) {
+            providerData = Map<String, dynamic>.from(first['provider']);
+          }
+        }
+      }
+    }
+
     // استخراج السندات
     final List rawBonds = json['bonds'] ?? json['receipts'] ?? [];
     List<OrderBond> bonds = rawBonds
@@ -199,6 +231,18 @@ class OrderModel {
       timeOnly = '$hour:$minute';
     } catch (e) {
       timeOnly = (json['created_at_human'] ?? '').toString();
+    }
+
+    // استخراج معرف المزود
+    int? providerId;
+    if (json['provider_id'] != null) {
+      providerId = int.tryParse(json['provider_id'].toString());
+    } else if (providerData['id'] != null) {
+      providerId = int.tryParse(providerData['id'].toString());
+    } else if (providerData['user_id'] != null) {
+      providerId = int.tryParse(providerData['user_id'].toString());
+    } else if (allServices.isNotEmpty) {
+      providerId = int.tryParse(allServices.first['provider_id']?.toString() ?? '');
     }
 
     return OrderModel(
@@ -236,6 +280,7 @@ class OrderModel {
               json['provider_finished'] == true ||
               json['is_provider_finished'] == 1),
       rawJson: json,
+      providerId: providerId,
     );
   }
 }

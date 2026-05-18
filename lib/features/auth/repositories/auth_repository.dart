@@ -399,6 +399,131 @@ class AuthRepository {
   }
 
   // ===========================================================================
+  // 🔑 استعادة كلمة المرور (Forgot Password Flow)
+  // ===========================================================================
+
+  /// 📌 1. طلب إرسال رمز التحقق
+  Future<void> forgotPassword(String email) async {
+    try {
+      final response = await _apiService.post(
+        ApiEndpoints.forgotPassword,
+        data: {'email': email},
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('فشل طلب استعادة كلمة المرور: ${response.statusMessage}');
+      }
+    } catch (e) {
+      if (e is DioException) {
+        if (e.response?.statusCode == 422 || e.response?.statusCode == 400) {
+          final data = e.response?.data;
+          String errorMessage = data['message'] ?? 'البريد الإلكتروني غير مسجل لدينا';
+          if (data['errors'] != null && data['errors'] is Map) {
+            final errorsMap = data['errors'] as Map<String, dynamic>;
+            final messages = <String>[];
+            errorsMap.forEach((key, value) {
+              if (value is List) {
+                messages.addAll(value.map((v) => v.toString()));
+              } else {
+                messages.add(value.toString());
+              }
+            });
+            if (messages.isNotEmpty) {
+              errorMessage = messages.join('\n');
+            }
+          }
+          throw Exception(errorMessage);
+        }
+      }
+      rethrow;
+    }
+  }
+
+  /// 📌 2. التحقق من كود الـ OTP
+  Future<void> verifyResetCode(String email, String code) async {
+    try {
+      final response = await _apiService.post(
+        ApiEndpoints.verifyResetCode,
+        data: {'email': email, 'code': code},
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('فشل التحقق من رمز الاستعادة: ${response.statusMessage}');
+      }
+    } catch (e) {
+      if (e is DioException) {
+        if (e.response?.statusCode == 422 || e.response?.statusCode == 400) {
+          final data = e.response?.data;
+          String errorMessage = data['message'] ?? 'رمز التحقق غير صحيح أو منتهي الصلاحية';
+          if (data['errors'] != null && data['errors'] is Map) {
+            final errorsMap = data['errors'] as Map<String, dynamic>;
+            final messages = <String>[];
+            errorsMap.forEach((key, value) {
+              if (value is List) {
+                messages.addAll(value.map((v) => v.toString()));
+              } else {
+                messages.add(value.toString());
+              }
+            });
+            if (messages.isNotEmpty) {
+              errorMessage = messages.join('\n');
+            }
+          }
+          throw Exception(errorMessage);
+        }
+      }
+      rethrow;
+    }
+  }
+
+  /// 📌 3. تعيين كلمة المرور الجديدة
+  Future<void> resetPassword({
+    required String email,
+    required String code,
+    required String password,
+    required String passwordConfirmation,
+  }) async {
+    try {
+      final response = await _apiService.post(
+        ApiEndpoints.resetPassword,
+        data: {
+          'email': email,
+          'code': code,
+          'password': password,
+          'password_confirmation': passwordConfirmation,
+        },
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('فشل إعادة تعيين كلمة المرور: ${response.statusMessage}');
+      }
+    } catch (e) {
+      if (e is DioException) {
+        if (e.response?.statusCode == 422 || e.response?.statusCode == 400) {
+          final data = e.response?.data;
+          String errorMessage = data['message'] ?? 'فشل إعادة تعيين كلمة المرور';
+          if (data['errors'] != null && data['errors'] is Map) {
+            final errorsMap = data['errors'] as Map<String, dynamic>;
+            final messages = <String>[];
+            errorsMap.forEach((key, value) {
+              if (value is List) {
+                messages.addAll(value.map((v) => v.toString()));
+              } else {
+                messages.add(value.toString());
+              }
+            });
+            if (messages.isNotEmpty) {
+              errorMessage = messages.join('\n');
+            }
+          }
+          throw Exception(errorMessage);
+        }
+      }
+      rethrow;
+    }
+  }
+
+  // ===========================================================================
   // 👤 الدخول كزائر (Guest Login)
   // ===========================================================================
 

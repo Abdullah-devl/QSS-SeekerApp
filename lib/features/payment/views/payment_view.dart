@@ -23,6 +23,7 @@ class PaymentView extends StatefulWidget {
 
 class _PaymentViewState extends State<PaymentView> {
   final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _bondNumberController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
 
   @override
@@ -37,6 +38,7 @@ class _PaymentViewState extends State<PaymentView> {
   @override
   void dispose() {
     _amountController.dispose();
+    _bondNumberController.dispose();
     super.dispose();
   }
 
@@ -299,6 +301,25 @@ class _PaymentViewState extends State<PaymentView> {
     final colors = context.qsColors;
     return Column(
       children: [
+        // حقل رقم السند
+        TextField(
+          controller: _bondNumberController,
+          keyboardType: TextInputType.text,
+          style: TextStyle(color: colors.text),
+          decoration: InputDecoration(
+            labelText: context.tr('bondOrTransferNumber'),
+            hintText: context.tr('enterBondNumberHint'),
+            labelStyle: TextStyle(color: colors.textSub),
+            filled: true,
+            fillColor: colors.card,
+            prefixIcon: Icon(Icons.numbers, color: colors.primary),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: colors.textSub.withValues(alpha: 0.2)),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
         // حقل المبلغ
         TextField(
           controller: _amountController,
@@ -310,7 +331,10 @@ class _PaymentViewState extends State<PaymentView> {
             filled: true,
             fillColor: colors.card,
             prefixIcon: Icon(Icons.attach_money, color: colors.primary),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: colors.textSub.withValues(alpha: 0.2))),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: colors.textSub.withValues(alpha: 0.2)),
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -406,18 +430,32 @@ class _PaymentViewState extends State<PaymentView> {
           await QSAlerts.showSuccess(context, context.tr('points_payment_success'));
           if (context.mounted) Navigator.pop(context);
         } else {
-          await QSAlerts.showError(context, viewModel.errorMessage ?? context.tr('points_payment_error'));
+          await QSAlerts.showError(
+            context,
+            viewModel.errorMessage != null
+                ? context.tr(viewModel.errorMessage!)
+                : context.tr('points_payment_error'),
+          );
         }
       }
     } else {
       // --- سداد بسند ---
       
-      final success = await viewModel.payByBond(widget.order.id, amount);
+      final success = await viewModel.payByBond(
+        widget.order.id,
+        amount,
+        _bondNumberController.text,
+      );
       if (success) {
         await QSAlerts.showSuccess(context, context.tr('bond_payment_success'));
         if (context.mounted) Navigator.pop(context);
       } else {
-        await QSAlerts.showError(context, viewModel.errorMessage ?? context.tr('bond_payment_error'));
+        await QSAlerts.showError(
+          context,
+          viewModel.errorMessage != null
+              ? context.tr(viewModel.errorMessage!)
+              : context.tr('bond_payment_error'),
+        );
       }
     }
   }

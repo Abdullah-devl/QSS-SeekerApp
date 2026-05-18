@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:seeker/core/routes/app_routes.dart';
 import 'package:seeker/core/utils/qs_alerts.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 import '../repositories/auth_repository.dart';
 
 class RegisterViewModel extends ChangeNotifier {
@@ -33,10 +34,12 @@ class RegisterViewModel extends ChangeNotifier {
     notifyListeners(); // تحديث الواجهة لتفعيل/تعطيل زر التسجيل
   }
 
-  /// 📜 دالة لفتح صفحة الشروط والأحكام.
-  /// إذا وافق المستخدم في تلك الصفحة، نعود ونفعّل الـ Checkbox تلقائياً.
   Future<void> openTermsPage(BuildContext context) async {
-    final result = await Navigator.pushNamed(context, '/terms');
+    final result = await Navigator.pushNamed(
+      context,
+      AppRoutes.privacyPolicy,
+      arguments: {'fromRegister': true},
+    );
     if (result == true) {
       toggleAgreement(true);
     }
@@ -44,24 +47,25 @@ class RegisterViewModel extends ChangeNotifier {
 
   /// 📝 دالة تنفيذ إنشاء الحساب.
   Future<void> register(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     // 1. التحقق من أن الحقول غير فارغة
     if (nameController.text.isEmpty ||
         emailController.text.isEmpty ||
         passwordController.text.isEmpty ||
         confirmPasswordController.text.isEmpty) {
-      QSAlerts.showWarning(context, 'يرجى تعبئة جميع الحقول');
+      QSAlerts.showWarning(context, l10n.pleaseFillFields);
       return;
     }
 
     // 2. التحقق من تطابق كلمة المرور
     if (passwordController.text != confirmPasswordController.text) {
-      QSAlerts.showWarning(context, 'كلمة المرور غير متطابقة');
+      QSAlerts.showWarning(context, l10n.passwordsDoNotMatch);
       return;
     }
 
     // 3. التحقق من الموافقة على الشروط
     if (!_isAgreed) {
-      QSAlerts.showWarning(context, 'يجب الموافقة على الشروط والأحكام');
+      QSAlerts.showWarning(context, l10n.agreeToTermsRequired);
       return;
     }
 
@@ -83,7 +87,7 @@ class RegisterViewModel extends ChangeNotifier {
       if (context.mounted) {
         await QSAlerts.showSuccess(
           context,
-          'تم إنشاء الحساب بنجاح! الرجاء تفعيل بريدك الإلكتروني للمتابعة.',
+          l10n.accountCreatedSuccess,
         );
         
         if (context.mounted) {

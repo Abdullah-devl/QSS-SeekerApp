@@ -52,7 +52,7 @@ class ChangePasswordView extends StatelessWidget {
                 _buildField(
                   context: context,
                   controller: vm.oldPasswordController,
-                  label: 'كلمة المرور الحالية',
+                  label: l10n.currentPassword,
                   obscure: vm.obscureOld,
                   toggle: vm.toggleOld,
                   colors: colors,
@@ -62,7 +62,7 @@ class ChangePasswordView extends StatelessWidget {
                 _buildField(
                   context: context,
                   controller: vm.newPasswordController,
-                  label: 'كلمة المرور الجديدة',
+                  label: l10n.newPassword,
                   obscure: vm.obscureNew,
                   toggle: vm.toggleNew,
                   colors: colors,
@@ -72,7 +72,7 @@ class ChangePasswordView extends StatelessWidget {
                 _buildField(
                   context: context,
                   controller: vm.confirmPasswordController,
-                  label: 'تأكيد كلمة المرور الجديدة',
+                  label: l10n.confirmNewPassword,
                   obscure: vm.obscureConfirm,
                   toggle: vm.toggleConfirm,
                   colors: colors,
@@ -92,10 +92,10 @@ class ChangePasswordView extends StatelessWidget {
                           borderRadius: BorderRadius.circular(16)),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'تحديث كلمة المرور',
+                    child: Text(
+                      l10n.updatePassword,
                       style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -129,7 +129,7 @@ class ChangePasswordView extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        'جاري التحديث...',
+                        l10n.updating,
                         style: TextStyle(
                           color: colors.text,
                           fontWeight: FontWeight.bold,
@@ -187,18 +187,19 @@ class ChangePasswordView extends StatelessWidget {
   }
 
   Future<void> _handleUpdate(BuildContext context, ChangePasswordViewModel vm) async {
+    final l10n = AppLocalizations.of(context)!;
     // 1. طلب التأكيد أولاً
     final bool confirmed = await QSAlerts.showConfirm(
       context,
-      title: 'تغيير كلمة المرور',
-      message: 'هل أنت متأكد من تغيير كلمة المرور؟ سيتم طلب تسجيل الدخول مجدداً بكلمة المرور الجديدة.',
+      title: l10n.changePassword,
+      message: l10n.confirmChangePasswordMsg,
     );
 
     if (confirmed) {
-      final success = await vm.changePassword();
+      final success = await vm.changePassword(context);
       if (success && context.mounted) {
         // نجاح التغيير
-        await QSAlerts.showSuccess(context, 'تمت العملية بنجاح. تم تغيير كلمة المرور.');
+        await QSAlerts.showSuccess(context, l10n.changePasswordSuccess);
         if (context.mounted) Navigator.pop(context); // العودة للإعدادات
       } else if (vm.errorMessage != null && context.mounted) {
         // فشل التغيير

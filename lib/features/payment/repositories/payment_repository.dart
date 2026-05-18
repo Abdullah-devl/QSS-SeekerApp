@@ -47,11 +47,13 @@ class PaymentRepository {
     required String requestId,
     required double amount,
     required File image,
+    required String bondNumber,
   }) async {
     try {
       final formData = FormData.fromMap({
         'request_id': requestId,
         'amount': amount,
+        'bond_number': bondNumber,
         'image_path': await MultipartFile.fromFile(
           image.path,
           filename: image.path.split('/').last,

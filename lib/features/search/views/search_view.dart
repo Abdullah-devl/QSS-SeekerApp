@@ -230,11 +230,17 @@ class _SearchViewState extends State<SearchView> {
         return StatefulBuilder(
           builder: (context, setModalState) {
             return Container(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
+              padding: EdgeInsets.only(
+                left: 24,
+                right: 24,
+                top: 24,
+                bottom: 24 + MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -360,69 +366,92 @@ class _SearchViewState extends State<SearchView> {
 
                   const SizedBox(height: 24),
 
-                  // 📍 اختيار الموقع من الخريطة
-                  Text(
-                    'موقع البحث',
-                    style: TextStyle(fontWeight: FontWeight.bold, color: colors.text),
-                  ),
-                  const SizedBox(height: 12),
-                  InkWell(
-                    onTap: () async {
-                      // فتح صفحة اختيار الموقع
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const PickLocationView(),
-                        ),
-                      );
-
-                      if (result != null && result is Map) {
-                        setModalState(() {
-                          final latLng = result['latLng'];
-                          final address = result['address'];
-                          viewModel.setPickedLocation(
-                            latLng.latitude,
-                            latLng.longitude,
-                            address,
-                          );
-                        });
-                      }
+                  // 📍 تفعيل/إلغاء البحث بالموقع
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(
+                      context.tr('searchByLocation'),
+                      style: TextStyle(fontWeight: FontWeight.bold, color: colors.text),
+                    ),
+                    subtitle: Text(
+                      context.tr('searchByLocationDesc'),
+                      style: TextStyle(fontSize: 12, color: colors.textSub),
+                    ),
+                    activeColor: colors.primary,
+                    value: viewModel.isLocationFilterEnabled,
+                    onChanged: (val) {
+                      setModalState(() {
+                        viewModel.setLocationFilterEnabled(val);
+                      });
                     },
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: colors.card,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: viewModel.pickedLat != null 
-                              ? colors.primary 
-                              : colors.textSub.withValues(alpha: 0.1),
+                  ),
+
+                  // عرض زر اختيار الموقع فقط إذا كان الفلتر مفعلاً
+                  if (viewModel.isLocationFilterEnabled) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      context.tr('searchLocationTitle'),
+                      style: TextStyle(fontWeight: FontWeight.bold, color: colors.text),
+                    ),
+                    const SizedBox(height: 12),
+                    InkWell(
+                      onTap: () async {
+                        // فتح صفحة اختيار الموقع
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const PickLocationView(),
+                          ),
+                        );
+
+                        if (result != null && result is Map) {
+                          setModalState(() {
+                            final latLng = result['latLng'];
+                            final address = result['address'];
+                            viewModel.setPickedLocation(
+                              latLng.latitude,
+                              latLng.longitude,
+                              address,
+                            );
+                          });
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: colors.card,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: viewModel.pickedLat != null 
+                                ? colors.primary 
+                                : colors.textSub.withValues(alpha: 0.1),
+                          ),
                         ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.map_rounded,
-                            color: viewModel.pickedLat != null ? colors.primary : colors.textSub,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              viewModel.pickedAddress ?? 'تحديد الموقع من الخريطة (اختياري)',
-                              style: TextStyle(
-                                color: viewModel.pickedLat != null ? colors.text : colors.textSub,
-                                fontSize: 14,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.map_rounded,
+                              color: viewModel.pickedLat != null ? colors.primary : colors.textSub,
                             ),
-                          ),
-                          if (viewModel.pickedLat != null)
-                            Icon(Icons.check_circle, color: colors.primary, size: 20),
-                        ],
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                viewModel.pickedAddress ?? context.tr('pickOnMap'),
+                                style: TextStyle(
+                                  color: viewModel.pickedLat != null ? colors.text : colors.textSub,
+                                  fontSize: 14,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (viewModel.pickedLat != null)
+                              Icon(Icons.check_circle, color: colors.primary, size: 20),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
+                  ],
 
                   const SizedBox(height: 32),
 
@@ -446,6 +475,7 @@ class _SearchViewState extends State<SearchView> {
                   const SizedBox(height: 16),
                 ],
               ),
+             ),
             );
           },
         );

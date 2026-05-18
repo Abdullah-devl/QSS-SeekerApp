@@ -152,7 +152,7 @@ class MyProfileView extends StatelessWidget {
                   children: [
                     _buildPointsStat(
                       label: 'رصيد النقاط',
-                      value: (profile.bonusPoints + profile.paidPoints).toStringAsFixed(0),
+                      value: profile.bonusPoints.toStringAsFixed(0),
                       icon: Icons.stars_rounded,
                       colors: colors,
                     ),

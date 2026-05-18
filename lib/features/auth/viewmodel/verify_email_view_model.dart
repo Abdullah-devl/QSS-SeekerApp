@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:seeker/core/utils/qs_alerts.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../repositories/auth_repository.dart';
 
@@ -34,11 +35,12 @@ class VerifyEmailViewModel extends ChangeNotifier {
 
   /// ✅ دالة التحقق من صحة الكود وإرساله للسيرفر
   Future<void> verifyEmail(BuildContext context, String email) async {
+    final l10n = AppLocalizations.of(context)!;
     final otp = _otpCode;
 
     // 1. التحقق من أن الكود مكون من 6 أرقام
     if (otp.length != 6) {
-      QSAlerts.showWarning(context, 'يرجى إدخال الكود كاملاً');
+      QSAlerts.showWarning(context, l10n.enterFullCode);
       return;
     }
 
@@ -52,7 +54,7 @@ class VerifyEmailViewModel extends ChangeNotifier {
 
       // 4. في حال النجاح، التوجيه للصفحة التالية (الرئيسية أو تسجيل الدخول)
       if (context.mounted) {
-        QSAlerts.showSuccess(context, 'تم تفعيل الحساب بنجاح!');
+        QSAlerts.showSuccess(context, l10n.accountActivatedSuccess);
         // التوجيه لصفحة تسجيل الدخول بعد التفعيل
         Navigator.pushNamedAndRemoveUntil(
           context,
@@ -100,12 +102,13 @@ class VerifyEmailViewModel extends ChangeNotifier {
 
   /// 🔄 دالة إعادة إرسال كود التفعيل
   Future<void> resendCode(BuildContext context, String email) async {
+    final l10n = AppLocalizations.of(context)!;
     // منع الضغط المتكرر أو إذا كان المؤقت يعمل
     if (_isLoading) return;
 
     if (_isTimerRunning) {
       if (context.mounted) {
-        QSAlerts.showWarning(context, 'يرجى الانتظار ${_start} ثانية قبل إعادة الإرسال');
+        QSAlerts.showWarning(context, l10n.resendWaitTimer(_start.toString()));
       }
       return;
     }
@@ -117,7 +120,7 @@ class VerifyEmailViewModel extends ChangeNotifier {
       await authRepository.resendVerificationCode(email);
 
       if (context.mounted) {
-        QSAlerts.showSuccess(context, 'تم إعادة إرسال كود التفعيل بنجاح');
+        QSAlerts.showSuccess(context, l10n.resendCodeSuccess);
       }
       // بدء المؤقت عند النجاح
       startTimer();

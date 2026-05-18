@@ -120,7 +120,12 @@ class LoginView extends StatelessWidget {
                                 children: [
                                   // زر "نسيت كلمة المرور" (يسار)
                                   GestureDetector(
-                                    onTap: () {}, // لم يتم تفعيله بعد
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        AppRoutes.forgotPassword,
+                                      );
+                                    },
                                     child: Text(
                                       AppLocalizations.of(
                                         context,
@@ -236,27 +241,17 @@ class LoginView extends StatelessWidget {
                         const SizedBox(height: 24),
 
                         // 5️⃣ أزرار السوشيال (Social Buttons)
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildSocialButton(
-                                context,
-                                icon: Icons.apple,
-                                label: 'Apple',
-                                onTap: () {},
-                              ),
+                        Center(
+                          child: SizedBox(
+                            width: 220,
+                            child: _buildSocialButton(
+                              context,
+                              icon: Icons.g_mobiledata_rounded,
+                              label: 'Google',
+                              onTap: () => viewModel.loginWithGoogle(context),
+                              isGoogle: true,
                             ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: _buildSocialButton(
-                                context,
-                                icon: Icons.g_mobiledata_rounded,
-                                label: 'Google',
-                                onTap: () => viewModel.loginWithGoogle(context),
-                                isGoogle: true,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
 
                         const SizedBox(height: 30),
@@ -351,14 +346,14 @@ class LoginView extends StatelessWidget {
           // زر الرجوع في الأعلى (اختياري، يظهر فقط إذا كان هناك صفحة سابقة)
           Positioned(
             top: 50,
-            right: Directionality.of(context) == TextDirection.rtl ? 20 : null,
-            left: Directionality.of(context) == TextDirection.ltr ? 20 : null,
+            right: 20,
             child: IconButton(
-              icon: Icon(
-                Directionality.of(context) == TextDirection.rtl
-                    ? Icons.arrow_forward_ios
-                    : Icons.arrow_back_ios,
-                color: colors.text,
+              icon: Directionality(
+                textDirection: TextDirection.ltr,
+                child: Icon(
+                  Icons.arrow_forward,
+                  color: colors.text,
+                ),
               ),
               onPressed: () => Navigator.pop(context),
             ),

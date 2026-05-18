@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:seeker/core/routes/app_routes.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
 
 class PointsManagementView extends StatelessWidget {
   const PointsManagementView({super.key});
@@ -12,9 +13,9 @@ class PointsManagementView extends StatelessWidget {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: const Text(
-          'إدارة شحن النقاط',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          context.tr('pointsManagementTitle'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: colors.background,
@@ -26,16 +27,16 @@ class PointsManagementView extends StatelessWidget {
           children: [
             _buildOptionCard(
               context: context,
-              title: 'باقاتي',
-              subtitle: 'الباقات التي تم طلبها وحالتها',
+              title: context.tr('myPackages'),
+              subtitle: context.tr('myPackagesSubtitle'),
               icon: Icons.inventory_2_outlined,
               onTap: () => Navigator.pushNamed(context, AppRoutes.myPackages),
             ),
             const SizedBox(height: 20),
             _buildOptionCard(
               context: context,
-              title: 'باقات النقاط',
-              subtitle: 'استعراض الباقات المتاحة لشحن الرصيد',
+              title: context.tr('pointsPackages'),
+              subtitle: context.tr('pointsPackagesSubtitle'),
               icon: Icons.grid_view_rounded,
               onTap: () => Navigator.pushNamed(context, AppRoutes.availablePackages),
             ),

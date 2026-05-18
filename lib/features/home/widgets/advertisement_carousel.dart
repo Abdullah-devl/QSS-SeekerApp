@@ -2,10 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:seeker/core/routes/app_routes.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
 import '../models/advertisement_model.dart';
-import '../models/category_model.dart';
 import '../viewmodels/home_view_model.dart';
 import '../repositories/home_repository.dart';
 import '../services/view/service_details_view.dart';
@@ -13,6 +11,7 @@ import '../services/viewmodels/service_details_view_model.dart';
 import 'package:seeker/features/home/viewmodels/category_details_view_model.dart';
 import 'package:seeker/features/home/views/category_details_view.dart';
 import 'package:seeker/features/home/repositories/advertisement_repository.dart'; // ✅ تمت الإضافة
+import 'package:seeker/l10n/app_localizations.dart';
 
 /// 📂 اسم الملف: advertisement_carousel.dart
 /// 📝 الوصف: ويدجت لعرض الإعلانات بشكل متحرك (Carousel) مع دعم التتبع والتوجيه.
@@ -266,9 +265,9 @@ class _AdvertisementCarouselState extends State<AdvertisementCarousel> {
                     color: context.qsColors.primary,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Text(
-                    'تفاصيل',
-                    style: TextStyle(color: Colors.white, fontSize: 10),
+                  child: Text(
+                    AppLocalizations.of(context)!.details,
+                    style: const TextStyle(color: Colors.white, fontSize: 10),
                   ),
                 ),
             ],

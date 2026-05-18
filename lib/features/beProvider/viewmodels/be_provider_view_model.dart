@@ -96,6 +96,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 import '../models/provider_request_model.dart';
 import '../repositories/be_provider_repository.dart';
 
@@ -156,12 +157,13 @@ class BeProviderViewModel extends ChangeNotifier {
   }
 
   /// 🚀 إرسال الطلب
-  Future<bool> submitRequest() async {
+  Future<bool> submitRequest(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     if (nameController.text.isEmpty ||
         descController.text.isEmpty ||
         _selectedImage == null ||
         _location.isEmpty) {
-      _errorMessage = 'يرجى تعبئة جميع الحقول وإرفاق الصورة وتحديد الموقع';
+      _errorMessage = l10n.beProviderValidation;
       notifyListeners();
       return false;
     }
@@ -183,7 +185,7 @@ class BeProviderViewModel extends ChangeNotifier {
       await _repository.submitRequest(request);
       return true; // نجاح
     } catch (e) {
-      _errorMessage = 'حدث خطأ أثناء إرسال الطلب: $e';
+      _errorMessage = l10n.errorSendingRequest(e.toString());
       return false; // فشل
     } finally {
       _isLoading = false;

@@ -5,6 +5,7 @@ import 'package:seeker/features/home/services/viewmodels/service_details_view_mo
 import 'package:seeker/features/home/services/view/service_details_view.dart';
 import 'package:seeker/features/favorites/viewmodels/favorite_view_model.dart';
 import 'package:seeker/core/widgets/service_card.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 import '../models/category_model.dart';
 import '../services/models/service_model.dart';
 import '../repositories/home_repository.dart';
@@ -65,7 +66,9 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
           if (vm.errorMessage.isNotEmpty) {
             return Center(
               child: Text(
-                vm.errorMessage,
+                vm.errorMessage == 'unexpectedError'
+                    ? AppLocalizations.of(context)!.unexpectedError
+                    : vm.errorMessage,
                 style: TextStyle(color: colors.text),
               ),
             );
@@ -84,7 +87,7 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
                 children: [
                   // 1️⃣ التصنيفات الفرعية (Sub Categories)
                   if (data.subCategories.isNotEmpty) ...[
-                    _buildSectionTitle('التصنيفات الفرعية', colors),
+                    _buildSectionTitle(AppLocalizations.of(context)!.subCategories, colors),
                     const SizedBox(height: 12),
                     _buildSubCategoriesList(data.subCategories, colors),
                     const SizedBox(height: 24),
@@ -92,7 +95,7 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
 
                   // 2️⃣ الموصى بهم (Recommended Providers)
                   if (data.recommendedProviders.isNotEmpty) ...[
-                    _buildSectionTitle('الموصى بهم', colors),
+                    _buildSectionTitle(AppLocalizations.of(context)!.recommendedProviders, colors),
                     const SizedBox(height: 12),
                     _buildProvidersList(data.recommendedProviders, colors),
                     const SizedBox(height: 24),
@@ -100,7 +103,7 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
 
                   // 3️⃣ الخدمات (Services) بتصميم screen.png المطابق
                   if (data.services.isNotEmpty) ...[
-                    _buildSectionTitle('الخدمات المتاحة', colors),
+                    _buildSectionTitle(AppLocalizations.of(context)!.availableServices, colors),
                     const SizedBox(height: 12),
                     _buildServicesList(data.services, colors, vm),
                   ] else ...[
@@ -108,7 +111,7 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
                       child: Padding(
                         padding: const EdgeInsets.only(top: 40),
                         child: Text(
-                          'لا توجد بيانات متاحة لهذا التصنيف حالياً',
+                          AppLocalizations.of(context)!.noDataForCategory,
                           style: TextStyle(color: colors.textSub),
                         ),
                       ),
@@ -360,9 +363,9 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
                   color: colors.primary,
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: const Text(
-                  'إعلان ممول',
-                  style: TextStyle(color: Colors.white, fontSize: 10),
+                child: Text(
+                  AppLocalizations.of(context)!.sponsoredAd,
+                  style: const TextStyle(color: Colors.white, fontSize: 10),
                 ),
               ),
               const SizedBox(height: 8),

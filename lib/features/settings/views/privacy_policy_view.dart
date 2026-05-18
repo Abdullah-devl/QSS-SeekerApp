@@ -39,6 +39,9 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
 
   /// إظهار رسالة التأكيد قبل الموافقة
   void _showConfirmDialog(PolicyViewModel vm, String role) {
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final bool fromRegister = args?['fromRegister'] ?? false;
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -59,6 +62,10 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(ctx);
+              if (fromRegister) {
+                Navigator.pop(context, true);
+                return;
+              }
               final success = await vm.agreeToPolicy(role);
               if (success && mounted) {
                 // حفظ الحالة محلياً
@@ -208,8 +215,8 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
             ],
           ),
         ),
-        // زر الموافقة يظهر فقط إذا لم يوافق المستخدم بعد
-        if (!_isAlreadyAgreed)
+        // زر الموافقة يظهر فقط إذا لم يوافق المستخدم بعد أو كان قادماً من صفحة التسجيل
+        if (!_isAlreadyAgreed || (ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?)?['fromRegister'] == true)
           Positioned(
             bottom: 30,
             left: 24,

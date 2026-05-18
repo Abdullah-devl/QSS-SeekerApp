@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 import '../repositories/auth_repository.dart';
 
 class ChangePasswordViewModel extends ChangeNotifier {
@@ -30,25 +31,26 @@ class ChangePasswordViewModel extends ChangeNotifier {
   void toggleNew() { _obscureNew = !_obscureNew; notifyListeners(); }
   void toggleConfirm() { _obscureConfirm = !_obscureConfirm; notifyListeners(); }
 
-  Future<bool> changePassword() async {
+  Future<bool> changePassword(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final oldPass = oldPasswordController.text.trim();
     final newPass = newPasswordController.text.trim();
     final confirmPass = confirmPasswordController.text.trim();
 
     if (oldPass.isEmpty || newPass.isEmpty || confirmPass.isEmpty) {
-      _errorMessage = 'الرجاء ملء جميع الحقول';
+      _errorMessage = l10n.pleaseFillFields;
       notifyListeners();
       return false;
     }
 
     if (newPass.length < 8) {
-      _errorMessage = 'يجب أن تكون كلمة المرور 8 أحرف على الأقل';
+      _errorMessage = l10n.passwordMinLength;
       notifyListeners();
       return false;
     }
 
     if (newPass != confirmPass) {
-      _errorMessage = 'كلمة المرور الجديدة غير متطابقة';
+      _errorMessage = l10n.passwordsDoNotMatch;
       notifyListeners();
       return false;
     }
@@ -69,7 +71,7 @@ class ChangePasswordViewModel extends ChangeNotifier {
         final data = e.response!.data;
         _errorMessage = (data is Map && data.containsKey('message')) 
             ? data['message'].toString() 
-            : 'فشل تغيير كلمة المرور';
+            : l10n.changePasswordFailed;
       } else {
         _errorMessage = e.toString().replaceAll('Exception: ', '');
       }

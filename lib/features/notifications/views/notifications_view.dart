@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 import '../viewmodels/notification_view_model.dart';
 import 'package:intl/intl.dart';
 
@@ -13,17 +14,18 @@ class NotificationsView extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.qsColors;
     final viewModel = context.watch<NotificationViewModel>();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('الإشعارات', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(l10n.notifications, style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         actions: [
           if (viewModel.notifications.isNotEmpty)
             TextButton(
               onPressed: () => viewModel.markAllAsRead(),
-              child: Text('تحديد الكل كمقروء', style: TextStyle(color: colors.primary, fontSize: 12)),
+              child: Text(l10n.markAllAsRead, style: TextStyle(color: colors.primary, fontSize: 12)),
             ),
         ],
       ),
@@ -53,6 +55,7 @@ class NotificationsView extends StatelessWidget {
   }
 
   Widget _buildFilters(BuildContext context, NotificationViewModel viewModel, dynamic colors) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
@@ -68,9 +71,9 @@ class NotificationsView extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildFilterChip(context, 'الكل', NotificationFilter.all, viewModel, colors),
-          _buildFilterChip(context, 'غير مقروء', NotificationFilter.unread, viewModel, colors),
-          _buildFilterChip(context, 'مقروء', NotificationFilter.read, viewModel, colors),
+          _buildFilterChip(context, l10n.all, NotificationFilter.all, viewModel, colors),
+          _buildFilterChip(context, l10n.unread, NotificationFilter.unread, viewModel, colors),
+          _buildFilterChip(context, l10n.read, NotificationFilter.read, viewModel, colors),
         ],
       ),
     );
@@ -106,7 +109,7 @@ class NotificationsView extends StatelessWidget {
         children: [
           Icon(Icons.notifications_off_outlined, size: 80, color: colors.textSub.withOpacity(0.2)),
           const SizedBox(height: 16),
-          Text('لا توجد إشعارات حالياً', style: TextStyle(color: colors.textSub, fontSize: 16)),
+          Text(AppLocalizations.of(context)!.noNotifications, style: TextStyle(color: colors.textSub, fontSize: 16)),
         ],
       ),
     );
@@ -242,7 +245,7 @@ class NotificationsView extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
-                child: const Text('إغلاق', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                child: Text(AppLocalizations.of(context)!.close, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
               ),
             ),
           ],

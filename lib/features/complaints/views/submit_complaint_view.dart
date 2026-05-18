@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/qs_color_extension.dart';
 import '../viewmodels/submit_complaint_viewmodel.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 
 class SubmitComplaintView extends StatefulWidget {
   final String orderId;
@@ -25,15 +25,16 @@ class _SubmitComplaintViewState extends State<SubmitComplaintView> {
   }
 
   void _showConfirmDialog() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('تأكيد تقديم الشكوى'),
-        content: const Text('هل أنت متأكد من رغبتك في تقديم بلاغ بخصوص هذا الطلب؟'),
+        title: Text(l10n.confirmComplaintTitle),
+        content: Text(l10n.confirmComplaintMsg),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('إلغاء'),
+            child: Text(l10n.cancel_order), // reusable cancel string
           ),
           ElevatedButton(
             onPressed: () {
@@ -41,7 +42,7 @@ class _SubmitComplaintViewState extends State<SubmitComplaintView> {
               _submit();
             },
             style: ElevatedButton.styleFrom(backgroundColor: context.qsColors.primary),
-            child: const Text('تأكيد', style: TextStyle(color: Colors.white)),
+            child: Text(l10n.confirm, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -49,6 +50,7 @@ class _SubmitComplaintViewState extends State<SubmitComplaintView> {
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     final viewModel = context.read<SubmitComplaintViewModel>();
     final success = await viewModel.submit(
       widget.orderId,
@@ -60,20 +62,21 @@ class _SubmitComplaintViewState extends State<SubmitComplaintView> {
 
     if (success) {
       _showResultDialog(
-        'تم الإرسال',
-        'تم إرسال شكواك بنجاح، سنقوم بمراجعة الطلب والتواصل معك.',
+        l10n.sentSuccessfully,
+        l10n.complaintSubmitSuccessMsg,
         true,
       );
     } else if (viewModel.errorMessage != null) {
       _showResultDialog(
-        'خطأ',
-        'حدث خطأ أثناء الإرسال، يرجى المحاولة لاحقاً.',
+        l10n.error_loading_orders, // reusable error title
+        l10n.complaintSubmitFailedMsg,
         false,
       );
     }
   }
 
   void _showResultDialog(String title, String message, bool isSuccess) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -88,7 +91,7 @@ class _SubmitComplaintViewState extends State<SubmitComplaintView> {
                 Navigator.pop(context); // العودة لتفاصيل الطلب
               }
             },
-            child: const Text('حسناً'),
+            child: Text(l10n.ok),
           ),
         ],
       ),
@@ -99,11 +102,12 @@ class _SubmitComplaintViewState extends State<SubmitComplaintView> {
   Widget build(BuildContext context) {
     final viewModel = context.watch<SubmitComplaintViewModel>();
     final colors = context.qsColors;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: const Text('تقديم شكوى على طلب'),
+        title: Text(l10n.submitComplaintTitle),
         centerTitle: true,
         elevation: 0,
         backgroundColor: colors.background,
@@ -114,24 +118,24 @@ class _SubmitComplaintViewState extends State<SubmitComplaintView> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // 🏷️ نوع الشكوى (Dropdown)
-            _buildFieldLabel('فئة المشكلة'),
+            _buildFieldLabel(l10n.complaintCategory),
             const SizedBox(height: 8),
             _buildDropdownField(context, viewModel),
             const SizedBox(height: 24),
 
-            _buildFieldLabel('عنوان الشكوى'),
+            _buildFieldLabel(l10n.complaintSubject),
             const SizedBox(height: 8),
             _buildTextField(
               controller: _subjectController,
-              hintText: 'مثلاً: تأخر المزود، سوء التعامل، اختلاف السعر...',
+              hintText: l10n.complaintSubjectHint,
               maxLines: 1,
             ),
             const SizedBox(height: 24),
-            _buildFieldLabel('تفاصيل الشكوى'),
+            _buildFieldLabel(l10n.complaintDetails),
             const SizedBox(height: 8),
             _buildTextField(
               controller: _messageController,
-              hintText: 'يرجى كتابة ما حدث معك بالتفصيل...',
+              hintText: l10n.complaintDetailsHint,
               maxLines: 6,
             ),
             const SizedBox(height: 48),
@@ -155,9 +159,9 @@ class _SubmitComplaintViewState extends State<SubmitComplaintView> {
                         color: Colors.white,
                       ),
                     )
-                  : const Text(
-                      'إرسال الشكوى',
-                      style: TextStyle(
+                  : Text(
+                      l10n.sendComplaint,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -184,13 +188,14 @@ class _SubmitComplaintViewState extends State<SubmitComplaintView> {
     BuildContext context,
     SubmitComplaintViewModel viewModel,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     final Map<String, String> types = {
-      'type_payment': 'مشكلة في الدفع',
-      'type_behavior': 'سوء تعامل من المزود',
-      'type_requirements': 'عدم الالتزام بالمتطلبات',
-      'type_location': 'مشكلة في الموقع',
-      'type_no_show': 'عدم حضور المزود',
-      'type_other': 'أخرى',
+      'type_payment': l10n.typePayment,
+      'type_behavior': l10n.typeBehavior,
+      'type_requirements': l10n.typeRequirements,
+      'type_location': l10n.typeLocation,
+      'type_no_show': l10n.typeNoShow,
+      'type_other': l10n.typeOther,
     };
 
     return Container(

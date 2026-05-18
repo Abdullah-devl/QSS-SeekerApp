@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
 import '../viewmodels/points_viewmodel.dart';
 
 class MyPackagesView extends StatefulWidget {
@@ -27,7 +28,7 @@ class _MyPackagesViewState extends State<MyPackagesView> {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: const Text('باقاتي', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(context.tr('myPackages'), style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         backgroundColor: colors.background,
         elevation: 0,
@@ -52,7 +53,7 @@ class _MyPackagesViewState extends State<MyPackagesView> {
 
   Widget _buildPackageItem(Map<String, dynamic> package, dynamic colors) {
     // استخراج البيانات بناءً على هيكل الـ API المتوقع
-    final String name = package['package']?['name'] ?? 'باقة نقاط';
+    final String name = package['package']?['name'] ?? context.tr('defaultPackageName');
     final String status = package['status'] ?? 'pending';
     final String date = package['created_at']?.toString().split('T').first ?? '';
     final String price = package['package']?['price']?.toString() ?? '0';
@@ -63,15 +64,15 @@ class _MyPackagesViewState extends State<MyPackagesView> {
     switch (status) {
       case 'approved':
         statusColor = Colors.green;
-        statusText = 'مقبول';
+        statusText = context.tr('approved');
         break;
       case 'rejected':
         statusColor = Colors.red;
-        statusText = 'مرفوض';
+        statusText = context.tr('rejected');
         break;
       default:
         statusColor = Colors.orange;
-        statusText = 'قيد الانتظار';
+        statusText = context.tr('pendingStatus');
     }
 
     return Container(
@@ -109,7 +110,7 @@ class _MyPackagesViewState extends State<MyPackagesView> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'التاريخ: $date',
+                  '${context.tr('dateLabel')}: $date',
                   style: TextStyle(fontSize: 12, color: colors.textSub),
                 ),
               ],
@@ -119,7 +120,7 @@ class _MyPackagesViewState extends State<MyPackagesView> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '$price ر.س',
+                '$price ${context.tr('currency_sar')}',
                 style: TextStyle(fontWeight: FontWeight.bold, color: colors.primary),
               ),
               const SizedBox(height: 4),
@@ -149,7 +150,7 @@ class _MyPackagesViewState extends State<MyPackagesView> {
           Icon(Icons.inventory_2_outlined, size: 64, color: colors.textSub.withValues(alpha: 0.3)),
           const SizedBox(height: 16),
           Text(
-            'لا توجد باقات مشتراة حالياً',
+            context.tr('noPurchasedPackages'),
             style: TextStyle(color: colors.textSub, fontSize: 16),
           ),
         ],

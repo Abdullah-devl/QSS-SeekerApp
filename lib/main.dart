@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:seeker/core/services/notification_service.dart';
 
 // --- Imports --- (استيراد الملفات اللازمة)
@@ -24,6 +25,8 @@ import 'package:seeker/features/home/viewmodels/category_details_view_model.dart
 import 'package:seeker/features/auth/viewmodel/verify_email_view_model.dart'; // ✅ تمت الإضافة
 
 // Views
+import 'package:seeker/features/auth/viewmodel/forgot_password_view_model.dart';
+import 'package:seeker/features/auth/views/forgot_password_view.dart';
 import 'package:seeker/features/auth/views/login_view.dart';
 import 'package:seeker/features/intro/splash_view.dart';
 import 'package:seeker/features/intro/welcome_view.dart';
@@ -98,6 +101,10 @@ void main() async {
 
   // 📦 تهيئة Hive للتخزين المحلي
   await Hive.initFlutter();
+
+  // 🌙 تحميل تفضيل الثيم مبكراً لمنع الوميض وتأخر التحميل
+  final prefs = await SharedPreferences.getInstance();
+  final isDarkMode = prefs.getBool('isDarkMode');
 
   // 🔥 تهيئة Firebase
   try {
@@ -204,7 +211,7 @@ void main() async {
         // 3️⃣ طبقة إدارة الحالة (ViewModels Layer)
         // ----------------------------------------------------------
         // مزود الثيم (Theme)
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider(initialDarkMode: isDarkMode)),
 
         // Login ViewModel - يحتاج AuthRepository
         ChangeNotifierProvider<LoginViewModel>(
@@ -245,6 +252,11 @@ void main() async {
         //
         ChangeNotifierProvider<VerifyEmailViewModel>(
           create: (context) => VerifyEmailViewModel(
+            authRepository: context.read<AuthRepository>(),
+          ),
+        ),
+        ChangeNotifierProvider<ForgotPasswordViewModel>(
+          create: (context) => ForgotPasswordViewModel(
             authRepository: context.read<AuthRepository>(),
           ),
         ),
@@ -375,7 +387,7 @@ class _MyAppState extends State<MyApp> {
       builder: (context, themeProvider, _) {
         return MaterialApp
         (
-          title: 'خدماتك',
+          title: 'QSS',
           debugShowCheckedModeBanner: false,
 
           // 🌍 إعدادات اللغة (Localization)
@@ -419,6 +431,7 @@ class _MyAppState extends State<MyApp> {
             },
             AppRoutes.beProvider: (context) => const BeProviderView(),
             AppRoutes.changePassword: (context) => const ChangePasswordView(),
+            AppRoutes.forgotPassword: (context) => const ForgotPasswordView(),
             '/notifications': (context) => const NotificationsView(),
             AppRoutes.privacyPolicy: (context) => ChangeNotifierProvider(
               create: (context) => PolicyViewModel(

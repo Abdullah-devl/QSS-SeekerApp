@@ -1,6 +1,5 @@
 // lib/features/notifications/repositories/notification_repository.dart
 
-import 'package:dio/dio.dart';
 import 'package:seeker/core/network/api_service.dart';
 import 'package:seeker/core/network/api_endpoints.dart';
 import '../models/notification_model.dart';

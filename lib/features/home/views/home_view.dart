@@ -326,20 +326,6 @@ class _HomeViewState extends State<HomeView> {
     } else {
       userName = _extractFirstName(cachedName);
     }
-    
-    String currentAddress = context.select<HomeViewModel, String>(
-      (vm) => vm.currentAddress,
-    );
-    // ✅ ترجمة المواقع الافتراضية
-    if (currentAddress == 'unknownLocation') {
-      currentAddress = AppLocalizations.of(context)!.unknownLocation;
-    } else if (currentAddress == 'Yemen') {
-      currentAddress = AppLocalizations.of(context)!.defaultCountry;
-    }
-
-    final isLocationLoading = context.select<HomeViewModel, bool>(
-      (vm) => vm.isLocationLoading,
-    );
 
     return Row(
       children: [
@@ -363,98 +349,6 @@ class _HomeViewState extends State<HomeView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // زر تحديث الموقع
-              GestureDetector(
-                onTap: () async {
-                  // 📍 عند الضغط يتم تحديث الموقع وطلب الصلاحيات
-                  final error = await context
-                      .read<HomeViewModel>()
-                      .updateLocation();
-
-                  if (error != null && context.mounted) {
-                    // ✅ استخراج الرسالة المترجمة بناءً على الـ key الراجع من الـ ViewModel
-                    String translatedError;
-                    final l10n = AppLocalizations.of(context)!;
-
-                    switch (error) {
-                      case 'locationServiceDisabled':
-                        translatedError = l10n.locationServicesDisabled;
-                        break;
-                      case 'locationPermissionDenied':
-                        translatedError = l10n.locationPermissionsDenied;
-                        break;
-                      case 'locationPermissionForeverDenied':
-                        translatedError = l10n.locationPermissionForeverDenied;
-                        break;
-                      case 'locationUpdateFailed':
-                        translatedError = l10n.locationUpdateFailed;
-                        break;
-                      default:
-                        translatedError = error;
-                    }
-
-                    // عرض رسالة خطأ في حال الفشل
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: Text(
-                          l10n.alert,
-                          textAlign: TextAlign.right,
-                          style: const TextStyle(fontFamily: 'Cairo'),
-                        ),
-                        content: Text(
-                          translatedError,
-                          textAlign: TextAlign.right,
-                          style: const TextStyle(fontFamily: 'Cairo'),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text(
-                              l10n.ok,
-                              style: const TextStyle(fontFamily: 'Cairo'),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.keyboard_arrow_down,
-                      color: context.qsColors.primary,
-                    ),
-                    // عرض مؤشر تحميل صغير عند جلب الموقع
-                    if (isLocationLoading)
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 4),
-                        child: SizedBox(
-                          width: 12,
-                          height: 12,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      )
-                    else
-                      Text(
-                        currentAddress,
-                        style: TextStyle(
-                          color: context.qsColors.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    const SizedBox(width: 4),
-                    Icon(
-                      Icons.location_on,
-                      color: context.qsColors.primary,
-                      size: 18,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 4),
               // الترحيب بالمستخدم
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

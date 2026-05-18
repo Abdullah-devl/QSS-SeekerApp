@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/qs_color_extension.dart';
 import '../viewmodels/system_complaints_viewmodel.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 
 class SubmitSystemComplaintView extends StatefulWidget {
   const SubmitSystemComplaintView({super.key});
@@ -23,15 +23,16 @@ class _SubmitSystemComplaintViewState extends State<SubmitSystemComplaintView> {
   }
 
   void _showConfirmDialog() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('تأكيد الإرسال'),
-        content: const Text('هل أنت متأكد من رغبتك في إرسال هذا البلاغ للدعم الفني؟'),
+        title: Text(l10n.confirmSystemReportTitle),
+        content: Text(l10n.confirmSystemReportMsg),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('إلغاء'),
+            child: Text(l10n.cancel_order), // reusable cancel string
           ),
           ElevatedButton(
             onPressed: () {
@@ -39,7 +40,7 @@ class _SubmitSystemComplaintViewState extends State<SubmitSystemComplaintView> {
               _submit();
             },
             style: ElevatedButton.styleFrom(backgroundColor: context.qsColors.primary),
-            child: const Text('تأكيد الإرسال', style: TextStyle(color: Colors.white)),
+            child: Text(l10n.confirmSend, style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -47,6 +48,7 @@ class _SubmitSystemComplaintViewState extends State<SubmitSystemComplaintView> {
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     // ⏳ إظهار نافذة التحميل
     showDialog(
       context: context,
@@ -67,20 +69,21 @@ class _SubmitSystemComplaintViewState extends State<SubmitSystemComplaintView> {
 
     if (success) {
       _showResultDialog(
-        'تم الإرسال بنجاح',
-        'شكرًا لك، تم استلام بلاغك وسيقوم فريق الدعم الفني بمراجعته في أقرب وقت.',
+        l10n.sentSuccessfully,
+        l10n.systemComplaintSubmitSuccessMsg,
         true,
       );
     } else if (viewModel.errorMessage != null) {
       _showResultDialog(
-        'خطأ في الإرسال',
-        'نعتذر، حدث خطأ أثناء محاولة إرسال البلاغ. يرجى المحاولة مرة أخرى.',
+        l10n.systemReportFailedTitle,
+        l10n.systemComplaintSubmitFailedMsg,
         false,
       );
     }
   }
 
   void _showResultDialog(String title, String message, bool isSuccess) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -97,7 +100,7 @@ class _SubmitSystemComplaintViewState extends State<SubmitSystemComplaintView> {
                 context.read<SystemComplaintsViewModel>().clearError();
               }
             },
-            child: const Text('حسناً'),
+            child: Text(l10n.ok),
           ),
         ],
       ),
@@ -107,11 +110,12 @@ class _SubmitSystemComplaintViewState extends State<SubmitSystemComplaintView> {
   Widget build(BuildContext context) {
     final viewModel = context.watch<SystemComplaintsViewModel>();
     final colors = context.qsColors;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: const Text('إبلاغ عن مشكلة نظام'),
+        title: Text(l10n.submitSystemComplaintTitle),
         centerTitle: true,
         elevation: 0,
         backgroundColor: colors.background,
@@ -122,27 +126,27 @@ class _SubmitSystemComplaintViewState extends State<SubmitSystemComplaintView> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // 🏷️ نوع المشكلة (Dropdown)
-            _buildFieldLabel('نوع البلاغ'),
+            _buildFieldLabel(l10n.systemComplaintType),
             const SizedBox(height: 8),
             _buildDropdownField(context, viewModel),
             const SizedBox(height: 24),
 
             // 🏷️ العنوان
-            _buildFieldLabel('عنوان البلاغ'),
+            _buildFieldLabel(l10n.systemComplaintSubject),
             const SizedBox(height: 8),
             _buildTextField(
               controller: _titleController,
-              hintText: 'مثلاً: مشكلة في شحن النقاط، خطأ في تسجيل الدخول...',
+              hintText: l10n.systemComplaintSubjectHint,
               maxLines: 1,
             ),
             const SizedBox(height: 24),
 
             // 🏷️ التفاصيل
-            _buildFieldLabel('تفاصيل البلاغ'),
+            _buildFieldLabel(l10n.systemComplaintDetails),
             const SizedBox(height: 8),
             _buildTextField(
               controller: _contentController,
-              hintText: 'يرجى كتابة تفاصيل المشكلة التي تواجهها بوضوح...',
+              hintText: l10n.systemComplaintDetailsHint,
               maxLines: 6,
             ),
             const SizedBox(height: 48),
@@ -167,9 +171,9 @@ class _SubmitSystemComplaintViewState extends State<SubmitSystemComplaintView> {
                         color: Colors.white,
                       ),
                     )
-                  : const Text(
-                      'إرسال البلاغ الآن',
-                      style: TextStyle(
+                  : Text(
+                      l10n.sendReport,
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -196,12 +200,13 @@ class _SubmitSystemComplaintViewState extends State<SubmitSystemComplaintView> {
     BuildContext context,
     SystemComplaintsViewModel viewModel,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     final Map<String, String> typeLabels = {
-      'type_technical': 'مشكلة تقنية',
-      'type_account': 'الحساب والخصوصية',
-      'type_financial_system': 'عمليات الدفع والنقاط',
-      'type_suggestion': 'اقتراح أو تحسين',
-      'type_other': 'أخرى',
+      'type_technical': l10n.typeTechnical,
+      'type_account': l10n.typeAccount,
+      'type_financial_system': l10n.typeFinancialSystem,
+      'type_suggestion': l10n.typeSuggestion,
+      'type_other': l10n.typeOther,
     };
 
     return Container(

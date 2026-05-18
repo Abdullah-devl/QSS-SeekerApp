@@ -67,7 +67,7 @@ class FavoriteViewModel extends ChangeNotifier {
       ];
 
     } catch (e) {
-      _errorMessage = 'حدث خطأ في جلب المفضلة';
+      _errorMessage = 'errorLoadingFavorites';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -119,7 +119,7 @@ class FavoriteViewModel extends ChangeNotifier {
       } else {
         _allFavoriteServices.removeWhere((s) => s.id == service.id);
       }
-      _errorMessage = 'فشل تحديث المفضلة';
+      _errorMessage = 'errorUpdatingFavorites';
       notifyListeners();
     }
   }

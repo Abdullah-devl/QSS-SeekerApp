@@ -33,8 +33,8 @@ class ConfirmOrderView extends StatelessWidget {
         leading: IconButton(
           icon: Icon(
             Directionality.of(context) == TextDirection.rtl
-                ? Icons.arrow_forward_ios
-                : Icons.arrow_back_ios_new,
+                ? Icons.arrow_back_ios_new
+                : Icons.arrow_forward_ios,
             color: colors.text,
             size: 20,
           ),

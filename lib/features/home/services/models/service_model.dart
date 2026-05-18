@@ -212,6 +212,7 @@ class ServiceModel {
           final fromTime = scheduleJson['from'] ?? scheduleJson['start_time'] ?? '00:00';
           final toTime = scheduleJson['to'] ?? scheduleJson['end_time'] ?? '00:00';
           final isActive = (scheduleJson['is_active'] == 1 || scheduleJson['is_active'] == true);
+          final label = scheduleJson['label']?.toString();
           
           final rawDays = scheduleJson['days'];
           if (rawDays is List) {
@@ -224,6 +225,7 @@ class ServiceModel {
                   fromTime: fromTime,
                   toTime: toTime,
                   isActive: isActive,
+                  label: label,
                 ));
               }
             }
@@ -235,6 +237,7 @@ class ServiceModel {
               fromTime: fromTime,
               toTime: toTime,
               isActive: isActive,
+              label: label,
             ));
           }
         }

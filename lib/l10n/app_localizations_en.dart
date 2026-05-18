@@ -487,7 +487,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get service_details_title => 'Service Details';
 
   @override
-  String get location_label => 'Location';
+  String get location_label => 'Service Location';
 
   @override
   String distance_away(Object distance) {
@@ -753,13 +753,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get complaintDetails => 'Complaint Details';
 
   @override
-  String get complaintDetailsHint => 'Explain the problem in detail here...';
+  String get complaintDetailsHint =>
+      'Please write in detail what happened with you...';
 
   @override
   String get sending => 'Sending...';
 
   @override
-  String get confirmSend => 'Confirm Send';
+  String get confirmSend => 'Confirm Submission';
 
   @override
   String get confirmSendMsg => 'Are you sure you want to send this complaint?';
@@ -804,13 +805,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get typePerformance => 'Performance';
 
   @override
-  String get typePayment => 'Payment';
+  String get typePayment => 'Payment Issue';
 
   @override
-  String get typeAccount => 'Account';
+  String get typeAccount => 'Account & Privacy';
 
   @override
-  String get typeSuggestion => 'Suggestion';
+  String get typeSuggestion => 'Suggestion or Improvement';
 
   @override
   String get typeOther => 'Other';
@@ -1021,4 +1022,409 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get activateAccount => 'Activate Account';
+
+  @override
+  String get currentPassword => 'Current Password';
+
+  @override
+  String get newPassword => 'New Password';
+
+  @override
+  String get confirmNewPassword => 'Confirm New Password';
+
+  @override
+  String get updatePassword => 'Update Password';
+
+  @override
+  String get updating => 'Updating...';
+
+  @override
+  String get confirmChangePasswordMsg =>
+      'Are you sure you want to change your password? You will need to login again with the new password.';
+
+  @override
+  String get changePasswordSuccess =>
+      'The process was completed successfully. The password has been changed.';
+
+  @override
+  String get pleaseFillFields => 'Please fill in all fields';
+
+  @override
+  String get passwordMinLength => 'Password must be at least 8 characters';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get changePasswordFailed => 'Failed to change password';
+
+  @override
+  String get pleaseActivateAccountFirst => 'Please activate your account first';
+
+  @override
+  String get agreeToTermsRequired =>
+      'You must agree to the terms and conditions';
+
+  @override
+  String get accountCreatedSuccess =>
+      'Account created successfully! Please activate your email to continue.';
+
+  @override
+  String get enterFullCode => 'Please enter the full code';
+
+  @override
+  String get accountActivatedSuccess => 'Account activated successfully!';
+
+  @override
+  String resendWaitTimer(Object timer) {
+    return 'Please wait $timer seconds before resending';
+  }
+
+  @override
+  String get resendCodeSuccess => 'Activation code resent successfully';
+
+  @override
+  String get beProviderValidation =>
+      'Please fill in all fields, upload your ID card, and specify your location.';
+
+  @override
+  String get beProviderSubmitSuccess =>
+      'Your request to join as a service provider has been submitted successfully! Your details will be reviewed by the admin.';
+
+  @override
+  String get beProviderSubmitFailed =>
+      'Failed to submit request, please try again later';
+
+  @override
+  String errorSendingRequest(Object error) {
+    return 'An error occurred while sending the request: $error';
+  }
+
+  @override
+  String get complaintsHub => 'Complaints & Reports Center';
+
+  @override
+  String get systemComplaintsDesc =>
+      'Report a technical issue or suggest improvements for the app';
+
+  @override
+  String get orderComplaintsTitle => 'Order Complaints';
+
+  @override
+  String get orderComplaintsDesc =>
+      'Have a problem with a specific order? Submit a report and we will help you';
+
+  @override
+  String get noOrderComplaints => 'There are no order complaints currently.';
+
+  @override
+  String get resolved => 'Resolved';
+
+  @override
+  String get orderNo => 'Order No.';
+
+  @override
+  String get viewOrder => 'View Order';
+
+  @override
+  String get submitComplaintTitle => 'Submit Order Complaint';
+
+  @override
+  String get complaintCategory => 'Problem Category';
+
+  @override
+  String get complaintSubject => 'Complaint Title';
+
+  @override
+  String get complaintSubjectHint =>
+      'e.g., provider delay, bad behavior, price difference...';
+
+  @override
+  String get sendComplaint => 'Submit Complaint';
+
+  @override
+  String get confirmComplaintTitle => 'Confirm Complaint Submission';
+
+  @override
+  String get confirmComplaintMsg =>
+      'Are you sure you want to submit a complaint for this order?';
+
+  @override
+  String get sentSuccessfully => 'Submitted Successfully';
+
+  @override
+  String get complaintSubmitSuccessMsg =>
+      'Your complaint has been submitted successfully, we will review the order and contact you.';
+
+  @override
+  String get complaintSubmitFailedMsg =>
+      'An error occurred during submission, please try again later.';
+
+  @override
+  String get systemComplaintType => 'Report Type';
+
+  @override
+  String get systemComplaintSubject => 'Report Title';
+
+  @override
+  String get systemComplaintDetails => 'Report Details';
+
+  @override
+  String get systemComplaintSubjectHint =>
+      'e.g., issue charging points, login error...';
+
+  @override
+  String get systemComplaintDetailsHint =>
+      'Please write details of the issue you face clearly...';
+
+  @override
+  String get sendReport => 'Send Report Now';
+
+  @override
+  String get confirmSystemReportTitle => 'Confirm Submission';
+
+  @override
+  String get confirmSystemReportMsg =>
+      'Are you sure you want to send this report to technical support?';
+
+  @override
+  String get systemComplaintSubmitSuccessMsg =>
+      'Thank you, your report has been received and technical support team will review it as soon as possible.';
+
+  @override
+  String get systemReportFailedTitle => 'Submission Error';
+
+  @override
+  String get systemComplaintSubmitFailedMsg =>
+      'We apologize, an error occurred while trying to send the report. Please try again.';
+
+  @override
+  String get myTechnicalReports => 'System Complaints';
+
+  @override
+  String get addNewReport => 'Add New Complaint';
+
+  @override
+  String get errorLoadingData => 'An error occurred while loading data';
+
+  @override
+  String get noSystemReports => 'There are no complaints submitted currently';
+
+  @override
+  String get typeTechnical => 'Technical Issue';
+
+  @override
+  String get typeFinancialSystem => 'Payment & Points Operations';
+
+  @override
+  String get typeBehavior => 'Bad behavior from provider';
+
+  @override
+  String get typeRequirements => 'Non-compliance with requirements';
+
+  @override
+  String get typeLocation => 'Location Issue';
+
+  @override
+  String get typeNoShow => 'Provider no-show';
+
+  @override
+  String get searchByLocation => 'Search by Location';
+
+  @override
+  String get searchByLocationDesc =>
+      'Show results near your current location or a specific location';
+
+  @override
+  String get searchLocationTitle => 'Search Location';
+
+  @override
+  String get pickOnMap => 'Select location on map (Optional)';
+
+  @override
+  String get submitSystemComplaintTitle => 'Submit a System Complaint';
+
+  @override
+  String get pending => 'In Progress';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get loginNowPrompt => 'Log In Now';
+
+  @override
+  String get favoriteGuestMessage =>
+      'Please log in to be able to add services to favorites and access them at any time.';
+
+  @override
+  String get errorLoadingFavorites =>
+      'An error occurred while fetching favorites';
+
+  @override
+  String get errorUpdatingFavorites => 'Failed to update favorites';
+
+  @override
+  String get subCategories => 'Subcategories';
+
+  @override
+  String get recommendedProviders => 'Recommended Providers';
+
+  @override
+  String get availableServices => 'Available Services';
+
+  @override
+  String get noDataForCategory =>
+      'No data available for this category currently';
+
+  @override
+  String get sponsoredAd => 'Sponsored';
+
+  @override
+  String get locationNotSpecified => 'Location not specified by provider';
+
+  @override
+  String get providerAddress => 'Provider Address';
+
+  @override
+  String get noReviews => 'No reviews currently';
+
+  @override
+  String get noPublicReviews => 'No public reviews currently';
+
+  @override
+  String hideHiddenReviews(int count) {
+    return 'Hide Hidden Reviews ($count)';
+  }
+
+  @override
+  String showHiddenReviews(int count) {
+    return 'Show Hidden Reviews ($count)';
+  }
+
+  @override
+  String get unexpectedError =>
+      'An unexpected error occurred while loading data';
+
+  @override
+  String get errorServerUpdate => 'Could not update some data from the server.';
+
+  @override
+  String get markAllAsRead => 'Mark all as read';
+
+  @override
+  String get unread => 'Unread';
+
+  @override
+  String get read => 'Read';
+
+  @override
+  String get noNotifications => 'No notifications currently';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get ordersGuestMessage =>
+      'Please log in to track your orders and access your transaction history.';
+
+  @override
+  String get selectReceiptImageError => 'Please select the receipt image first';
+
+  @override
+  String get pointsManagementTitle => 'Points Top-Up Management';
+
+  @override
+  String get myPackages => 'My Packages';
+
+  @override
+  String get myPackagesSubtitle => 'Packages ordered and their status';
+
+  @override
+  String get pointsPackages => 'Points Packages';
+
+  @override
+  String get pointsPackagesSubtitle =>
+      'Browse available packages to recharge points';
+
+  @override
+  String get buyNow => 'Buy Now';
+
+  @override
+  String get gift => 'Gift';
+
+  @override
+  String get errorLoadingPackages => 'An error occurred while loading packages';
+
+  @override
+  String get noPackagesAvailable => 'No packages available currently';
+
+  @override
+  String get defaultPackageName => 'Points Package';
+
+  @override
+  String get approved => 'Approved';
+
+  @override
+  String get rejected => 'Rejected';
+
+  @override
+  String get pendingStatus => 'Pending';
+
+  @override
+  String get dateLabel => 'Date';
+
+  @override
+  String get noPurchasedPackages => 'No purchased packages currently';
+
+  @override
+  String get errorSelectingImage => 'Error selecting image';
+
+  @override
+  String get enterBondNumberError => 'Please enter the bond number';
+
+  @override
+  String get enterBankNameError => 'Please enter the bank name';
+
+  @override
+  String get attachBondImageError => 'Please attach the bond receipt image';
+
+  @override
+  String get success => 'Success';
+
+  @override
+  String get rechargeRequestSubmittedSuccess =>
+      'Top-up request submitted successfully, it will be reviewed shortly';
+
+  @override
+  String get submitFailed => 'Submission failed';
+
+  @override
+  String get confirmRechargeTitle => 'Confirm Top-Up';
+
+  @override
+  String get bondOrTransferNumber => 'Bond / Transfer Number';
+
+  @override
+  String get enterBondNumberHint => 'Enter bond number here';
+
+  @override
+  String get senderBankName => 'Sender Bank Name';
+
+  @override
+  String get bankNameExample => 'e.g., Al Rajhi Bank';
+
+  @override
+  String get transferReceiptImage => 'Transfer Receipt Image';
+
+  @override
+  String get clickToUploadReceipt => 'Click to upload receipt image';
+
+  @override
+  String pointsGainPrompt(num count) {
+    return 'You will get $count points';
+  }
 }

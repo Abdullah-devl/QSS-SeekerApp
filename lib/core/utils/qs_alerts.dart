@@ -226,6 +226,78 @@ class QSAlerts {
       },
     );
   }
+
+  /// ⏳ إظهار ديالوج التحميل (Loading) بتصميم زجاجي فاخر
+  static void showLoading(BuildContext context, {String? message}) {
+    final colors = context.qsColors;
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final defaultMessage = isAr ? 'جاري إرسال الطلب...' : 'Submitting request...';
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black.withOpacity(0.4),
+      builder: (context) {
+        return PopScope(
+          canPop: false,
+          child: AlertDialog(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            contentPadding: EdgeInsets.zero,
+            content: ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                child: Container(
+                  padding: const EdgeInsets.all(32),
+                  decoration: BoxDecoration(
+                    color: colors.background.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(
+                      color: colors.primary.withOpacity(0.2),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(color: colors.primary),
+                      const SizedBox(height: 24),
+                      Text(
+                        message ?? defaultMessage,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: colors.text,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /// 📥 إغلاق ديالوج التحميل
+  static void hideLoading(BuildContext context) {
+    Navigator.of(context, rootNavigator: true).pop();
+  }
+
+  /// 🤝 إظهار تنبيه تأكيد إرسال طلب الانضمام كمزود خدمة
+  static Future<bool> showConfirmJoinProvider(BuildContext context) async {
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final title = isAr ? 'تأكيد إرسال الطلب' : 'Confirm Request Submission';
+    final message = isAr
+        ? 'هل أنت متأكد من رغبتك في إرسال طلب الانضمام كمزود خدمة؟ سيتم مراجعة طلبك من قبل الإدارة.'
+        : 'Are you sure you want to submit your request to join as a service provider? Your details will be reviewed by the admin team.';
+
+    return await showConfirm(context, title: title, message: message);
+  }
 }
 
 enum AlertType { success, error, warning, info, confirm }

@@ -100,7 +100,7 @@ class WelcomeView extends StatelessWidget {
                 // 3️⃣ العنوان والوصف (Title & Description)
                 // ==========================================
                 Text(
-                  'QuickServe',
+                  l10n.appTitle,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 28,

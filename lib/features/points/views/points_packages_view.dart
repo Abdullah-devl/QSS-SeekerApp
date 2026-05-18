@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/core/routes/app_routes.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
 import '../models/points_package_model.dart';
 import '../viewmodels/points_viewmodel.dart';
 import 'submit_points_payment_view.dart';
@@ -34,7 +35,7 @@ class _PointsPackagesViewState extends State<PointsPackagesView> {
         elevation: 0,
         centerTitle: true,
         title: Text(
-          'باقات النقاط',
+          context.tr('pointsPackages'),
           style: TextStyle(
             color: colors.text,
             fontWeight: FontWeight.bold,
@@ -106,12 +107,12 @@ class _PointsPackagesViewState extends State<PointsPackagesView> {
               ),
               const SizedBox(height: 8),
               Text(
-                '${package.points} نقطة',
+                '${package.points} ${context.tr('points')}',
                 style: TextStyle(fontSize: 13, color: colors.primary, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
               Text(
-                '${package.price.toInt()} ر.س',
+                '${package.price.toInt()} ${context.tr('currency_sar')}',
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: colors.text),
               ),
               const SizedBox(height: 12),
@@ -132,7 +133,10 @@ class _PointsPackagesViewState extends State<PointsPackagesView> {
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 8),
                   ),
-                  child: const Text('شراء الآن', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                  child: Text(
+                    context.tr('buyNow'),
+                    style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             ],
@@ -164,7 +168,7 @@ class _PointsPackagesViewState extends State<PointsPackagesView> {
                   const Icon(Icons.card_giftcard, color: Colors.white, size: 12),
                   const SizedBox(width: 4),
                   Text(
-                    '+${package.bonusPoints} هدية',
+                    '+${package.bonusPoints} ${context.tr('gift')}',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 10,
@@ -186,10 +190,10 @@ class _PointsPackagesViewState extends State<PointsPackagesView> {
         children: [
           const Icon(Icons.error_outline, color: Colors.red, size: 48),
           const SizedBox(height: 16),
-          const Text('حدث خطأ أثناء تحميل الباقات'),
+          Text(context.tr('errorLoadingPackages')),
           TextButton(
             onPressed: () => context.read<PointsViewModel>().fetchAvailablePackages(),
-            child: const Text('إعادة المحاولة'),
+            child: Text(context.tr('retry')),
           ),
         ],
       ),
@@ -197,8 +201,8 @@ class _PointsPackagesViewState extends State<PointsPackagesView> {
   }
 
   Widget _buildEmptyWidget(BuildContext context, dynamic colors) {
-    return const Center(
-      child: Text('لا توجد باقات متاحة حالياً'),
+    return Center(
+      child: Text(context.tr('noPackagesAvailable')),
     );
   }
 }

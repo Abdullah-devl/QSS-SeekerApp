@@ -97,7 +97,7 @@ class CategoryDetailsViewModel extends ChangeNotifier {
       if (e is Failure) {
         _errorMessage = e.message;
       } else {
-        _errorMessage = 'حدث خطأ غير متوقع أثناء تحميل البيانات';
+        _errorMessage = 'unexpectedError';
       }
     } finally {
       _isLoading = false;

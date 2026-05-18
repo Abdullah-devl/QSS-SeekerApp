@@ -5,13 +5,6 @@ import 'package:seeker/core/routes/app_routes.dart';
 /// 📝 الوصف: يدير منطق صفحة الترحيب (WelcomeView) والنصوص المعروضة فيها.
 
 class WelcomeViewModel extends ChangeNotifier {
-  // 📝 النصوص المعروضة في الواجهة
-  String title = "QuickServe";
-  String subtitle = "خدماتك اليومية، أسرع وأسهل.";
-  String subtitle2 = "خدماتك اليومية، أسرع وأسهل.";
-  String buttonTitle = "تسجيل الدخول";
-  String buttonTitle2 = "إنشاء حساب جديد";
-
   // دالة فارغة (ربما كانت مخصصة لتغيير الثيم)
   chingTheme() {}
 

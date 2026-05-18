@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
 import '../models/points_package_model.dart';
 import '../viewmodels/points_viewmodel.dart';
 
@@ -31,22 +32,22 @@ class _SubmitPointsPaymentViewState extends State<SubmitPointsPaymentView> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('خطأ في اختيار الصورة')),
+        SnackBar(content: Text(context.tr('errorSelectingImage'))),
       );
     }
   }
 
   Future<void> _submit(PointsViewModel viewModel) async {
     if (_bondNumberController.text.isEmpty) {
-      _showError('يرجى إدخال رقم السند');
+      _showError(context.tr('enterBondNumberError'));
       return;
     }
     if (_bankNameController.text.isEmpty) {
-      _showError('يرجى إدخال اسم البنك');
+      _showError(context.tr('enterBankNameError'));
       return;
     }
     if (_selectedImage == null) {
-      _showError('يرجى إرفاق صورة السند');
+      _showError(context.tr('attachBondImageError'));
       return;
     }
 
@@ -61,21 +62,25 @@ class _SubmitPointsPaymentViewState extends State<SubmitPointsPaymentView> {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('تم بنجاح'),
-          content: const Text('تم إرسال طلب الشحن بنجاح، سيتم مراجعته قريباً'),
+          title: Text(context.tr('success')),
+          content: Text(context.tr('rechargeRequestSubmittedSuccess')),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(ctx);
                 Navigator.pop(context);
               },
-              child: const Text('موافق'),
+              child: Text(context.tr('ok')),
             ),
           ],
         ),
       );
     } else if (mounted) {
-      _showError(viewModel.errorMessage ?? 'فشلت عملية الإرسال');
+      _showError(
+        viewModel.errorMessage != null
+            ? context.tr(viewModel.errorMessage!)
+            : context.tr('submitFailed'),
+      );
     }
   }
 
@@ -96,9 +101,9 @@ class _SubmitPointsPaymentViewState extends State<SubmitPointsPaymentView> {
         backgroundColor: colors.background,
         elevation: 0,
         centerTitle: true,
-        title: const Text(
-          'تأكيد عملية الشحن',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          context.tr('confirmRechargeTitle'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
       body: SingleChildScrollView(
@@ -108,15 +113,15 @@ class _SubmitPointsPaymentViewState extends State<SubmitPointsPaymentView> {
           children: [
             _buildPackageSummary(colors),
             const SizedBox(height: 32),
-            _buildLabel('رقم السند / الحوالة'),
+            _buildLabel(context.tr('bondOrTransferNumber')),
             const SizedBox(height: 8),
-            _buildTextField(_bondNumberController, 'أدخل رقم السند هنا', colors),
+            _buildTextField(_bondNumberController, context.tr('enterBondNumberHint'), colors),
             const SizedBox(height: 24),
-            _buildLabel('اسم البنك المحول منه'),
+            _buildLabel(context.tr('senderBankName')),
             const SizedBox(height: 8),
-            _buildTextField(_bankNameController, 'مثال: مصرف الراجحي', colors),
+            _buildTextField(_bankNameController, context.tr('bankNameExample'), colors),
             const SizedBox(height: 24),
-            _buildLabel('صورة إيصال التحويل'),
+            _buildLabel(context.tr('transferReceiptImage')),
             const SizedBox(height: 12),
             _buildImagePicker(colors),
             const SizedBox(height: 48),
@@ -131,9 +136,9 @@ class _SubmitPointsPaymentViewState extends State<SubmitPointsPaymentView> {
                 ),
                 child: viewModel.isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        'إرسال الطلب',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                    : Text(
+                        context.tr('sendRequest'),
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                       ),
               ),
             ),
@@ -186,7 +191,7 @@ class _SubmitPointsPaymentViewState extends State<SubmitPointsPaymentView> {
                 children: [
                   Icon(Icons.cloud_upload_outlined, color: colors.primary, size: 48),
                   const SizedBox(height: 12),
-                  const Text('اضغط لرفع صورة الإيصال'),
+                  Text(context.tr('clickToUploadReceipt')),
                 ],
               ),
       ),
@@ -205,12 +210,12 @@ class _SubmitPointsPaymentViewState extends State<SubmitPointsPaymentView> {
           Text(widget.package.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           Text(
-            '${widget.package.price.toInt()} ر.س',
+            '${widget.package.price.toInt()} ${context.tr('currency_sar')}',
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: colors.primary),
           ),
           const SizedBox(height: 8),
           Text(
-            'سوف تحصل على ${widget.package.points} نقطة',
+            context.tr('pointsGainPrompt', args: {'count': widget.package.points}),
             style: const TextStyle(fontSize: 14),
           ),
         ],

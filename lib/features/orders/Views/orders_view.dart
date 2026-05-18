@@ -7,9 +7,13 @@ import '../../../core/theme/qs_color_extension.dart';
 import '../ViewModels/orders_viewmodel.dart';
 import '../Models/order_model.dart';
 import 'order_detail_view.dart';
-import '../../../core/utils/qs_alerts.dart';
 import 'package:seeker/core/routes/app_routes.dart';
 import 'package:seeker/features/home/viewmodels/home_view_model.dart';
+import '../../../core/network/api_service.dart';
+import '../../profile/viewmodels/profile_view_model.dart';
+import '../../profile/view/profile_view.dart';
+import '../../profile/repositories/profile_repository.dart';
+import '../../profile/models/profile_model.dart';
 
 class OrdersView extends StatefulWidget {
   const OrdersView({super.key});
@@ -120,7 +124,7 @@ class _OrdersBody extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              'سجل دخولك الآن',
+              context.tr('loginNowPrompt'),
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -129,7 +133,7 @@ class _OrdersBody extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'يرجى تسجيل الدخول لمتابعة طلباتك والوصول إلى سجل العمليات الخاصة بك.',
+              context.tr('ordersGuestMessage'),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -153,9 +157,9 @@ class _OrdersBody extends StatelessWidget {
                   ),
                   elevation: 0,
                 ),
-                child: const Text(
-                  'تسجيل الدخول',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                child: Text(
+                  context.tr('login'),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -245,6 +249,198 @@ class _OrdersBody extends StatelessWidget {
   }
 }
 
+class _ProviderInfoRow extends StatefulWidget {
+  final OrderModel order;
+  final String displayServiceName;
+
+  const _ProviderInfoRow({
+    required this.order,
+    required this.displayServiceName,
+  });
+
+  @override
+  State<_ProviderInfoRow> createState() => _ProviderInfoRowState();
+}
+
+class _ProviderInfoRowState extends State<_ProviderInfoRow> {
+  static final Map<int, ProfileModel> _profilesCache = {};
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileIfNeeded();
+  }
+
+  void _loadProfileIfNeeded() async {
+    final providerId = widget.order.providerId;
+    if (providerId == null) return;
+    if (_profilesCache.containsKey(providerId)) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final apiService = context.read<ApiService>();
+      final repo = ProfileRepository(apiService);
+      final profile = await repo.fetchUserProfile(providerId);
+      
+      _profilesCache[providerId] = profile;
+    } catch (e) {
+      debugPrint('❌ Error loading provider profile: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.qsColors;
+    final providerId = widget.order.providerId;
+    
+    // استخدام البيانات المخبأة إن وجدت، وإلا نستخدم البيانات الحالية من الطلب
+    final profile = providerId != null ? _profilesCache[providerId] : null;
+    final String providerName = profile?.name ?? widget.order.providerName;
+    final String providerImage = profile?.avatarUrl ?? widget.order.providerImage;
+
+    return GestureDetector(
+      onTap: providerId != null
+          ? () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChangeNotifierProvider(
+                    create: (context) => ProfileViewModel(
+                      ProfileRepository(context.read<ApiService>()),
+                      targetUserId: providerId,
+                    ),
+                    child: ProfileView(userId: providerId),
+                  ),
+                ),
+              );
+            }
+          : null,
+      child: Row(
+        children: [
+          Stack(
+            alignment: Alignment.bottomLeft,
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: colors.background,
+                ),
+                child: ClipOval(
+                  child: providerImage.isNotEmpty
+                      ? Image.network(
+                          providerImage,
+                          width: 64,
+                          height: 64,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(
+                              Icons.person_outline,
+                              color: colors.textSub.withOpacity(0.5),
+                              size: 36,
+                            );
+                          },
+                        )
+                      : Icon(
+                          Icons.person_outline,
+                          color: colors.textSub.withOpacity(0.5),
+                          size: 36,
+                        ),
+                ),
+              ),
+              if (widget.order.isVerified || (profile?.verificationProvider ?? false))
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: colors.background,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.verified,
+                      color: colors.primary,
+                      size: 20,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        providerName,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: colors.text,
+                        ),
+                      ),
+                    ),
+                    if (providerId != null) ...[
+                      if (_isLoading)
+                        const SizedBox(
+                          width: 14,
+                          height: 14,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
+                      else
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 14,
+                          color: colors.textSub.withOpacity(0.3),
+                        ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    widget.displayServiceName,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: colors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _OrderCardWidget extends StatelessWidget {
   final OrderModel order;
   const _OrderCardWidget({required this.order});
@@ -252,6 +448,22 @@ class _OrderCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.qsColors;
+
+    // تحديد اسم الخدمة المعروض بناءً على الشروط المطلوبة
+    final String displayServiceName;
+    if (order.serviceName.trim() == '_custom') {
+      displayServiceName = 'خدمة مخصصة';
+    } else if (order.serviceName.trim() == '_meeting') {
+      displayServiceName = 'خدمة حضور';
+    } else {
+      displayServiceName = order.serviceName;
+    }
+
+    // تنسيق التاريخ فقط بدون الوقت
+    final String displayDate = order.createdAt != null
+        ? '${order.createdAt!.year}-${order.createdAt!.month.toString().padLeft(2, '0')}-${order.createdAt!.day.toString().padLeft(2, '0')}'
+        : order.timeAgo;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
@@ -268,12 +480,12 @@ class _OrderCardWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 1. Header: Status and Time
+          // 1. Header: Status and Time (تم مسح اللون الشفاف اللي خلفها)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            decoration: BoxDecoration(
-              color: _getStatusColor(context, order.status).withOpacity(0.08),
-              borderRadius: const BorderRadius.vertical(
+            decoration: const BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.vertical(
                 top: Radius.circular(24),
               ),
             ),
@@ -284,13 +496,13 @@ class _OrderCardWidget extends StatelessWidget {
                 Row(
                   children: [
                     Icon(
-                      Icons.watch_later_outlined,
+                      Icons.calendar_today_outlined, // أيقونة التقويم
                       size: 16,
                       color: _getStatusColor(context, order.status),
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      order.timeAgo,
+                      displayDate,
                       style: TextStyle(
                         color: _getStatusColor(context, order.status),
                         fontSize: 14,
@@ -309,81 +521,10 @@ class _OrderCardWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 2. Client and Service Info
-                Row(
-                  children: [
-                    Stack(
-                      alignment: Alignment.bottomLeft,
-                      children: [
-                        CircleAvatar(
-                          radius: 32,
-                          backgroundColor: colors.background,
-                          backgroundImage: order.providerImage.isNotEmpty
-                              ? NetworkImage(order.providerImage)
-                              : null,
-                          child: order.providerImage.isEmpty
-                              ? Icon(
-                                  Icons.person_outline,
-                                  color: colors.textSub.withOpacity(0.5),
-                                  size: 36,
-                                )
-                              : null,
-                        ),
-                        if (order.isVerified)
-                          Positioned(
-                            bottom: 0,
-                            left: 0,
-                            child: Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                color: colors.background,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.verified,
-                                color: colors.primary,
-                                size: 20,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            order.providerName,
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w800,
-                              color: colors.text,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colors.textSub.withOpacity(0.08),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              order.serviceName,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: colors.textSub,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                // 2. Provider and Service Info (يعرض بيانات مزود الخدمة بشكل تفاعلي وديناميكي)
+                _ProviderInfoRow(
+                  order: order,
+                  displayServiceName: displayServiceName,
                 ),
                 const SizedBox(height: 24),
 
@@ -457,99 +598,36 @@ class _OrderCardWidget extends StatelessWidget {
                 Divider(height: 1, color: colors.textSub.withOpacity(0.1)),
                 const SizedBox(height: 24),
 
-                // 4. Action Buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextButton(
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          backgroundColor: colors.textSub.withOpacity(0.05),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            side: BorderSide(color: colors.textSub.withOpacity(0.1)),
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  OrderDetailView(order: order),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          context.tr('details'),
-                          style: TextStyle(
-                            color: colors.text,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
-                          ),
-                        ),
+                // 4. Action Buttons (تم الإبقاء على زر التفاصيل وتوسيعه ليكون ملائماً ومضبوطاً)
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: colors.textSub.withOpacity(0.05),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        side: BorderSide(color: colors.textSub.withOpacity(0.1)),
                       ),
                     ),
-                    const SizedBox(width: 14),
-                    if (order.status != 'canceled' &&
-                        order.status != 'cancelled' &&
-                        order.status != 'completed')
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: colors.error,
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          onPressed: () async {
-                            final viewModel = context.read<OrdersViewModel>();
-                            
-                            // 1️⃣ إظهار تنبيه تأكيد قبل الإلغاء
-                            final confirmed = await QSAlerts.showConfirm(
-                              context,
-                              title: context.tr('confirm_cancel_title'),
-                              message: context.tr('confirm_cancel_message'),
-                            );
-
-                            if (!confirmed) return;
-
-                            // 2️⃣ تنفيذ عملية الإلغاء
-                            final success = await viewModel.updateStatus(
-                              order.id,
-                              'cancelled',
-                            );
-
-                            if (success) {
-                              // 3️⃣ الانتظار حتى يرى المستخدم رسالة النجاح ويضغط موافق
-                              if (context.mounted) {
-                                await QSAlerts.showSuccess(
-                                  context,
-                                  context.tr('order_cancelled_success'),
-                                );
-                              }
-                            } else {
-                              // إظهار رسالة الخطأ والانتظار
-                              if (context.mounted) {
-                                await QSAlerts.showError(
-                                  context, 
-                                  viewModel.errorMessage ?? context.tr('order_cancelled_error'),
-                                );
-                              }
-                            }
-                          },
-                          child: Text(
-                            context.tr('cancel_order'),
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 15,
-                            ),
-                          ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              OrderDetailView(order: order),
                         ),
+                      );
+                    },
+                    child: Text(
+                      context.tr('details'),
+                      style: TextStyle(
+                        color: colors.text,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
                       ),
-                  ],
+                    ),
+                  ),
                 ),
               ],
             ),

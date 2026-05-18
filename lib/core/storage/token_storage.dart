@@ -171,4 +171,20 @@ class TokenStorage {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_firstTimeKey) ?? true;
   }
+
+  // ===========================================================================
+  // 🔔 إدارة الإشعارات (Notifications Settings)
+  // ===========================================================================
+
+  /// 💾 حفظ حالة تفعيل الإشعارات
+  Future<void> saveNotificationsEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('notifications_enabled', enabled);
+  }
+
+  /// 📤 استرجاع حالة تفعيل الإشعارات
+  Future<bool> getNotificationsEnabled() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('notifications_enabled') ?? true;
+  }
 }

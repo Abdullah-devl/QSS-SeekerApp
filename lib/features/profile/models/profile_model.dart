@@ -34,6 +34,11 @@ class ProfileModel {
   final List<WorkModel> previousWorks;
   final bool isAvailable;
   final List<ServiceModel> mainServices;
+  final int? _requestsCount;
+  final int? _servicesCount;
+
+  int get requestsCount => _requestsCount ?? 0;
+  int get servicesCount => _servicesCount ?? 0;
 
   // 📞 بيانات التواصل الإضافية والحسابات البنكية من الباك إند
   final List<PhoneModel> phones;
@@ -66,11 +71,14 @@ class ProfileModel {
     this.previousWorks = const [],
     this.isAvailable = true,
     this.mainServices = const [],
+    int? requestsCount = 0,
+    int? servicesCount = 0,
     this.phones = const [],
     this.banks = const [],
     this.latitude,
     this.longitude,
-  });
+  })  : _requestsCount = requestsCount,
+        _servicesCount = servicesCount;
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
     // 🚀 جلب البيانات بناءً على هيكل السيرفر الملاحظ في السجلات
@@ -121,7 +129,12 @@ class ProfileModel {
         ? (profileData['longitude'] as num).toDouble() 
         : double.tryParse(profileData['longitude']?.toString() ?? '');
 
-    developer.log('🔍 [ProfileModel.fromJson] Parsed ID: $parsedId, Name: ${findName()}, Lat: $lat, Lng: $lng', name: 'ProfileModel');
+    // 📊 قراءة إحصائيات مزود الخدمة من السيرفر
+    final stats = profileData['provider_stats'] ?? {};
+    final int requestsCountVal = int.tryParse(stats['requests_count']?.toString() ?? '0') ?? 0;
+    final int servicesCountVal = int.tryParse(stats['services_count']?.toString() ?? '0') ?? 0;
+
+    developer.log('🔍 [ProfileModel.fromJson] Parsed ID: $parsedId, Name: ${findName()}, Lat: $lat, Lng: $lng, Requests: $requestsCountVal, Services: $servicesCountVal', name: 'ProfileModel');
 
     return ProfileModel(
       id: parsedId,
@@ -190,6 +203,8 @@ class ProfileModel {
         return services;
       }(),
       isAvailable: profileData['is_available'] == 1 || profileData['is_available'] == true,
+      requestsCount: requestsCountVal,
+      servicesCount: servicesCountVal,
       phones: () {
         final List<PhoneModel> list = [];
         final dynamic raw = profileData['profile_phones'] ?? profileData['phones'] ?? json['phones'];

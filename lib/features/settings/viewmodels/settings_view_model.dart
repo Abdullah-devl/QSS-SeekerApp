@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:seeker/core/storage/token_storage.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:seeker/core/services/notification_service.dart';
 
 /// 📂 اسم الملف: settings_view_model.dart
 /// 📝 الوصف: نموذج العرض لإدارة حالة صفحة الإعدادات.
@@ -48,6 +50,9 @@ class SettingsViewModel extends ChangeNotifier {
       _locale = Locale(savedLang);
     }
 
+    // تحميل حالة الإشعارات المحفوظة
+    _notificationsEnabled = await _tokenStorage.getNotificationsEnabled();
+
     notifyListeners();
   }
 
@@ -59,9 +64,29 @@ class SettingsViewModel extends ChangeNotifier {
     await _tokenStorage.saveLanguage(locale.languageCode);
   }
 
-  /// 🔔 تبديل تفعيل الإشعارات
-  void toggleNotifications(bool value) {
+  /// 🔔 تبديل تفعيل الإشعارات وربطه بالصلاحيات الحقيقية
+  Future<void> toggleNotifications(bool value) async {
     _notificationsEnabled = value;
     notifyListeners();
+    await _tokenStorage.saveNotificationsEnabled(value);
+
+    try {
+      if (value) {
+        // 🚀 طلب صلاحيات الإشعارات وتحديث توكن FCM بالسيرفر
+        final NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+        if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+          await NotificationService().updateTokenToServer();
+        }
+      } else {
+        // 🛑 حذف توكن FCM من فيربييس والباك إند لمنع استلام أي إشعارات نهائياً
+        await NotificationService().deleteTokenOnLogout();
+      }
+    } catch (e) {
+      debugPrint('❌ [SettingsViewModel]: Error toggling notifications: $e');
+    }
   }
 }

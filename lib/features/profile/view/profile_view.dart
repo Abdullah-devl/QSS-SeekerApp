@@ -9,8 +9,10 @@ import 'package:seeker/features/profile/viewmodels/profile_view_model.dart';
 import 'package:seeker/features/profile/viewmodels/parts/services_view_model.dart';
 import 'package:seeker/features/profile/viewmodels/parts/contact_info_view_model.dart';
 import 'package:seeker/features/profile/models/profile_model.dart';
+import 'package:seeker/features/profile/models/profile_review_model.dart';
 import 'package:seeker/features/profile/view/parts/services_view.dart';
 import 'package:seeker/features/profile/view/parts/contact_info_view.dart';
+import 'package:seeker/features/profile/view/parts/image_viewer.dart';
 import '../provider_works/view/provider_works_view.dart';
 import '../provider_works/viewmodel/provider_works_view_model.dart';
 import '../requests/custom/view/custom_request_view.dart';
@@ -95,7 +97,7 @@ class ProfileView extends StatelessWidget {
                 child: const ProviderWorksView(),
               ),
               ServicesView(services: profile.mainServices),
-              const Center(child: Text('التقييمات قريباً')),
+              _buildReviewsTab(context, vm, colors),
               ChangeNotifierProvider(
                 create: (context) => ContactInfoViewModel(ProfileRepository(context.read<ApiService>())),
                 child: ContactInfoView(profile: profile),
@@ -126,15 +128,9 @@ class ProfileView extends StatelessWidget {
         ],
       ),
       leading: IconButton(
-        icon: Icon(Icons.more_vert, color: colors.primary),
-        onPressed: () {},
+        icon: Icon(Icons.arrow_back, color: colors.text),
+        onPressed: () => Navigator.pop(context),
       ),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.arrow_forward, color: colors.text),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ],
     );
   }
 
@@ -147,20 +143,23 @@ class ProfileView extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                width: 85,
-                height: 85,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: colors.primary, width: 3),
-                  image: profile.avatarUrl.isNotEmpty
-                      ? DecorationImage(image: NetworkImage(profile.avatarUrl), fit: BoxFit.cover)
-                      : const DecorationImage(image: AssetImage('assets/images/user_avatar.png'), fit: BoxFit.cover),
+              GestureDetector(
+                onTap: () => QsImageViewer.show(context, profile.avatarUrl),
+                child: Container(
+                  width: 85,
+                  height: 85,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: colors.primary, width: 3),
+                    image: profile.avatarUrl.isNotEmpty
+                        ? DecorationImage(image: NetworkImage(profile.avatarUrl), fit: BoxFit.cover)
+                        : const DecorationImage(image: AssetImage('assets/images/user_avatar.png'), fit: BoxFit.cover),
+                  ),
                 ),
               ),
-              _buildStatItem(context, '${profile.yearsExperience}+', AppLocalizations.of(context)!.yearsExperience(profile.yearsExperience).split(' ').last, colors),
-              _buildStatItem(context, '${profile.ratingAvg}', 'التقييم', colors),
-              _buildStatItem(context, '${profile.completedJobs}', 'عمل منجز', colors),
+              _buildStatItem(context, '${profile.requestsCount}', 'عدد الطلبات', colors),
+              _buildStatItem(context, '${profile.servicesCount}', 'عدد الخدمات', colors),
+              _buildStatItem(context, '${profile.ratingAvg}', 'التقييم الكامل', colors),
             ],
           ),
           const SizedBox(height: 16),
@@ -183,12 +182,14 @@ class ProfileView extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 12),
-          Text(
-            profile.bio.isNotEmpty == true ? profile.bio : 'وصف فني محترف...',
-            textAlign: TextAlign.start,
-            style: TextStyle(fontSize: 13, color: colors.textSub, height: 1.6),
-          ),
+          if (profile.bio.trim().isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text(
+              profile.bio,
+              textAlign: TextAlign.start,
+              style: TextStyle(fontSize: 13, color: colors.textSub, height: 1.6),
+            ),
+          ],
         ],
       ),
     );
@@ -281,6 +282,224 @@ class ProfileView extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildReviewsTab(BuildContext context, ProfileViewModel vm, dynamic colors) {
+    if (vm.isLoadingReviews && vm.reviews.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: CircularProgressIndicator(color: colors.primary),
+        ),
+      );
+    }
+
+    final visibleReviews = vm.reviews.where((r) => r.isHidden != true).toList();
+    final hiddenReviews = vm.reviews.where((r) => r.isHidden == true).toList();
+
+    if (visibleReviews.isEmpty && hiddenReviews.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.star_outline_rounded, size: 64, color: colors.textSub.withOpacity(0.3)),
+              const SizedBox(height: 16),
+              Text(
+                'لا توجد تقييمات حالياً',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: colors.textSub,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        // 1. عرض التقييمات الظاهرة
+        if (visibleReviews.isNotEmpty)
+          ...visibleReviews.map((r) => Padding(
+            padding: const EdgeInsets.only(bottom: 12.0),
+            child: _buildReviewCardItem(r, colors),
+          )).toList()
+        else
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24.0),
+            child: Center(
+              child: Text(
+                'لا توجد تقييمات عامة حالياً',
+                style: TextStyle(color: colors.textSub, fontSize: 13),
+              ),
+            ),
+          ),
+
+        // 2. زر التحكم بالتقييمات المخفية
+        if (hiddenReviews.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Center(
+            child: TextButton.icon(
+              onPressed: () => vm.toggleHiddenReviews(),
+              icon: Icon(
+                vm.showHiddenReviews ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                color: colors.primary,
+                size: 18,
+              ),
+              label: Text(
+                vm.showHiddenReviews
+                    ? 'إخفاء التقييمات المخفية (${hiddenReviews.length})'
+                    : 'عرض التقييمات المخفية (${hiddenReviews.length})',
+                style: TextStyle(
+                  color: colors.primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                backgroundColor: colors.primary.withOpacity(0.05),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // 3. عرض التقييمات المخفية إذا تم التفعيل
+          if (vm.showHiddenReviews)
+            ...hiddenReviews.map((r) => Padding(
+              padding: const EdgeInsets.only(bottom: 12.0),
+              child: _buildReviewCardItem(r, colors),
+            )).toList(),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildReviewCardItem(ProfileReviewModel review, dynamic colors) {
+    final String displayDate = review.createdAt.isNotEmpty 
+        ? review.createdAt.split('T').first 
+        : '';
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colors.card,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: colors.text.withOpacity(0.05)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.01),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (displayDate.isNotEmpty) ...[
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                displayDate,
+                style: TextStyle(
+                  color: colors.textSub.withOpacity(0.6),
+                  fontSize: 11,
+                  fontFamily: 'Cairo',
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: colors.primary.withOpacity(0.1),
+                backgroundImage: review.userImageUrl.isNotEmpty
+                    ? NetworkImage(review.userImageUrl)
+                    : null,
+                child: review.userImageUrl.isEmpty
+                    ? Icon(Icons.person, color: colors.primary, size: 20)
+                    : null,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      review.userName,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: colors.text,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (review.comment.trim().isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    review.comment,
+                    style: TextStyle(
+                      color: colors.textSub,
+                      fontSize: 13,
+                      height: 1.5,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: List.generate(5, (starIndex) {
+                    return Icon(
+                      starIndex < review.rating 
+                          ? Icons.star_rounded 
+                          : Icons.star_border_rounded,
+                      color: colors.warning,
+                      size: 13,
+                    );
+                  }),
+                ),
+              ],
+            ),
+          ] else ...[
+            const SizedBox(height: 12),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(5, (starIndex) {
+                  return Icon(
+                    starIndex < review.rating 
+                        ? Icons.star_rounded 
+                        : Icons.star_border_rounded,
+                    color: colors.warning,
+                    size: 13,
+                  );
+                }),
+              ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 

@@ -6,6 +6,7 @@ import '../../../../core/network/api_service.dart';
 import '../repositories/complaints_repository.dart';
 import '../viewmodels/order_complaints_viewmodel.dart';
 import 'order_complaints_list_view.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 
 class ComplaintsView extends StatelessWidget {
   const ComplaintsView({super.key});
@@ -13,13 +14,14 @@ class ComplaintsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.qsColors;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: const Text(
-          'مركز الشكاوى والبلاغات',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          l10n.complaintsHub,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         elevation: 0,
@@ -31,8 +33,8 @@ class ComplaintsView extends StatelessWidget {
           children: [
             _buildHubCard(
               context,
-              title: 'شكاوى النظام',
-              description: 'أبلغ عن مشكلة تقنية أو قدم اقتراحاً لتحسين التطبيق',
+              title: l10n.systemComplaints,
+              description: l10n.systemComplaintsDesc,
               icon: Icons.settings_suggest_rounded,
               color: colors.primary,
               onTap: () {
@@ -45,8 +47,8 @@ class ComplaintsView extends StatelessWidget {
             const SizedBox(height: 20),
             _buildHubCard(
               context,
-              title: 'شكاوى الطلبات',
-              description: 'لديك مشكلة في طلب معين؟ قدم بلاغاً وسنقوم بمساعدتك',
+              title: l10n.orderComplaintsTitle,
+              description: l10n.orderComplaintsDesc,
               icon: Icons.assignment_rounded,
               color: Colors.orange.shade700,
               onTap: () {

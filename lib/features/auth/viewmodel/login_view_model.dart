@@ -3,6 +3,7 @@ import 'package:seeker/core/routes/app_routes.dart';
 import 'package:seeker/core/utils/qs_alerts.dart';
 import 'package:seeker/core/services/notification_service.dart';
 import 'package:seeker/core/storage/token_storage.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 import '../repositories/auth_repository.dart';
 
 /// 📂 اسم الملف: login_view_model.dart
@@ -28,10 +29,11 @@ class LoginViewModel extends ChangeNotifier {
 
   /// 🔓 دالة تنفيذ تسجيل الدخول.
   Future<void> login(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     // 1. التحقق البسيط من أن الحقول ليست فارغة
     if (emailController.text.trim().isEmpty ||
         passwordController.text.trim().isEmpty) {
-      QSAlerts.showWarning(context, 'الرجاء تعبئة جميع الحقول');
+      QSAlerts.showWarning(context, l10n.pleaseFillFields);
       return;
     }
 
@@ -68,7 +70,7 @@ class LoginViewModel extends ChangeNotifier {
           }
         } else {
           // ⚠️ الحساب غير مفعل -> الذهاب لصفحة التفعيل
-          await QSAlerts.showWarning(context, 'الرجاء تفعيل حسابك أولاً');
+          await QSAlerts.showWarning(context, l10n.pleaseActivateAccountFirst);
           if (context.mounted) {
             Navigator.pushNamed(
               context,
@@ -92,6 +94,7 @@ class LoginViewModel extends ChangeNotifier {
 
   /// 🌐 دالة تسجيل الدخول عبر جوجل.
   Future<void> loginWithGoogle(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     _isLoading = true;
     notifyListeners();
 
@@ -116,7 +119,7 @@ class LoginViewModel extends ChangeNotifier {
             Navigator.pushReplacementNamed(context, AppRoutes.privacyPolicy);
           }
         } else {
-          await QSAlerts.showWarning(context, 'الرجاء تفعيل حسابك أولاً');
+          await QSAlerts.showWarning(context, l10n.pleaseActivateAccountFirst);
           if (context.mounted) {
             Navigator.pushNamed(context, AppRoutes.verifyEmail, arguments: user.email);
           }
@@ -125,7 +128,7 @@ class LoginViewModel extends ChangeNotifier {
     } catch (e) {
       if (context.mounted) {
         // إذا ألغى المستخدم الدخول فلا نعرض رسالة خطأ، عدا ذلك نعرضها
-        if (!e.toString().contains('إلغاء')) {
+        if (!e.toString().contains('إلغاء') && !e.toString().contains('canceled') && !e.toString().contains('cancel')) {
           QSAlerts.showError(context, e.toString().replaceAll('Exception: ', ''));
         }
       }
@@ -151,7 +154,7 @@ class LoginViewModel extends ChangeNotifier {
       }
     } catch (e) {
       if (context.mounted) {
-        QSAlerts.showError(context, 'حدث خطأ: $e');
+        QSAlerts.showError(context, e.toString().replaceAll('Exception: ', ''));
       }
     } finally {
       _isLoading = false;

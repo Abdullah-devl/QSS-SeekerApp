@@ -24,6 +24,7 @@ class SearchViewModel extends ChangeNotifier {
   double? _minPrice;
   double? _maxPrice;
   bool _isVerifiedOnly = false; // ✅ فلتر الموثقين
+  bool _isLocationFilterEnabled = false; // 📍 فلتر الموقع المفعّل
   
   // الموقع الجغرافي
   Position? _currentPosition; // الموقع التلقائي (GPS)
@@ -42,6 +43,7 @@ class SearchViewModel extends ChangeNotifier {
   double? get minPrice => _minPrice;
   double? get maxPrice => _maxPrice;
   bool get isVerifiedOnly => _isVerifiedOnly;
+  bool get isLocationFilterEnabled => _isLocationFilterEnabled;
   double? get pickedLat => _pickedLat;
   double? get pickedLng => _pickedLng;
   String? get pickedAddress => _pickedAddress;
@@ -88,11 +90,21 @@ class SearchViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// تحديث تفعيل فلتر الموقع
+  void setLocationFilterEnabled(bool value) {
+    _isLocationFilterEnabled = value;
+    notifyListeners();
+  }
+
   /// تحديث الموقع المختار يدوياً من الخريطة
   void setPickedLocation(double? lat, double? lng, String? address) {
     _pickedLat = lat;
     _pickedLng = lng;
     _pickedAddress = address;
+    // عند اختيار موقع يدوياً، نقوم بتفعيل فلتر الموقع تلقائياً
+    if (lat != null && lng != null) {
+      _isLocationFilterEnabled = true;
+    }
     notifyListeners();
   }
 
@@ -103,6 +115,7 @@ class SearchViewModel extends ChangeNotifier {
     _minPrice = null;
     _maxPrice = null;
     _isVerifiedOnly = false;
+    _isLocationFilterEnabled = false;
     _pickedLat = null;
     _pickedLng = null;
     _pickedAddress = null;
@@ -114,7 +127,12 @@ class SearchViewModel extends ChangeNotifier {
   /// 🚀 تنفيذ عملية البحث
   Future<void> performSearch() async {
     // إذا لم يكن هناك استعلام ولا فلاتر، نكتفي بمسح النتائج
-    if (_query.isEmpty && _selectedCategoryId == null && _minPrice == null && _maxPrice == null) {
+    if (_query.isEmpty &&
+        _selectedCategoryId == null &&
+        _minPrice == null &&
+        _maxPrice == null &&
+        !_isVerifiedOnly &&
+        !_isLocationFilterEnabled) {
       _results = [];
       notifyListeners();
       return;
@@ -125,8 +143,10 @@ class SearchViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // محاولة جلب الموقع قبل البحث لحساب المسافات
-      await _fetchCurrentLocation();
+      // محاولة جلب الموقع قبل البحث لحساب المسافات إذا كان فلتر الموقع مفعلاً
+      if (_isLocationFilterEnabled) {
+        await _fetchCurrentLocation();
+      }
 
       // تنظيف قيم السعر قبل الإرسال (إذا كانت تغطي النطاق الكامل لا نرسلها لتقليل القيود)
       double? finalMin = _minPrice == 0 ? null : _minPrice;
@@ -138,8 +158,8 @@ class SearchViewModel extends ChangeNotifier {
         minPrice: finalMin,
         maxPrice: finalMax,
         isVerified: _isVerifiedOnly,
-        lat: _pickedLat ?? _currentPosition?.latitude,
-        lng: _pickedLng ?? _currentPosition?.longitude,
+        lat: _isLocationFilterEnabled ? (_pickedLat ?? _currentPosition?.latitude) : null,
+        lng: _isLocationFilterEnabled ? (_pickedLng ?? _currentPosition?.longitude) : null,
       );
     } catch (e) {
       _errorMessage = e.toString();

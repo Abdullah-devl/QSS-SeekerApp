@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/core/widgets/custom_text_field.dart';
+import 'package:seeker/features/auth/viewmodel/login_view_model.dart';
 import 'package:seeker/features/auth/viewmodel/register_view_model.dart';
 import 'package:seeker/features/provider/theme_provider.dart';
 // import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -32,41 +33,45 @@ class RegisterView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // 1️⃣ الشريط العلوي (Top Bar)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // زر الوضع الليلي (يسار الشاشة)
-                      Container(
-                        decoration: BoxDecoration(
-                          color: colors.card,
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          icon: Icon(
-                            isDark ? Icons.light_mode : Icons.nightlight_round,
-                            color: colors.text,
+                  Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // زر الوضع الليلي (يسار الشاشة)
+                        Container(
+                          decoration: BoxDecoration(
+                            color: colors.card,
+                            shape: BoxShape.circle,
                           ),
-                          onPressed: context.read<ThemeProvider>().toggleTheme,
+                          child: IconButton(
+                            icon: Icon(
+                              isDark ? Icons.light_mode : Icons.nightlight_round,
+                              color: colors.text,
+                            ),
+                            onPressed: context.read<ThemeProvider>().toggleTheme,
+                          ),
                         ),
-                      ),
 
-                      // زر الرجوع (متجاوب مع الاتجاه)
-                      Container(
-                        decoration: BoxDecoration(
-                          color: colors.card,
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          icon: Icon(
-                            Directionality.of(context) == TextDirection.rtl
-                                ? Icons.arrow_forward
-                                : Icons.arrow_back,
-                            color: colors.text,
+                        // زر الرجوع (يمين الشاشة)
+                        Container(
+                          decoration: BoxDecoration(
+                            color: colors.card,
+                            shape: BoxShape.circle,
                           ),
-                          onPressed: () => Navigator.pop(context),
+                          child: IconButton(
+                            icon: Directionality(
+                              textDirection: TextDirection.ltr,
+                              child: Icon(
+                                Icons.arrow_forward,
+                                color: colors.text,
+                              ),
+                            ),
+                            onPressed: () => Navigator.pop(context),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
 
                   const SizedBox(height: 30),
@@ -281,27 +286,16 @@ class RegisterView extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   // 8️⃣ أزرار السوشيال
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildSocialButton(
-                          context,
-                          label: 'Apple',
-                          icon: Icons.apple,
-                          isApple: true,
-                          onTap: () {},
-                        ),
+                  Center(
+                    child: SizedBox(
+                      width: 220,
+                      child: _buildSocialButton(
+                        context,
+                        label: 'Google',
+                        icon: Icons.g_mobiledata_rounded,
+                        onTap: () => Provider.of<LoginViewModel>(context, listen: false).loginWithGoogle(context),
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildSocialButton(
-                          context,
-                          label: 'Google',
-                          icon: Icons.g_mobiledata,
-                          onTap: () {},
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
 
                   const SizedBox(height: 20),

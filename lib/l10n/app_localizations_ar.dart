@@ -484,7 +484,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get service_details_title => 'تفاصيل الخدمة';
 
   @override
-  String get location_label => 'الموقع';
+  String get location_label => 'موقع الخدمة';
 
   @override
   String distance_away(Object distance) {
@@ -747,7 +747,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get complaintDetails => 'تفاصيل الشكوى';
 
   @override
-  String get complaintDetailsHint => 'اشرح المشكلة بالتفصيل هنا...';
+  String get complaintDetailsHint => 'يرجى كتابة ما حدث معك بالتفصيل...';
 
   @override
   String get sending => 'جاري الإرسال...';
@@ -798,13 +798,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get typePerformance => 'الأداء';
 
   @override
-  String get typePayment => 'المدفوعات';
+  String get typePayment => 'مشكلة في الدفع';
 
   @override
-  String get typeAccount => 'الحساب';
+  String get typeAccount => 'الحساب والخصوصية';
 
   @override
-  String get typeSuggestion => 'اقتراح';
+  String get typeSuggestion => 'اقتراح أو تحسين';
 
   @override
   String get typeOther => 'أخرى';
@@ -1013,4 +1013,403 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get activateAccount => 'تفعيل الحساب';
+
+  @override
+  String get currentPassword => 'كلمة المرور الحالية';
+
+  @override
+  String get newPassword => 'كلمة المرور الجديدة';
+
+  @override
+  String get confirmNewPassword => 'تأكيد كلمة المرور الجديدة';
+
+  @override
+  String get updatePassword => 'تحديث كلمة المرور';
+
+  @override
+  String get updating => 'جاري التحديث...';
+
+  @override
+  String get confirmChangePasswordMsg =>
+      'هل أنت متأكد من تغيير كلمة المرور؟ سيتم طلب تسجيل الدخول مجدداً بكلمة المرور الجديدة.';
+
+  @override
+  String get changePasswordSuccess =>
+      'تمت العملية بنجاح. تم تغيير كلمة المرور.';
+
+  @override
+  String get pleaseFillFields => 'الرجاء تعبئة جميع الحقول';
+
+  @override
+  String get passwordMinLength => 'يجب أن تكون كلمة المرور 8 أحرف على الأقل';
+
+  @override
+  String get passwordsDoNotMatch => 'كلمة المرور غير متطابقة';
+
+  @override
+  String get changePasswordFailed => 'فشل تغيير كلمة المرور';
+
+  @override
+  String get pleaseActivateAccountFirst => 'الرجاء تفعيل حسابك أولاً';
+
+  @override
+  String get agreeToTermsRequired => 'يجب الموافقة على الشروط والأحكام';
+
+  @override
+  String get accountCreatedSuccess =>
+      'تم إنشاء الحساب بنجاح! الرجاء تفعيل بريدك الإلكتروني للمتابعة.';
+
+  @override
+  String get enterFullCode => 'يرجى إدخال الكود كاملاً';
+
+  @override
+  String get accountActivatedSuccess => 'تم تفعيل الحساب بنجاح!';
+
+  @override
+  String resendWaitTimer(Object timer) {
+    return 'يرجى الانتظار $timer ثانية قبل إعادة الإرسال';
+  }
+
+  @override
+  String get resendCodeSuccess => 'تم إعادة إرسال كود التفعيل بنجاح';
+
+  @override
+  String get beProviderValidation =>
+      'يرجى تعبئة جميع الحقول وإرفاق صورة الهوية وتحديد موقعك.';
+
+  @override
+  String get beProviderSubmitSuccess =>
+      'تم إرسال طلب انضمامك كمزود خدمة بنجاح! سيتم مراجعة بياناتك من قبل الإدارة.';
+
+  @override
+  String get beProviderSubmitFailed => 'فشل إرسال الطلب، يرجى المحاولة لاحقاً';
+
+  @override
+  String errorSendingRequest(Object error) {
+    return 'حدث خطأ أثناء إرسال الطلب: $error';
+  }
+
+  @override
+  String get complaintsHub => 'مركز الشكاوى والبلاغات';
+
+  @override
+  String get systemComplaintsDesc =>
+      'أبلغ عن مشكلة تقنية أو قدم اقتراحاً لتحسين التطبيق';
+
+  @override
+  String get orderComplaintsTitle => 'شكاوى الطلبات';
+
+  @override
+  String get orderComplaintsDesc =>
+      'لديك مشكلة في طلب معين؟ قدم بلاغاً وسنقوم بمساعدتك';
+
+  @override
+  String get noOrderComplaints => 'لا توجد شكاوي طلبات حالياً.';
+
+  @override
+  String get resolved => 'محلولة';
+
+  @override
+  String get orderNo => 'رقم الطلب';
+
+  @override
+  String get viewOrder => 'عرض الطلب';
+
+  @override
+  String get submitComplaintTitle => 'تقديم شكوى على طلب';
+
+  @override
+  String get complaintCategory => 'فئة المشكلة';
+
+  @override
+  String get complaintSubject => 'عنوان الشكوى';
+
+  @override
+  String get complaintSubjectHint =>
+      'مثلاً: تأخر المزود، سوء التعامل، اختلاف السعر...';
+
+  @override
+  String get sendComplaint => 'إرسال الشكوى';
+
+  @override
+  String get confirmComplaintTitle => 'تأكيد تقديم الشكوى';
+
+  @override
+  String get confirmComplaintMsg =>
+      'هل أنت متأكد من رغبتك في تقديم بلاغ بخصوص هذا الطلب؟';
+
+  @override
+  String get sentSuccessfully => 'تم الإرسال بنجاح';
+
+  @override
+  String get complaintSubmitSuccessMsg =>
+      'تم إرسال شكواك بنجاح، سنقوم بمراجعة الطلب والتواصل معك.';
+
+  @override
+  String get complaintSubmitFailedMsg =>
+      'حدث خطأ أثناء الإرسال، يرجى المحاولة لاحقاً.';
+
+  @override
+  String get systemComplaintType => 'نوع الشكوى';
+
+  @override
+  String get systemComplaintSubject => 'عنوان الشكوى';
+
+  @override
+  String get systemComplaintDetails => 'تفاصيل الشكوى';
+
+  @override
+  String get systemComplaintSubjectHint =>
+      'مثلاً: مشكلة في شحن النقاط، خطأ في تسجيل الدخول...';
+
+  @override
+  String get systemComplaintDetailsHint =>
+      'يرجى كتابة تفاصيل المشكلة التي تواجهها بوضوح...';
+
+  @override
+  String get sendReport => 'إرسال الشكوى الآن';
+
+  @override
+  String get confirmSystemReportTitle => 'تأكيد الإرسال';
+
+  @override
+  String get confirmSystemReportMsg =>
+      'هل أنت متأكد من رغبتك في إرسال هذه الشكوى للدعم الفني؟';
+
+  @override
+  String get systemComplaintSubmitSuccessMsg =>
+      'شكرًا لك، تم استلام شكواك وسيقوم فريق الدعم الفني بمراجعتها في أقرب وقت.';
+
+  @override
+  String get systemReportFailedTitle => 'خطأ في الإرسال';
+
+  @override
+  String get systemComplaintSubmitFailedMsg =>
+      'نعتذر، حدث خطأ أثناء محاولة إرسال الشكوى. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get myTechnicalReports => 'شكاوى النظام';
+
+  @override
+  String get addNewReport => 'إضافة شكوى جديدة';
+
+  @override
+  String get errorLoadingData => 'حدث خطأ أثناء تحميل البيانات';
+
+  @override
+  String get noSystemReports => 'لا توجد شكاوى مرسلة حالياً';
+
+  @override
+  String get typeTechnical => 'مشكلة تقنية';
+
+  @override
+  String get typeFinancialSystem => 'عمليات الدفع والنقاط';
+
+  @override
+  String get typeBehavior => 'سوء تعامل من المزود';
+
+  @override
+  String get typeRequirements => 'عدم الالتزام بالمتطلبات';
+
+  @override
+  String get typeLocation => 'مشكلة في الموقع';
+
+  @override
+  String get typeNoShow => 'عدم حضور المزود';
+
+  @override
+  String get searchByLocation => 'البحث بالموقع الجغرافي';
+
+  @override
+  String get searchByLocationDesc =>
+      'عرض النتائج القريبة منك أو تحديد موقع مخصص';
+
+  @override
+  String get searchLocationTitle => 'موقع البحث';
+
+  @override
+  String get pickOnMap => 'تحديد الموقع من الخريطة (اختياري)';
+
+  @override
+  String get submitSystemComplaintTitle => 'تقديم شكوى نظام';
+
+  @override
+  String get pending => 'قيد المعالجة';
+
+  @override
+  String get confirm => 'تأكيد';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get loginNowPrompt => 'سجل دخولك الآن';
+
+  @override
+  String get favoriteGuestMessage =>
+      'يرجى تسجيل الدخول لتتمكن من إضافة الخدمات إلى المفضلة والوصول إليها في أي وقت.';
+
+  @override
+  String get errorLoadingFavorites => 'حدث خطأ في جلب المفضلة';
+
+  @override
+  String get errorUpdatingFavorites => 'فشل تحديث المفضلة';
+
+  @override
+  String get subCategories => 'التصنيفات الفرعية';
+
+  @override
+  String get recommendedProviders => 'الموصى بهم';
+
+  @override
+  String get availableServices => 'الخدمات المتاحة';
+
+  @override
+  String get noDataForCategory => 'لا توجد بيانات متاحة لهذا التصنيف حالياً';
+
+  @override
+  String get sponsoredAd => 'إعلان ممول';
+
+  @override
+  String get locationNotSpecified => 'الموقع غير محدد من قبل مزود الخدمة';
+
+  @override
+  String get providerAddress => 'عنوان مقدم الخدمة';
+
+  @override
+  String get noReviews => 'لا توجد تقييمات حالية';
+
+  @override
+  String get noPublicReviews => 'لا توجد تقييمات عامة حالية';
+
+  @override
+  String hideHiddenReviews(int count) {
+    return 'إخفاء التقييمات المخفية ($count)';
+  }
+
+  @override
+  String showHiddenReviews(int count) {
+    return 'إظهار التقييمات المخفية ($count)';
+  }
+
+  @override
+  String get unexpectedError => 'حدث خطأ غير متوقع أثناء تحميل البيانات';
+
+  @override
+  String get errorServerUpdate => 'تعذر تحديث بعض البيانات من الخادم.';
+
+  @override
+  String get markAllAsRead => 'تحديد الكل كمقروء';
+
+  @override
+  String get unread => 'غير مقروء';
+
+  @override
+  String get read => 'مقروء';
+
+  @override
+  String get noNotifications => 'لا توجد إشعارات حالياً';
+
+  @override
+  String get close => 'إغلاق';
+
+  @override
+  String get ordersGuestMessage =>
+      'يرجى تسجيل الدخول لمتابعة طلباتك والوصول إلى سجل العمليات الخاصة بك.';
+
+  @override
+  String get selectReceiptImageError => 'يرجى اختيار صورة الإيصال أولاً';
+
+  @override
+  String get pointsManagementTitle => 'إدارة شحن النقاط';
+
+  @override
+  String get myPackages => 'باقاتي';
+
+  @override
+  String get myPackagesSubtitle => 'الباقات التي تم طلبها وحالتها';
+
+  @override
+  String get pointsPackages => 'باقات النقاط';
+
+  @override
+  String get pointsPackagesSubtitle => 'استعراض الباقات المتاحة لشحن الرصيد';
+
+  @override
+  String get buyNow => 'شراء الآن';
+
+  @override
+  String get gift => 'هدية';
+
+  @override
+  String get errorLoadingPackages => 'حدث خطأ أثناء تحميل الباقات';
+
+  @override
+  String get noPackagesAvailable => 'لا توجد باقات متاحة حالياً';
+
+  @override
+  String get defaultPackageName => 'باقة نقاط';
+
+  @override
+  String get approved => 'مقبول';
+
+  @override
+  String get rejected => 'مرفوض';
+
+  @override
+  String get pendingStatus => 'قيد الانتظار';
+
+  @override
+  String get dateLabel => 'التاريخ';
+
+  @override
+  String get noPurchasedPackages => 'لا توجد باقات مشتراة حالياً';
+
+  @override
+  String get errorSelectingImage => 'خطأ في اختيار الصورة';
+
+  @override
+  String get enterBondNumberError => 'يرجى إدخال رقم السند';
+
+  @override
+  String get enterBankNameError => 'يرجى إدخال اسم البنك';
+
+  @override
+  String get attachBondImageError => 'يرجى إرفاق صورة السند';
+
+  @override
+  String get success => 'تم بنجاح';
+
+  @override
+  String get rechargeRequestSubmittedSuccess =>
+      'تم إرسال طلب الشحن بنجاح، سيتم مراجعته قريباً';
+
+  @override
+  String get submitFailed => 'فشلت عملية الإرسال';
+
+  @override
+  String get confirmRechargeTitle => 'تأكيد عملية الشحن';
+
+  @override
+  String get bondOrTransferNumber => 'رقم السند / الحوالة';
+
+  @override
+  String get enterBondNumberHint => 'أدخل رقم السند هنا';
+
+  @override
+  String get senderBankName => 'اسم البنك المحول منه';
+
+  @override
+  String get bankNameExample => 'مثال: مصرف الراجحي';
+
+  @override
+  String get transferReceiptImage => 'صورة إيصال التحويل';
+
+  @override
+  String get clickToUploadReceipt => 'اضغط لرفع صورة الإيصال';
+
+  @override
+  String pointsGainPrompt(num count) {
+    return 'سوف تحصل على $count نقطة';
+  }
 }

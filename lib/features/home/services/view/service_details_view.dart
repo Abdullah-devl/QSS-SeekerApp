@@ -11,6 +11,7 @@ import 'package:seeker/core/localization/app_localizations.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:seeker/features/home/services/models/service_model.dart';
+import 'package:seeker/features/home/models/service_schedule_model.dart';
 import 'package:seeker/features/home/services/viewmodels/service_details_view_model.dart';
 import 'package:seeker/features/favorites/viewmodels/favorite_view_model.dart';
 import 'package:seeker/features/profile/requests/repository/request_repository.dart';
@@ -107,8 +108,8 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
       leading: IconButton(
         icon: Icon(
           Directionality.of(context) == TextDirection.rtl
-              ? Icons.arrow_forward_ios
-              : Icons.arrow_back_ios_new,
+              ? Icons.arrow_back_ios_new
+              : Icons.arrow_forward_ios,
           color: colors.text,
           size: 20,
         ),
@@ -195,7 +196,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
   Widget _buildProviderCard(ServiceModel service, ProfileModel? providerProfile, dynamic colors) {
     final String jobTitle = (providerProfile != null && providerProfile.jobTitle.isNotEmpty)
         ? providerProfile.jobTitle
-        : (Directionality.of(context) == TextDirection.rtl ? 'مزود خدمة' : 'Service Provider');
+        : AppLocalizations.of(context)!.provider_role;
 
     return Container(
       margin: const EdgeInsets.all(16),
@@ -306,7 +307,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
 
     final String displayAddress = (providerProfile != null && providerProfile.address != null && providerProfile.address!.isNotEmpty)
         ? providerProfile.address!
-        : (Directionality.of(context) == TextDirection.rtl ? 'الموقع غير محدد من قبل مزود الخدمة' : 'Location not specified by provider');
+        : AppLocalizations.of(context)!.locationNotSpecified;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -357,7 +358,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            Directionality.of(context) == TextDirection.rtl ? 'عنوان مقدم الخدمة' : 'Provider Address',
+                            AppLocalizations.of(context)!.providerAddress,
                             style: TextStyle(fontWeight: FontWeight.bold, color: colors.text, fontSize: 14),
                           ),
                           Text(displayAddress, style: TextStyle(color: colors.textSub, fontSize: 11)),
@@ -446,53 +447,169 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
   }
 
   Widget _buildWorkingHours(ServiceModel service, dynamic colors) {
+    // 1. تجميع المواعيد حسب الفترة
+    final Map<String, List<ServiceScheduleModel>> groups = {};
+    for (var schedule in service.schedules) {
+      final key = '${schedule.label ?? ''}_${schedule.fromTime}_${schedule.toTime}_${schedule.isActive}';
+      if (!groups.containsKey(key)) {
+        groups[key] = [];
+      }
+      groups[key]!.add(schedule);
+    }
+
+    final List<_GroupedSchedule> groupedSchedules = groups.entries.map((entry) {
+      final first = entry.value.first;
+      final days = entry.value.map((e) => e.day).toList();
+      return _GroupedSchedule(
+        label: first.label ?? '',
+        fromTime: first.fromTime,
+        toTime: first.toTime,
+        isActive: first.isActive,
+        days: days,
+      );
+    }).toList();
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSectionTitle(AppLocalizations.of(context)!.workingHours, colors),
-          const SizedBox(height: 12),
-          if (service.schedules.isEmpty)
+          const SizedBox(height: 16),
+          if (groupedSchedules.isEmpty)
             _buildEmptyState(AppLocalizations.of(context)!.noWorkingHours, Icons.event_busy, colors)
           else
-            SizedBox(
-              height: 110,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: service.schedules.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 10),
-                itemBuilder: (context, index) {
-                  final schedule = service.schedules[index];
-                  final isActive = schedule.isActive;
-                  final dayTranslated = _getTranslatedDay(context, schedule.day);
-                  final fromFormatted = _formatTime(context, schedule.fromTime);
-                  final toFormatted = _formatTime(context, schedule.toTime);
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: groupedSchedules.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final period = groupedSchedules[index];
+                final isActive = period.isActive;
+                
+                // 🟢 أولاً: تحديد عنوان الكرت (اسم الفترة أو حالة التوفر)
+                final isAr = Directionality.of(context) == TextDirection.rtl;
+                String displayTitle = period.label.trim().isNotEmpty 
+                    ? period.label 
+                    : (isActive 
+                        ? (isAr ? 'متاح' : 'Available') 
+                        : (isAr ? 'غير متاح' : 'Unavailable'));
 
-                  return Container(
-                    width: 95,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
-                      color: isActive ? colors.primary.withOpacity(0.05) : colors.textSub.withOpacity(0.05),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: isActive ? colors.primary.withOpacity(0.2) : colors.textSub.withOpacity(0.1)),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(dayTranslated, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: isActive ? colors.primary : colors.textSub)),
-                        const SizedBox(height: 8),
-                        if (isActive) ...[
-                          Text(fromFormatted, style: TextStyle(fontSize: 10, color: colors.text)),
-                          const Icon(Icons.keyboard_arrow_down_rounded, size: 10, color: Colors.grey),
-                          Text(toFormatted, style: TextStyle(fontSize: 10, color: colors.text)),
-                        ] else
-                          Text(context.tr('closed'), style: TextStyle(fontSize: 12, color: colors.error.withOpacity(0.7), fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                  );
-                },
-              ),
+                // 🕒 ثانياً: تنسيق الوقت بنظام 12 ساعة
+                final fromFormatted = _formatTime(context, period.fromTime);
+                final toFormatted = _formatTime(context, period.toTime);
+                final displayTimeRange = '$fromFormatted - $toFormatted';
+
+                // 🎨 رابعاً: التنسيق البصري التفاعلي حسب الحالة
+                Color cardBg = isActive ? colors.card : colors.textSub.withOpacity(0.02);
+                Color borderColor = isActive ? colors.primary.withOpacity(0.2) : colors.textSub.withOpacity(0.08);
+                double borderThickness = isActive ? 1.5 : 1.0;
+                Color titleColor = isActive ? colors.text : colors.textSub.withOpacity(0.6);
+                Color timeColor = isActive ? colors.primary : colors.textSub.withOpacity(0.5);
+
+                return Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: cardBg,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: borderColor, width: borderThickness),
+                    boxShadow: isActive ? [
+                      BoxShadow(
+                        color: colors.primary.withOpacity(0.03),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      )
+                    ] : null,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // الصف العلوي: العنوان مع الوقت
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.watch_later_outlined,
+                                  size: 18,
+                                  color: isActive ? colors.primary : colors.textSub.withOpacity(0.4),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    displayTitle,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                      color: titleColor,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            displayTimeRange,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                              color: timeColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      const SizedBox(height: 12),
+                      Divider(color: colors.text.withOpacity(0.05), height: 1),
+                      const SizedBox(height: 12),
+                      
+                      // 📅 ثالثاً: عرض الأيام النشطة كـ Chips داخل Wrap
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: period.days.map((day) {
+                          final dayTranslated = _getTranslatedDay(context, day);
+                          
+                          Color chipBg = isActive 
+                              ? colors.primary.withOpacity(0.08) 
+                              : colors.textSub.withOpacity(0.05);
+                          Color chipText = isActive 
+                              ? colors.primary 
+                              : colors.textSub.withOpacity(0.5);
+
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: chipBg,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: isActive 
+                                    ? colors.primary.withOpacity(0.1) 
+                                    : Colors.transparent,
+                                width: 1,
+                              ),
+                            ),
+                            child: Text(
+                              dayTranslated,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: chipText,
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
         ],
       ),
@@ -601,7 +718,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
           // 1. إذا كان المجموع الكلي فارغاً:
           if (visibleReviews.isEmpty && hiddenReviews.isEmpty)
             _buildEmptyState(
-              Directionality.of(context) == TextDirection.rtl ? 'لا توجد تقييمات حالية' : 'No reviews currently',
+              AppLocalizations.of(context)!.noReviews,
               Icons.rate_review_outlined,
               colors,
             )
@@ -613,7 +730,7 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
               )
             else
               _buildEmptyState(
-                Directionality.of(context) == TextDirection.rtl ? 'لا توجد تقييمات عامة حالية' : 'No public reviews currently',
+                AppLocalizations.of(context)!.noPublicReviews,
                 Icons.rate_review_outlined,
                 colors,
               ),
@@ -635,12 +752,8 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                   ),
                   label: Text(
                     _showHiddenReviews
-                        ? (Directionality.of(context) == TextDirection.rtl
-                            ? 'إخفاء التقييمات المخفية (${hiddenReviews.length})'
-                            : 'Hide Hidden Reviews (${hiddenReviews.length})')
-                        : (Directionality.of(context) == TextDirection.rtl
-                            ? 'إظهار التقييمات المخفية (${hiddenReviews.length})'
-                            : 'Show Hidden Reviews (${hiddenReviews.length})'),
+                        ? AppLocalizations.of(context)!.hideHiddenReviews(hiddenReviews.length)
+                        : AppLocalizations.of(context)!.showHiddenReviews(hiddenReviews.length),
                     style: TextStyle(
                       color: colors.primary,
                       fontWeight: FontWeight.bold,
@@ -764,4 +877,20 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
   Widget _buildDivider(dynamic colors) {
     return Divider(height: 32, thickness: 8, color: colors.text.withOpacity(0.02));
   }
+}
+
+class _GroupedSchedule {
+  final String label;
+  final String fromTime;
+  final String toTime;
+  final bool isActive;
+  final List<String> days;
+
+  _GroupedSchedule({
+    required this.label,
+    required this.fromTime,
+    required this.toTime,
+    required this.isActive,
+    required this.days,
+  });
 }

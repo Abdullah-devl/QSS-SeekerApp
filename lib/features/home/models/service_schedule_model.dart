@@ -7,6 +7,7 @@ class ServiceScheduleModel {
   final String fromTime; // وقت البدء (مثلاً: 08:00)
   final String toTime; // وقت الانتهاء (مثلاً: 16:00)
   final bool isActive; // هل هذا اليوم متاح أم مغلق
+  final String? label; // اسم الفترة (مثلاً: الفترة الصباحية، الفترة المسائية)
 
   ServiceScheduleModel({
     required this.id,
@@ -14,6 +15,7 @@ class ServiceScheduleModel {
     required this.fromTime,
     required this.toTime,
     this.isActive = true,
+    this.label,
   });
 
   factory ServiceScheduleModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class ServiceScheduleModel {
       fromTime: json['from'] ?? json['start_time'] ?? '00:00',
       toTime: json['to'] ?? json['end_time'] ?? '00:00',
       isActive: (json['is_active'] == 1 || json['is_active'] == true),
+      label: json['label']?.toString(),
     );
   }
 

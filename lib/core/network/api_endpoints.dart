@@ -58,6 +58,15 @@ class ApiEndpoints {
   /// 📝 رابط إنشاء حساب جديد.
   static String get register => "$baseUrl/register";
 
+  /// 🔑 رابط طلب استعادة كلمة المرور.
+  static String get forgotPassword => "$baseUrl/forgot-password";
+
+  /// 🔑 رابط التحقق من كود الاستعادة.
+  static String get verifyResetCode => "$baseUrl/verify-reset-code";
+
+  /// 🔑 رابط إعادة تعيين كلمة المرور الجديدة.
+  static String get resetPassword => "$baseUrl/reset-password";
+
   /// 🚪 رابط تسجيل الخروج.
   static String get logout => "$baseUrl/logout";
 

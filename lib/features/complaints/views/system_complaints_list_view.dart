@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/localization/app_localizations.dart';
 import '../../../../core/theme/qs_color_extension.dart';
 import '../viewmodels/system_complaints_viewmodel.dart';
 import 'submit_system_complaint_view.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 
 class SystemComplaintsListView extends StatefulWidget {
   const SystemComplaintsListView({super.key});
@@ -25,11 +25,12 @@ class _SystemComplaintsListViewState extends State<SystemComplaintsListView> {
   Widget build(BuildContext context) {
     final viewModel = context.watch<SystemComplaintsViewModel>();
     final colors = context.qsColors;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: const Text('بلاغاتي التقنية'),
+        title: Text(l10n.myTechnicalReports),
         centerTitle: true,
         elevation: 0,
         backgroundColor: colors.background,
@@ -44,9 +45,9 @@ class _SystemComplaintsListViewState extends State<SystemComplaintsListView> {
         },
         backgroundColor: colors.primary,
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text(
-          'إضافة بلاغ جديد',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        label: Text(
+          l10n.addNewReport,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
       body: RefreshIndicator(
@@ -58,6 +59,7 @@ class _SystemComplaintsListViewState extends State<SystemComplaintsListView> {
   }
 
   Widget _buildBody(BuildContext context, SystemComplaintsViewModel viewModel) {
+    final l10n = AppLocalizations.of(context)!;
     if (viewModel.isLoading && viewModel.complaints.isEmpty) {
       return Center(child: CircularProgressIndicator(color: context.qsColors.primary));
     }
@@ -69,10 +71,10 @@ class _SystemComplaintsListViewState extends State<SystemComplaintsListView> {
           children: [
             Icon(Icons.error_outline, size: 48, color: context.qsColors.error),
             const SizedBox(height: 16),
-            const Text('حدث خطأ أثناء تحميل البيانات'),
+            Text(l10n.errorLoadingData),
             TextButton(
               onPressed: () => viewModel.fetchComplaints(),
-              child: const Text('إعادة المحاولة'),
+              child: Text(l10n.retry),
             ),
           ],
         ),
@@ -90,9 +92,9 @@ class _SystemComplaintsListViewState extends State<SystemComplaintsListView> {
               children: [
                 Icon(Icons.speaker_notes_off_outlined, size: 64, color: context.qsColors.textSub),
                 const SizedBox(height: 16),
-                const Text(
-                  'لا توجد بلاغات مرسلة حالياً',
-                  style: TextStyle(fontSize: 16),
+                Text(
+                  l10n.noSystemReports,
+                  style: const TextStyle(fontSize: 16),
                 ),
               ],
             ),
@@ -157,7 +159,7 @@ class _SystemComplaintsListViewState extends State<SystemComplaintsListView> {
               Icon(Icons.category_outlined, size: 14, color: colors.primary),
               const SizedBox(width: 4),
               Text(
-                _getTypeLabel(complaint.type),
+                _getTypeLabel(context, complaint.type),
                 style: TextStyle(fontSize: 12, color: colors.primary, fontWeight: FontWeight.bold),
               ),
             ],
@@ -167,13 +169,14 @@ class _SystemComplaintsListViewState extends State<SystemComplaintsListView> {
     );
   }
 
-  String _getTypeLabel(String type) {
+  String _getTypeLabel(BuildContext context, String type) {
+    final l10n = AppLocalizations.of(context)!;
     switch (type) {
-      case 'type_technical': return 'مشكلة تقنية';
-      case 'type_account': return 'الحساب والخصوصية';
-      case 'type_financial_system': return 'عمليات الدفع والنقاط';
-      case 'type_suggestion': return 'اقتراح أو تحسين';
-      default: return 'أخرى';
+      case 'type_technical': return l10n.typeTechnical;
+      case 'type_account': return l10n.typeAccount;
+      case 'type_financial_system': return l10n.typeFinancialSystem;
+      case 'type_suggestion': return l10n.typeSuggestion;
+      default: return l10n.typeOther;
     }
   }
 
@@ -181,19 +184,30 @@ class _SystemComplaintsListViewState extends State<SystemComplaintsListView> {
     Color color;
     String label;
     final colors = context.qsColors;
+    final l10n = AppLocalizations.of(context)!;
 
     switch (status) {
       case 'resolved':
         color = colors.success;
-        label = 'تم الحل';
+        label = l10n.statusResolved;
         break;
       case 'closed':
         color = colors.textSub;
-        label = 'مغلق';
+        label = l10n.statusClosed;
         break;
+      case 'in_progress':
+      case 'processing':
+        color = Colors.blue;
+        label = l10n.statusInProgress;
+        break;
+      case 'rejected':
+        color = colors.error;
+        label = l10n.statusRejected;
+        break;
+      case 'pending':
       default:
         color = Colors.orange;
-        label = 'قيد المراجعة';
+        label = l10n.statusPending;
     }
 
     return Container(

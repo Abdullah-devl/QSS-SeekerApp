@@ -244,44 +244,57 @@ class _HomeDrawerState extends State<HomeDrawer> {
                 // 3. منطقة أزرار الدخول / الخروج
                 // =================================================================
                 Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
                   child: userRole == AppLocalizations.of(context)!.guest
                       ? //  إذا كان المستخدم زائراً، نعرض زر تسجيل الدخول
-                        InkWell(
-                          onTap: () {
-                            Navigator.pushNamed(context, AppRoutes.login);
-                          },
-                          child: Row(
-                            children: [
-                              Icon(Icons.login, color: colors.text),
-                              const SizedBox(width: 8),
-                              Text(
-                                AppLocalizations.of(context)!.login,
-                                style: TextStyle(
-                                  color: colors.text, // لون مختلف للتمييز
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.pop(context); // إغلاق القائمة الجانبية لتسهيل الانتقال
+                              Navigator.pushNamed(context, AppRoutes.login);
+                            },
+                            icon: const Icon(Icons.login, color: Colors.white, size: 20),
+                            label: Text(
+                              AppLocalizations.of(context)!.login,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
                               ),
-                            ],
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: colors.primary,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
                           ),
                         )
                       : // إذا لم يكن زائراً، نعرض زر تسجيل الخروج الأصلي
-                        InkWell(
-                          onTap: _logout,
-                          child: Row(
-                            children: [
-                              Icon(Icons.logout, color: colors.error),
-                              const SizedBox(width: 8),
-                              Text(
-                                AppLocalizations.of(context)!.logout,
-                                style: TextStyle(
-                                  color: colors.error,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: OutlinedButton.icon(
+                            onPressed: _logout,
+                            icon: Icon(Icons.logout, color: colors.error, size: 20),
+                            label: Text(
+                              AppLocalizations.of(context)!.logout,
+                              style: TextStyle(
+                                color: colors.error,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
                               ),
-                            ],
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(color: colors.error.withValues(alpha: 0.2)),
+                              backgroundColor: colors.error.withValues(alpha: 0.05),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                            ),
                           ),
                         ),
                 ),

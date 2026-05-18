@@ -11,6 +11,12 @@ import 'package:seeker/core/theme/qs_color_extension.dart';
 
 import 'package:seeker/core/utils/qs_alerts.dart'; // ✅ تمت الإضافة
 import 'bond_gallery_view.dart'; // ✅ تمت الإضافة
+import 'package:seeker/core/network/api_service.dart';
+import 'package:seeker/features/profile/viewmodels/profile_view_model.dart';
+import 'package:seeker/features/profile/view/profile_view.dart';
+import 'package:seeker/features/profile/repositories/profile_repository.dart';
+import 'package:seeker/features/profile/models/phone_model.dart';
+import 'package:seeker/features/profile/models/profile_model.dart';
 
 class OrderDetailView extends StatefulWidget {
   final OrderModel order;
@@ -22,7 +28,41 @@ class OrderDetailView extends StatefulWidget {
 }
 
 class _OrderDetailViewState extends State<OrderDetailView> {
+  static final Map<int, ProfileModel> _providerProfilesCache = {};
+  bool _isProviderLoading = false;
   final TextEditingController _amountController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProviderProfileIfNeeded();
+  }
+
+  void _loadProviderProfileIfNeeded() async {
+    final providerId = widget.order.providerId;
+    if (providerId == null) return;
+    if (_providerProfilesCache.containsKey(providerId)) return;
+
+    setState(() {
+      _isProviderLoading = true;
+    });
+
+    try {
+      final apiService = context.read<ApiService>();
+      final repo = ProfileRepository(apiService);
+      final profile = await repo.fetchUserProfile(providerId);
+      
+      _providerProfilesCache[providerId] = profile;
+    } catch (e) {
+      debugPrint('❌ Error loading provider detail profile: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isProviderLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -32,18 +72,18 @@ class _OrderDetailViewState extends State<OrderDetailView> {
 
   @override
   Widget build(BuildContext context) {
-    // إحداثيات افتراضية
-    final double lat = widget.order.latitude ?? 24.7136;
-    final double lng = widget.order.longitude ?? 46.6753;
-    final bool hasCoordinates =
-        widget.order.latitude != null && widget.order.longitude != null;
-
     final viewModel = Provider.of<OrdersViewModel>(context);
     // البحث عن أحدث نسخة من الطلب في القائمة الكلية لضمان تحديث البيانات
     final currentOrder = viewModel.allOrders.firstWhere(
       (o) => o.id == widget.order.id,
       orElse: () => widget.order,
     );
+
+    // إحداثيات افتراضية مأخوذة من الطلب الأحدث المجلوب من السيرفر
+    final double lat = currentOrder.latitude ?? 24.7136;
+    final double lng = currentOrder.longitude ?? 46.6753;
+    final bool hasCoordinates =
+        currentOrder.latitude != null && currentOrder.longitude != null;
 
     // 🕵️ طباعة بيانات التشخيص عند بناء الصفحة
     debugPrint(
@@ -63,6 +103,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                   ? Icons.arrow_forward
                   : Icons.arrow_back,
               color: context.qsColors.text,
+              textDirection: TextDirection.ltr,
             ),
             onPressed: () => Navigator.of(context).pop(),
           ),
@@ -188,15 +229,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
             ),
             child: GestureDetector(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => BondGalleryView(
-                      bonds: order.bonds,
-                      initialPage: index,
-                    ),
-                  ),
-                );
+                _showBondDetailsDialog(context, bond);
               },
               child: Column(
                 children: [
@@ -212,8 +245,27 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                                 bond.imagePath,
                                 fit: BoxFit.cover,
                                 width: double.infinity,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: colors.background,
+                                    alignment: Alignment.center,
+                                    child: Icon(
+                                      Icons.receipt_long,
+                                      size: 32,
+                                      color: colors.textSub.withOpacity(0.5),
+                                    ),
+                                  );
+                                },
                               )
-                            : const Icon(Icons.receipt_long, color: Colors.grey),
+                            : Container(
+                                color: colors.background,
+                                alignment: Alignment.center,
+                                child: Icon(
+                                  Icons.receipt_long,
+                                  size: 32,
+                                  color: colors.textSub.withOpacity(0.5),
+                                ),
+                              ),
                       ),
                     ),
                   ),
@@ -587,8 +639,733 @@ class _OrderDetailViewState extends State<OrderDetailView> {
   }
 
 
+  void _showProviderDetailsDialog(
+    BuildContext context,
+    String providerName,
+    String providerImage,
+    String providerPhone,
+    String providerEmail,
+    OrderModel order,
+  ) {
+    final colors = context.qsColors;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 400),
+            decoration: BoxDecoration(
+              color: colors.card,
+              borderRadius: BorderRadius.circular(32),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 30,
+                  offset: const Offset(0, 15),
+                ),
+              ],
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // 1️⃣ رأس الحوار (Header) مع الخلفية الجمالية
+                  Container(
+                    height: 120,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          colors.primary.withOpacity(0.1),
+                          colors.primary.withOpacity(0.02),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                      ),
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                    ),
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        // زر الإغلاق الأنيق
+                        Positioned(
+                          top: 16,
+                          left: 16,
+                          child: GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: colors.background,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(Icons.close, size: 18, color: colors.textSub),
+                            ),
+                          ),
+                        ),
+                        // الصورة الشخصية المحلقة بالمنتصف
+                        Positioned(
+                          bottom: -40,
+                          left: 0,
+                          right: 0,
+                          child: Center(
+                            child: Stack(
+                              alignment: Alignment.bottomLeft,
+                              children: [
+                                Container(
+                                  width: 90,
+                                  height: 90,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: colors.card,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.08),
+                                        blurRadius: 15,
+                                        offset: const Offset(0, 5),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4),
+                                    child: ClipOval(
+                                      child: providerImage.isNotEmpty
+                                          ? Image.network(
+                                              providerImage,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (_, __, ___) => Icon(
+                                                Icons.person,
+                                                size: 45,
+                                                color: colors.textSub,
+                                              ),
+                                            )
+                                          : Icon(
+                                              Icons.person,
+                                              size: 45,
+                                              color: colors.textSub,
+                                            ),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  width: 20,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    color: colors.success,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(color: Colors.white, width: 3),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 50),
+
+                  // 2️⃣ اسم مزود الخدمة ولقبه
+                  Text(
+                    providerName,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      color: colors.primary,
+                      fontFamily: 'Cairo',
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: colors.primary.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      context.tr('service_provider') ?? 'مزود الخدمة',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: colors.primary,
+                        fontFamily: 'Cairo',
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // 3️⃣ قسم معلومات التواصل
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "معلومات التواصل",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w900,
+                            color: colors.textSub,
+                            fontFamily: 'Cairo',
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+
+                        // بطاقة الهاتف
+                        _buildDialogContactCard(
+                          context: context,
+                          icon: Icons.phone_android,
+                          title: "رقم الجوال",
+                          value: providerPhone.isNotEmpty ? providerPhone : '---',
+                          onCopy: providerPhone.isNotEmpty && providerPhone != '---'
+                              ? () {
+                                  Clipboard.setData(ClipboardData(text: providerPhone));
+                                  QSAlerts.showSuccess(context, context.tr('copySuccess'));
+                                }
+                              : null,
+                        ),
+                        const SizedBox(height: 12),
+
+                        // بطاقة البريد الإلكتروني
+                        _buildDialogContactCard(
+                          context: context,
+                          icon: Icons.email_outlined,
+                          title: "البريد الإلكتروني",
+                          value: providerEmail.isNotEmpty ? providerEmail : '---',
+                          onCopy: providerEmail.isNotEmpty && providerEmail != '---'
+                              ? () {
+                                  Clipboard.setData(ClipboardData(text: providerEmail));
+                                  QSAlerts.showSuccess(context, context.tr('copySuccess'));
+                                }
+                              : null,
+                        ),
+
+                        // 4️⃣ قسم الحسابات البنكية للمزود
+                        if (order.providerBanks.isNotEmpty) ...[
+                          const SizedBox(height: 24),
+                          Text(
+                            "الحسابات البنكية",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w900,
+                              color: colors.textSub,
+                              fontFamily: 'Cairo',
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          ...order.providerBanks.map(
+                            (bank) => Container(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: colors.background,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: colors.textSub.withOpacity(0.08),
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.account_balance,
+                                        size: 18,
+                                        color: colors.primary,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          bank.bankName,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w900,
+                                            color: colors.text,
+                                            fontFamily: 'Cairo',
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  if (bank.accountName.isNotEmpty) ...[
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          "اسم صاحب الحساب: ",
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            color: colors.textSub,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Cairo',
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            bank.accountName,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: colors.text,
+                                              fontWeight: FontWeight.w800,
+                                              fontFamily: 'Cairo',
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                  const SizedBox(height: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                    decoration: BoxDecoration(
+                                      color: colors.card,
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            bank.iban,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: colors.text,
+                                              fontWeight: FontWeight.w800,
+                                              fontFamily: 'Roboto',
+                                            ),
+                                          ),
+                                        ),
+                                        IconButton(
+                                          constraints: const BoxConstraints(),
+                                          padding: EdgeInsets.zero,
+                                          icon: Icon(
+                                            Icons.copy,
+                                            size: 16,
+                                            color: colors.primary,
+                                          ),
+                                          onPressed: () {
+                                            Clipboard.setData(ClipboardData(text: bank.iban));
+                                            QSAlerts.showSuccess(context, context.tr('copySuccess'));
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showBondDetailsDialog(BuildContext context, OrderBond bond) {
+    final colors = context.qsColors;
+    
+    // تحديد الألوان والنصوص بناءً على حالة السند
+    Color statusColor;
+    Color statusBgColor;
+    IconData statusIcon;
+    String statusTitle;
+
+    final String currentStatus = bond.status ?? 'pending';
+    switch (currentStatus.toLowerCase()) {
+      case 'approved':
+      case 'success':
+        statusColor = const Color(0xFF2E7D32); // أخضر داكن
+        statusBgColor = const Color(0xFFE8F5E9); // أخضر فاتح
+        statusIcon = Icons.check_circle_rounded;
+        statusTitle = "سند مقبول ومعتمد";
+        break;
+      case 'rejected':
+      case 'failed':
+        statusColor = const Color(0xFFC62828); // أحمر داكن
+        statusBgColor = const Color(0xFFFFEBEE); // أحمر فاتح
+        statusIcon = Icons.cancel_rounded;
+        statusTitle = "سند مرفوض";
+        break;
+      case 'pending':
+      default:
+        statusColor = const Color(0xFFEF6C00); // برتقالي داكن
+        statusBgColor = const Color(0xFFFFF3E0); // برتقالي فاتح
+        statusIcon = Icons.watch_later_rounded;
+        statusTitle = "سند قيد المراجعة والتدقيق";
+        break;
+    }
+
+    // تنظيف التاريخ
+    String formattedDate = '---';
+    final String dateStr = bond.createdAt ?? '';
+    if (dateStr.isNotEmpty) {
+      try {
+        formattedDate = dateStr.split('T')[0];
+      } catch (_) {}
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 400),
+            decoration: BoxDecoration(
+              color: colors.card,
+              borderRadius: BorderRadius.circular(32),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 30,
+                  offset: const Offset(0, 15),
+                ),
+              ],
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // 1️⃣ رأس النافذة المنبثقة: حالة السند الملونة
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    decoration: BoxDecoration(
+                      color: statusBgColor,
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(statusIcon, color: statusColor, size: 24),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            statusTitle,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                              color: statusColor,
+                              fontFamily: 'Cairo',
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.05),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(Icons.close, size: 18, color: statusColor),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // 2️⃣ صورة السند التفاعلية
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context); // إغلاق الديالوج أولاً
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BondGalleryView(
+                                  bonds: [bond],
+                                  initialPage: 0,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            height: 200,
+                            decoration: BoxDecoration(
+                              color: colors.background,
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(
+                                color: colors.textSub.withOpacity(0.08),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: colors.text.withOpacity(0.04),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(24),
+                              child: Stack(
+                                children: [
+                                  Positioned.fill(
+                                    child: bond.imagePath.isNotEmpty
+                                        ? Image.network(
+                                            bond.imagePath,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (context, error, stackTrace) {
+                                              return Center(
+                                                child: Icon(
+                                                  Icons.broken_image,
+                                                  size: 48,
+                                                  color: colors.textSub.withOpacity(0.4),
+                                                ),
+                                              );
+                                            },
+                                          )
+                                        : Center(
+                                            child: Icon(
+                                              Icons.receipt_long,
+                                              size: 48,
+                                              color: colors.textSub.withOpacity(0.4),
+                                            ),
+                                          ),
+                                  ),
+                                  // تراكب داكن سفلي مع نص إرشادي
+                                  Positioned(
+                                    bottom: 0,
+                                    left: 0,
+                                    right: 0,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(vertical: 8),
+                                      color: Colors.black.withOpacity(0.55),
+                                      child: const Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(Icons.zoom_in, color: Colors.white, size: 16),
+                                          SizedBox(width: 6),
+                                          Text(
+                                            "اضغط لتكبير الصورة ملء الشاشة",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'Cairo',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // 3️⃣ تفاصيل ومعلومات السند
+                        Text(
+                          "تفاصيل الحوالة / السند",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w900,
+                            color: colors.textSub,
+                            fontFamily: 'Cairo',
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+
+                        // بطاقة رقم السند
+                        _buildDialogContactCard(
+                          context: context,
+                          icon: Icons.confirmation_number_outlined,
+                          title: "رقم السند",
+                          value: (bond.bondNumber != null && bond.bondNumber!.isNotEmpty)
+                              ? bond.bondNumber!
+                              : 'غير متوفر حالياً',
+                          onCopy: (bond.bondNumber != null && bond.bondNumber!.isNotEmpty)
+                              ? () {
+                                  Clipboard.setData(ClipboardData(text: bond.bondNumber!));
+                                  QSAlerts.showSuccess(context, context.tr('copySuccess'));
+                                }
+                              : null,
+                        ),
+                        const SizedBox(height: 12),
+
+                        // بطاقة المبلغ المدفوع
+                        _buildDialogContactCard(
+                          context: context,
+                          icon: Icons.payments_outlined,
+                          title: "المبلغ المدفوع",
+                          value: "${bond.amount.toInt()} ${context.tr('currency_sar')}",
+                          onCopy: () {
+                            Clipboard.setData(ClipboardData(text: bond.amount.toInt().toString()));
+                            QSAlerts.showSuccess(context, context.tr('copySuccess'));
+                          },
+                        ),
+
+
+                        // بطاقة الوصف (إذا كان موجوداً)
+                        if (bond.description != null && bond.description!.trim().isNotEmpty) ...[
+                          const SizedBox(height: 12),
+                          _buildDialogContactCard(
+                            context: context,
+                            icon: Icons.description_outlined,
+                            title: "الوصف والملاحظات",
+                            value: bond.description!,
+                          ),
+                        ],
+
+                        const SizedBox(height: 24),
+
+                        // زر الإغلاق النهائي
+                        SizedBox(
+                          height: 52,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: colors.primary,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              elevation: 0,
+                            ),
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text(
+                              "إغلاق النافذة",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900,
+                                fontFamily: 'Cairo',
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDialogContactCard({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required String value,
+    VoidCallback? onCopy,
+  }) {
+    final colors = context.qsColors;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colors.background,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: colors.textSub.withOpacity(0.08),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: colors.primary.withOpacity(0.08),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 16, color: colors.primary),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: colors.textSub,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Cairo',
+                  ),
+                ),
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: colors.text,
+                    fontWeight: FontWeight.w900,
+                    fontFamily: icon == Icons.email_outlined ? 'Roboto' : 'Cairo',
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          if (onCopy != null)
+            IconButton(
+              constraints: const BoxConstraints(),
+              padding: const EdgeInsets.all(8),
+              icon: Icon(
+                Icons.copy,
+                size: 16,
+                color: colors.primary,
+              ),
+              onPressed: onCopy,
+            ),
+        ],
+      ),
+    );
+  }
+
+
   Widget _buildUnifiedRequestCard(BuildContext context, OrderModel order) {
     final colors = context.qsColors;
+    
+    // جلب بيانات الملف الشخصي المحملة ديناميكياً
+    final profile = order.providerId != null ? _providerProfilesCache[order.providerId] : null;
+    final String providerName = profile?.name ?? order.providerName;
+    final String providerImage = profile?.avatarUrl ?? order.providerImage;
+
+    // استخراج رقم الهاتف الحقيقي
+    String providerPhone = order.providerPhone;
+    if (providerPhone.isEmpty || providerPhone == '---') {
+      if (profile != null && profile.phones.isNotEmpty) {
+        final primaryPhone = profile.phones.firstWhere(
+          (p) => p.isPrimary,
+          orElse: () => profile.phones.first,
+        );
+        if (primaryPhone.phone.isNotEmpty) {
+          providerPhone = primaryPhone.phone;
+        }
+      }
+    }
+
+    // استخراج البريد الحقيقي
+    String providerEmail = order.providerEmail;
+    if (providerEmail.isEmpty || providerEmail == '---') {
+      if (profile?.email != null && profile!.email.isNotEmpty) {
+        providerEmail = profile.email;
+      }
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: colors.card,
@@ -604,254 +1381,149 @@ class _OrderDetailViewState extends State<OrderDetailView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 👨‍🔧 1. رأس البطاقة: بيانات مزود الخدمة
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              children: [
-                Stack(
-                  alignment: Alignment.bottomLeft,
-                  children: [
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24),
-                        color: colors.background,
-                        image: order.providerImage.isNotEmpty
-                            ? DecorationImage(
-                                image: NetworkImage(order.providerImage),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
-                      ),
-                      child: order.providerImage.isEmpty
-                          ? Icon(Icons.person, size: 40, color: colors.textSub)
-                          : null,
-                    ),
-                    Container(
-                      width: 18,
-                      height: 18,
-                      decoration: BoxDecoration(
-                        color: colors.success,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 3),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+          // 👨‍🔧 1. رأس البطاقة: بيانات مزود الخدمة (يمكن الضغط لزيارة ملفه الشخصي)
+          GestureDetector(
+            onTap: () {
+              _showProviderDetailsDialog(
+                context,
+                providerName,
+                providerImage,
+                providerPhone,
+                providerEmail,
+                order,
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Stack(
+                    alignment: Alignment.bottomLeft,
                     children: [
-                      Text(
-                        order.providerName,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w900,
-                          color: colors.primary,
+                      Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(24),
+                          color: colors.background,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(24),
+                          child: providerImage.isNotEmpty
+                              ? Image.network(
+                                  providerImage,
+                                  width: 80,
+                                  height: 80,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Icon(Icons.person, size: 40, color: colors.textSub);
+                                  },
+                                )
+                              : Icon(Icons.person, size: 40, color: colors.textSub),
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.phone_android,
-                            size: 14,
-                            color: context.qsColors.textSub.withOpacity(0.5),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            order.providerPhone.isNotEmpty
-                                ? order.providerPhone
-                                : '---',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: context.qsColors.textSub,
-                            ),
-                          ),
-                          if (order.providerPhone.isNotEmpty) ...[
-                            IconButton(
-                              constraints: const BoxConstraints(),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                              icon: Icon(
-                                Icons.copy,
-                                size: 16,
-                                color: colors.primary,
-                              ),
-                              onPressed: () {
-                                Clipboard.setData(
-                                  ClipboardData(text: order.providerPhone),
-                                );
-                                QSAlerts.showSuccess(
-                                  context,
-                                  context.tr('copySuccess'),
-                                );
-                              },
-                            ),
-                          ],
-                        ],
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.email_outlined,
-                            size: 14,
-                            color: context.qsColors.textSub.withOpacity(0.5),
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              order.providerEmail.isNotEmpty
-                                  ? order.providerEmail
-                                  : '---',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: context.qsColors.textSub,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+                      Container(
+                        width: 18,
+                        height: 18,
+                        decoration: BoxDecoration(
+                          color: colors.success,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 3),
+                        ),
                       ),
                     ],
                   ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                providerName,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w900,
+                                  color: colors.primary,
+                                ),
+                              ),
+                            ),
+                            if (order.providerId != null && _isProviderLoading) ...[
+                              const SizedBox(
+                                width: 12,
+                                height: 12,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            ],
+                          ],
+                        ),
+                      if (providerEmail.isNotEmpty && providerEmail != '---') ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.email_outlined,
+                              size: 14,
+                              color: colors.textSub.withOpacity(0.5),
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                providerEmail,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: colors.textSub,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
-                const SizedBox(width: 8),
-                _buildActionIcon(
-                  Icons.phone_in_talk_outlined,
-                  colors.success.withOpacity(0.1),
-                  colors.success,
-                  onTap: () async {
-                    if (order.providerPhone.isNotEmpty) {
-                      final Uri url = Uri.parse('tel:${order.providerPhone}');
-                      if (await canLaunchUrl(url)) {
-                        await launchUrl(url);
-                      }
-                    }
-                  },
-                ),
-                const SizedBox(width: 8),
-                _buildActionIcon(
-                  Icons.chat_bubble_outline,
-                  colors.primary.withOpacity(0.1),
-                  colors.primary,
-                ),
+
               ],
             ),
           ),
+          ),
 
-          // 🏦 2. بيانات الحسابات البنكية
-          if (order.providerBanks.isNotEmpty)
+
+
+          const Divider(height: 1),
+
+          // 📝 2. وصف الطلب
+          if (order.description != null &&
+              order.description!.trim().isNotEmpty &&
+              order.description != '---') ...[
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    context.tr('provider_bank_accounts_label'),
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: colors.textSub,
-                    ),
-                  ),
+                  _buildInlineSectionTitle(context, 'description_label'),
                   const SizedBox(height: 8),
-                  ...order.providerBanks.map(
-                    (bank) => Container(
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: colors.background,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: colors.textSub.withOpacity(0.1),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.account_balance,
-                            size: 20,
-                            color: colors.primary,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  bank.bankName,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w900,
-                                    color: colors.text,
-                                  ),
-                                ),
-                                Text(
-                                  bank.iban,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: colors.textSub,
-                                    fontFamily: 'Roboto',
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              Icons.copy,
-                              size: 16,
-                              color: colors.primary,
-                            ),
-                            onPressed: () {
-                              Clipboard.setData(ClipboardData(text: bank.iban));
-                              QSAlerts.showSuccess(
-                                context,
-                                context.tr('copySuccess'),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
+                  Text(
+                    order.description!,
+                    style: TextStyle(
+                      fontSize: 15,
+                      height: 1.6,
+                      fontWeight: FontWeight.w600,
+                      color: colors.textSub,
                     ),
                   ),
                 ],
               ),
             ),
-
-          const Divider(height: 1),
-
-          // 📝 2. وصف الطلب
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildInlineSectionTitle(context, 'description_label'),
-                const SizedBox(height: 8),
-                Text(
-                  order.description ?? '---',
-                  style: TextStyle(
-                    fontSize: 15,
-                    height: 1.6,
-                    fontWeight: FontWeight.w600,
-                    color: colors.textSub,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          const Divider(height: 1),
+            const Divider(height: 1),
+          ],
 
           // 🛠️ 3. تفاصيل الخدمة
           Padding(
@@ -871,24 +1543,30 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                       decoration: BoxDecoration(
                         color: context.qsColors.background,
                         borderRadius: BorderRadius.circular(16),
-                        image:
-                            (order.mainServiceImage != null &&
-                                order.mainServiceImage!.isNotEmpty)
-                            ? DecorationImage(
-                                image: NetworkImage(order.mainServiceImage!),
-                                fit: BoxFit.cover,
-                              )
-                            : null,
                       ),
-                      child:
-                          (order.mainServiceImage == null ||
-                              order.mainServiceImage!.isEmpty)
-                          ? Icon(
-                              Icons.miscellaneous_services,
-                              color: context.qsColors.primary,
-                              size: 28,
-                            )
-                          : null,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: (order.mainServiceImage != null &&
+                                order.mainServiceImage!.isNotEmpty)
+                            ? Image.network(
+                                order.mainServiceImage!,
+                                width: 65,
+                                height: 65,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Icon(
+                                    Icons.miscellaneous_services,
+                                    color: context.qsColors.primary,
+                                    size: 28,
+                                  );
+                                },
+                              )
+                            : Icon(
+                                Icons.miscellaneous_services,
+                                color: context.qsColors.primary,
+                                size: 28,
+                              ),
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -926,28 +1604,11 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                   ],
                 ),
 
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  child: Divider(height: 1),
-                ),
-
-                // 🌿 الخدمات الفرعية
-                if (order.subServices.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Center(
-                      child: Text(
-                        "لا توجد خدمات فرعية",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade500,
-                          fontWeight: FontWeight.w600,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ),
-                  )
-                else
+                if (order.subServices.isNotEmpty) ...[
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Divider(height: 1),
+                  ),
                   ...order.subServices.map(
                     (sub) => Padding(
                       padding: const EdgeInsets.only(bottom: 16),
@@ -997,6 +1658,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                       ),
                     ),
                   ),
+                ],
 
                 // 🏁 المجموع الكلي للقسم
                 const SizedBox(height: 12),
@@ -1069,26 +1731,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
   }
 
   Widget _buildLocationSectionHeader(BuildContext context, OrderModel order) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _buildSectionHeader(context, 'location_label'),
-        Row(
-          children: [
-            Icon(Icons.near_me, color: context.qsColors.primary, size: 16),
-            const SizedBox(width: 6),
-            Text(
-              context.tr('distance_away', args: {'distance': order.distance}),
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w900,
-                color: context.qsColors.primary,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
+    return _buildSectionHeader(context, 'location_label');
   }
 
   Widget _buildLocationMapCard(
@@ -1098,42 +1741,85 @@ class _OrderDetailViewState extends State<OrderDetailView> {
     bool hasCoordinates,
     OrderModel order,
   ) {
-    return Container(
-      height: 180,
-      decoration: BoxDecoration(
-        color: const Color(0xFFE0E0E0),
-        borderRadius: BorderRadius.circular(32),
-        image: DecorationImage(
-          image: NetworkImage(
-            'https://api.mapbox.com/styles/v1/mapbox/light-v10/static/pin-s+ff4d4d($lng,$lat)/$lng,$lat,13/600x400?access_token=pk.placeholder',
+    final colors = context.qsColors;
+    return GestureDetector(
+      onTap: hasCoordinates
+          ? () async {
+              final googleMapsUrl = Uri.parse(
+                'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+              );
+              try {
+                if (await canLaunchUrl(googleMapsUrl)) {
+                  await launchUrl(
+                    googleMapsUrl,
+                    mode: LaunchMode.externalApplication,
+                  );
+                } else {
+                  if (context.mounted) {
+                    QSAlerts.showError(context, "تعذر فتح الخريطة");
+                  }
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  QSAlerts.showError(context, "تعذر فتح الخريطة");
+                }
+              }
+            }
+          : null,
+      child: Container(
+        height: 180,
+        decoration: BoxDecoration(
+          color: colors.background,
+          borderRadius: BorderRadius.circular(32),
+          border: Border.all(
+            color: colors.textSub.withOpacity(0.08),
           ),
-          fit: BoxFit.cover,
-          opacity: 0.8,
         ),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.location_on, color: Color(0xFFFF4D4D), size: 40),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
-              ),
-              child: Text(
-                order.location,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w900,
-                  color: context.qsColors.text,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(32),
+          child: Stack(
+            children: [
+              // Map image with graceful error fallback
+              Positioned.fill(
+                child: Image.network(
+                  'https://api.mapbox.com/styles/v1/mapbox/light-v10/static/pin-s+ff4d4d($lng,$lat)/$lng,$lat,13/600x400?access_token=pk.placeholder',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    // Beautiful decorative gradient with a grid pattern for styling on error
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            colors.primary.withOpacity(0.04),
+                            colors.primary.withOpacity(0.12),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: CustomPaint(
+                        painter: _GridPainter(colors.primary.withOpacity(0.15)),
+                      ),
+                    );
+                  },
                 ),
               ),
-            ),
-          ],
+              Center(
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: colors.error.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.location_on,
+                    color: colors.error,
+                    size: 36,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1714,4 +2400,28 @@ class _OrderDetailViewState extends State<OrderDetailView> {
       },
     );
   }
+}
+
+class _GridPainter extends CustomPainter {
+  final Color gridColor;
+  _GridPainter(this.gridColor);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = gridColor
+      ..strokeWidth = 1.0;
+
+    const double step = 25.0;
+
+    for (double i = 0; i < size.width; i += step) {
+      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
+    }
+    for (double i = 0; i < size.height; i += step) {
+      canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

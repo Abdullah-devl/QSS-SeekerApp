@@ -41,6 +41,9 @@ class AppRoutes {
   /// 🔐 مسار صفحة تغيير كلمة المرور
   static const String changePassword = 'change_password';
 
+  /// 🔐 مسار صفحة استعادة كلمة المرور (Forgot Password)
+  static const String forgotPassword = 'forgot_password';
+
   /// 📜 مسار صفحة سياسة الخصوصية
   static const String privacyPolicy = 'privacy_policy';
 

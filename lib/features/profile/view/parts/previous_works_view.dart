@@ -5,6 +5,7 @@ import 'package:seeker/l10n/app_localizations.dart';
 
 import '../../models/profile_model.dart';
 import '../../viewmodels/parts/previous_works_view_model.dart';
+import 'image_viewer.dart';
 
 class PreviousWorksView extends StatelessWidget {
   final ProfileModel profile;
@@ -146,19 +147,22 @@ class PreviousWorksView extends StatelessWidget {
 
           // Work Image
           if (work.imageUrl.isNotEmpty)
-            Image.network(
-              work.imageUrl,
-              width: double.infinity,
-              height: 220,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
+            GestureDetector(
+              onTap: () => QsImageViewer.show(context, work.imageUrl),
+              child: Image.network(
+                work.imageUrl,
                 width: double.infinity,
                 height: 220,
-                color: Colors.grey.shade200,
-                child: const Icon(
-                  Icons.broken_image,
-                  color: Colors.grey,
-                  size: 50,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  width: double.infinity,
+                  height: 220,
+                  color: Colors.grey.shade200,
+                  child: const Icon(
+                    Icons.broken_image,
+                    color: Colors.grey,
+                    size: 50,
+                  ),
                 ),
               ),
             ),

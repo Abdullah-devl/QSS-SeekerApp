@@ -433,7 +433,9 @@ class _PaymentViewState extends State<PaymentView> {
           await QSAlerts.showError(
             context,
             viewModel.errorMessage != null
-                ? context.tr(viewModel.errorMessage!)
+                ? (viewModel.errorMessage!.contains(' ')
+                    ? viewModel.errorMessage!
+                    : context.tr(viewModel.errorMessage!))
                 : context.tr('points_payment_error'),
           );
         }
@@ -453,7 +455,9 @@ class _PaymentViewState extends State<PaymentView> {
         await QSAlerts.showError(
           context,
           viewModel.errorMessage != null
-              ? context.tr(viewModel.errorMessage!)
+              ? (viewModel.errorMessage!.contains(' ')
+                  ? viewModel.errorMessage!
+                  : context.tr(viewModel.errorMessage!))
               : context.tr('bond_payment_error'),
         );
       }

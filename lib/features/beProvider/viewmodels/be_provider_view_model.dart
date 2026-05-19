@@ -99,6 +99,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:seeker/l10n/app_localizations.dart';
 import '../models/provider_request_model.dart';
 import '../repositories/be_provider_repository.dart';
+import '../../../core/errors/api_error_handler.dart';
 
 /// 📂 اسم الملف: be_provider_view_model.dart
 /// 📝 الوصف: ViewModel لإدارة منطق صفحة "كن مزود خدمة".
@@ -185,7 +186,7 @@ class BeProviderViewModel extends ChangeNotifier {
       await _repository.submitRequest(request);
       return true; // نجاح
     } catch (e) {
-      _errorMessage = l10n.errorSendingRequest(e.toString());
+      _errorMessage = ApiErrorHandler.handle(e).message;
       return false; // فشل
     } finally {
       _isLoading = false;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../Models/order_model.dart';
 import '../Repository/orders_repository.dart';
+import '../../../core/errors/api_error_handler.dart';
 
 class OrdersViewModel extends ChangeNotifier {
   final OrdersRepository _repository;
@@ -48,7 +49,7 @@ class OrdersViewModel extends ChangeNotifier {
       _isLoading = false;
     } catch (e) {
       _isLoading = false;
-      _errorMessage = e.toString();
+      _errorMessage = ApiErrorHandler.handle(e).message;
     }
     notifyListeners();
   }
@@ -120,7 +121,7 @@ class OrdersViewModel extends ChangeNotifier {
       await refreshOrderDetail(id); // تحديث بيانات هذا الطلب تحديداً
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiErrorHandler.handle(e).message;
       notifyListeners();
       return false;
     } finally {
@@ -146,7 +147,7 @@ class OrdersViewModel extends ChangeNotifier {
       await refreshOrderDetail(id);
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiErrorHandler.handle(e).message;
       notifyListeners();
       return false;
     } finally {
@@ -180,7 +181,7 @@ class OrdersViewModel extends ChangeNotifier {
       await refreshOrderDetail(id);
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiErrorHandler.handle(e).message;
       notifyListeners();
       return false;
     } finally {
@@ -209,7 +210,7 @@ class OrdersViewModel extends ChangeNotifier {
       );
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiErrorHandler.handle(e).message;
       return false;
     } finally {
       _isLoading = false;

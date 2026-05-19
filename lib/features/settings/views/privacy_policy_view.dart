@@ -38,59 +38,44 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
   }
 
   /// إظهار رسالة التأكيد قبل الموافقة
-  void _showConfirmDialog(PolicyViewModel vm, String role) {
+  Future<void> _showConfirmDialog(PolicyViewModel vm, String role) async {
     final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final bool fromRegister = args?['fromRegister'] ?? false;
 
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(
-          context.tr('confirm_completion_title'),
-          style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.bold),
-        ),
-        content: const Text(
-          'هل أنت موافق على جميع الشروط والسياسات المذكورة؟',
-          style: TextStyle(fontFamily: 'Cairo'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(context.tr('cancel_order'), style: const TextStyle(color: Colors.grey, fontFamily: 'Cairo')),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              Navigator.pop(ctx);
-              if (fromRegister) {
-                Navigator.pop(context, true);
-                return;
-              }
-              final success = await vm.agreeToPolicy(role);
-              if (success && mounted) {
-                // حفظ الحالة محلياً
-                await context.read<TokenStorage>().savePolicyAgreement(true);
-                if (mounted) {
-                  QSAlerts.showSuccess(context, 'مرحباً بك في تطبيق Seeker!');
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    AppRoutes.home,
-                    (route) => false,
-                  );
-                }
-              } else if (mounted) {
-                QSAlerts.showError(context, vm.errorMessage ?? 'حدث خطأ أثناء إرسال الموافقة');
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: context.qsColors.primary,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-            ),
-            child: const Text('أوافق الآن', style: TextStyle(color: Colors.white, fontFamily: 'Cairo')),
-          ),
-        ],
-      ),
+    final confirmed = await QSAlerts.showConfirm(
+      context,
+      title: context.tr('confirm_completion_title'),
+      message: 'هل أنت موافق على جميع الشروط والسياسات المذكورة؟',
     );
+
+    if (confirmed && mounted) {
+      if (fromRegister) {
+        Navigator.pop(context, true);
+        return;
+      }
+      final success = await vm.agreeToPolicy(role);
+      if (success && mounted) {
+        // حفظ الحالة محلياً
+        await context.read<TokenStorage>().savePolicyAgreement(true);
+        if (mounted) {
+          await QSAlerts.showSuccess(context, 'مرحباً بك في تطبيق Seeker!');
+          if (mounted) {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              AppRoutes.home,
+              (route) => false,
+            );
+          }
+        }
+      } else if (mounted) {
+        await QSAlerts.showError(
+          context,
+          vm.errorMessage != null
+              ? (vm.errorMessage!.contains(' ') ? vm.errorMessage! : context.tr(vm.errorMessage!))
+              : 'حدث خطأ أثناء إرسال الموافقة',
+        );
+      }
+    }
   }
 
   @override

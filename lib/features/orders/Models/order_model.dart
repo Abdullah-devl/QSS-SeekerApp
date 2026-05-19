@@ -132,7 +132,7 @@ class OrderModel {
 
   // 🚀 دالة تحويل الـ JSON القادم من السيرفر إلى مودل
   factory OrderModel.fromJson(Map<String, dynamic> json) {
-    // جلب الحالة كما هي من الباك اند
+   // جلب الحالة كما هي من الباك اند
     String currentStatus = (json['status'] ?? 'pending').toString().toLowerCase();
 
     // استخراج بيانات المستخدم (طالب الخدمة)
@@ -145,6 +145,14 @@ class OrderModel {
     double mainServicePrice = 0.0;
     double partialPercentage = 0.0;
     List<OrderSubService> subServices = [];
+
+    // 🕵️ أولاً: التحقق من وجود 'sub_services' في جذر الـ JSON بأي من المسميات المحتملة
+    final List rootSubServices = json['sub_services'] ?? json['subServices'] ?? json['children'] ?? json['child_services'] ?? [];
+    if (rootSubServices.isNotEmpty) {
+      subServices = rootSubServices
+          .map((e) => OrderSubService.fromJson(Map<String, dynamic>.from(e)))
+          .toList();
+    }
 
     if (allServices.isNotEmpty) {
       // البحث عن الخدمة الأساسية
@@ -159,15 +167,16 @@ class OrderModel {
       partialPercentage =
           double.tryParse(mainServiceJson['required_partial_percentage']?.toString() ?? '0') ?? 0.0;
 
-      // تجميع الخدمات الفرعية (أي خدمة ليست الأساسية)
-      subServices =
-          allServices
-              .where((s) => s['id'] != mainServiceJson['id'])
-              .map((e) => OrderSubService.fromJson(Map<String, dynamic>.from(e)))
-              .toList();
+      // إذا لم نجد خدمات فرعية في الجذر، نجمعها من allServices
+      if (subServices.isEmpty) {
+        subServices = allServices
+            .where((s) => s['id'] != mainServiceJson['id'])
+            .map((e) => OrderSubService.fromJson(Map<String, dynamic>.from(e)))
+            .toList();
+      }
     } else {
       // 🔄 Fallback للنظام القديم 'main_service' إذا لم تتوفر مصفوفة services
-      final List mainServiceLegacy = json['main_service'] ?? [];
+      final List mainServiceLegacy = json['main_service'] ?? json['mainService'] ?? [];
       if (mainServiceLegacy.isNotEmpty) {
         final first = mainServiceLegacy[0];
         mainServiceName = first['name'] ?? 'خدمة عامة';
@@ -176,8 +185,11 @@ class OrderModel {
         partialPercentage =
             double.tryParse(first['required_partial_percentage']?.toString() ?? '0') ?? 0.0;
 
-        final List rawSubs = first['sub_services'] ?? [];
-        subServices = rawSubs.map((e) => OrderSubService.fromJson(e)).toList();
+        // إذا لم نجد خدمات فرعية في الجذر، نجمعها من first['sub_services'] أو first['children']
+        if (subServices.isEmpty) {
+          final List rawSubs = first['sub_services'] ?? first['subServices'] ?? first['children'] ?? first['child_services'] ?? [];
+          subServices = rawSubs.map((e) => OrderSubService.fromJson(Map<String, dynamic>.from(e))).toList();
+        }
       }
     }
 

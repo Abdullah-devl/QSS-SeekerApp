@@ -516,5 +516,23 @@
         "type": "num"
       }
     }
-  }
+  },
+  "changeEmail": "تغيير البريد الإلكتروني",
+  "forgotPasswordTitle": "استعادة كلمة المرور",
+  "verifyCodeTitle": "التحقق من الرمز",
+  "resetPasswordTitle": "تعيين كلمة المرور الجديدة",
+  "recoverAccountTitle": "استعادة الحساب",
+  "forgotPasswordStep1Desc": "أدخل بريدك الإلكتروني المسجل وسنقوم بإرسال رمز OTP لتغيير كلمة المرور.",
+  "forgotPasswordStep2Desc": "أدخل الرمز المكون من 6 أرقام المرسل إلى البريد الإلكتروني الخاص بك.",
+  "forgotPasswordStep3Desc": "أدخل كلمة المرور الجديدة وتأكيدها لإتمام عملية تعيين كلمة المرور.",
+  "sendVerificationCode": "إرسال رمز التحقق",
+  "verifyCodeBtn": "التحقق من الكود",
+  "updatePasswordBtn": "تحديث كلمة المرور",
+  "continueBtn": "استمرار",
+  "verificationCodeOtp": "رمز التحقق (OTP)",
+  "newPasswordLabel": "كلمة المرور الجديدة",
+  "confirmPasswordLabel": "تأكيد كلمة المرور",
+  "resetOtpSentSuccess": "تم إرسال رمز استعادة كلمة المرور إلى بريدك الإلكتروني",
+  "resetCodeVerifiedSuccess": "رمز التحقق صحيح ومطابق",
+  "resetPasswordSuccess": "تم إعادة تعيين كلمة المرور بنجاح"
 }

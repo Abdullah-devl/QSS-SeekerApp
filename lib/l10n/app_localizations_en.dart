@@ -1427,4 +1427,62 @@ class AppLocalizationsEn extends AppLocalizations {
   String pointsGainPrompt(num count) {
     return 'You will get $count points';
   }
+
+  @override
+  String get changeEmail => 'Change Email';
+
+  @override
+  String get forgotPasswordTitle => 'Forgot Password';
+
+  @override
+  String get verifyCodeTitle => 'Verify Code';
+
+  @override
+  String get resetPasswordTitle => 'Reset Password';
+
+  @override
+  String get recoverAccountTitle => 'Recover Account';
+
+  @override
+  String get forgotPasswordStep1Desc =>
+      'Enter your registered email and we will send an OTP code to reset your password.';
+
+  @override
+  String get forgotPasswordStep2Desc =>
+      'Enter the 6-digit code sent to your email.';
+
+  @override
+  String get forgotPasswordStep3Desc =>
+      'Enter the new password and confirm it to complete the reset process.';
+
+  @override
+  String get sendVerificationCode => 'Send Verification Code';
+
+  @override
+  String get verifyCodeBtn => 'Verify Code';
+
+  @override
+  String get updatePasswordBtn => 'Update Password';
+
+  @override
+  String get continueBtn => 'Continue';
+
+  @override
+  String get verificationCodeOtp => 'Verification Code (OTP)';
+
+  @override
+  String get newPasswordLabel => 'New Password';
+
+  @override
+  String get confirmPasswordLabel => 'Confirm Password';
+
+  @override
+  String get resetOtpSentSuccess =>
+      'Reset password code has been sent to your email.';
+
+  @override
+  String get resetCodeVerifiedSuccess => 'Verification code is correct.';
+
+  @override
+  String get resetPasswordSuccess => 'Password has been reset successfully.';
 }

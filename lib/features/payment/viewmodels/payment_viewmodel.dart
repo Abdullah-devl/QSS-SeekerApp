@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import '../models/points_balance_model.dart';
 import '../repositories/payment_repository.dart';
+import '../../../core/errors/api_error_handler.dart';
 
 /// 📂 اسم الملف: payment_viewmodel.dart
 /// 📝 الوصف: مدير الحالة الخاص بصفحة الدفع.
@@ -51,7 +52,7 @@ class PaymentViewModel extends ChangeNotifier {
       _balance = await _repository.getPointsBalance();
       _isLoading = false;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiErrorHandler.handle(e).message;
       _isLoading = false;
     }
     notifyListeners();
@@ -69,7 +70,7 @@ class PaymentViewModel extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiErrorHandler.handle(e).message;
       _isLoading = false;
       notifyListeners();
       return false;
@@ -104,7 +105,7 @@ class PaymentViewModel extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiErrorHandler.handle(e).message;
       _isLoading = false;
       notifyListeners();
       return false;

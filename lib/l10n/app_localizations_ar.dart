@@ -1412,4 +1412,62 @@ class AppLocalizationsAr extends AppLocalizations {
   String pointsGainPrompt(num count) {
     return 'سوف تحصل على $count نقطة';
   }
+
+  @override
+  String get changeEmail => 'تغيير البريد الإلكتروني';
+
+  @override
+  String get forgotPasswordTitle => 'استعادة كلمة المرور';
+
+  @override
+  String get verifyCodeTitle => 'التحقق من الرمز';
+
+  @override
+  String get resetPasswordTitle => 'تعيين كلمة المرور الجديدة';
+
+  @override
+  String get recoverAccountTitle => 'استعادة الحساب';
+
+  @override
+  String get forgotPasswordStep1Desc =>
+      'أدخل بريدك الإلكتروني المسجل وسنقوم بإرسال رمز OTP لتغيير كلمة المرور.';
+
+  @override
+  String get forgotPasswordStep2Desc =>
+      'أدخل الرمز المكون من 6 أرقام المرسل إلى البريد الإلكتروني الخاص بك.';
+
+  @override
+  String get forgotPasswordStep3Desc =>
+      'أدخل كلمة المرور الجديدة وتأكيدها لإتمام عملية تعيين كلمة المرور.';
+
+  @override
+  String get sendVerificationCode => 'إرسال رمز التحقق';
+
+  @override
+  String get verifyCodeBtn => 'التحقق من الكود';
+
+  @override
+  String get updatePasswordBtn => 'تحديث كلمة المرور';
+
+  @override
+  String get continueBtn => 'استمرار';
+
+  @override
+  String get verificationCodeOtp => 'رمز التحقق (OTP)';
+
+  @override
+  String get newPasswordLabel => 'كلمة المرور الجديدة';
+
+  @override
+  String get confirmPasswordLabel => 'تأكيد كلمة المرور';
+
+  @override
+  String get resetOtpSentSuccess =>
+      'تم إرسال رمز استعادة كلمة المرور إلى بريدك الإلكتروني';
+
+  @override
+  String get resetCodeVerifiedSuccess => 'رمز التحقق صحيح ومطابق';
+
+  @override
+  String get resetPasswordSuccess => 'تم إعادة تعيين كلمة المرور بنجاح';
 }

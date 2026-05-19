@@ -517,5 +517,23 @@
         "type": "num"
       }
     }
-  }
+  },
+  "changeEmail": "Change Email",
+  "forgotPasswordTitle": "Forgot Password",
+  "verifyCodeTitle": "Verify Code",
+  "resetPasswordTitle": "Reset Password",
+  "recoverAccountTitle": "Recover Account",
+  "forgotPasswordStep1Desc": "Enter your registered email and we will send an OTP code to reset your password.",
+  "forgotPasswordStep2Desc": "Enter the 6-digit code sent to your email.",
+  "forgotPasswordStep3Desc": "Enter the new password and confirm it to complete the reset process.",
+  "sendVerificationCode": "Send Verification Code",
+  "verifyCodeBtn": "Verify Code",
+  "updatePasswordBtn": "Update Password",
+  "continueBtn": "Continue",
+  "verificationCodeOtp": "Verification Code (OTP)",
+  "newPasswordLabel": "New Password",
+  "confirmPasswordLabel": "Confirm Password",
+  "resetOtpSentSuccess": "Reset password code has been sent to your email.",
+  "resetCodeVerifiedSuccess": "Verification code is correct.",
+  "resetPasswordSuccess": "Password has been reset successfully."
 }

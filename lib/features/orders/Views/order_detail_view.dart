@@ -36,6 +36,12 @@ class _OrderDetailViewState extends State<OrderDetailView> {
   void initState() {
     super.initState();
     _loadProviderProfileIfNeeded();
+    // 🚀 تحديث تفاصيل الطلب تلقائياً من السيرفر عند فتح الصفحة لضمان جلب الخدمات الفرعية والسندات فوراً
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<OrdersViewModel>().refreshOrderDetail(widget.order.id);
+      }
+    });
   }
 
   void _loadProviderProfileIfNeeded() async {
@@ -1995,33 +2001,9 @@ class _OrderDetailViewState extends State<OrderDetailView> {
               ? null
               : () {
                   if (order.status == 'accepted_partial_paid') {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        title: Row(
-                          children: [
-                            const Icon(
-                              Icons.warning_amber_rounded,
-                              color: Colors.orange,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(context.tr('alert')),
-                          ],
-                        ),
-                        content: Text(
-                          context.tr('must_complete_payment'),
-                          style: const TextStyle(fontFamily: 'Cairo'),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: Text(context.tr('ok')),
-                          ),
-                        ],
-                      ),
+                    QSAlerts.showWarning(
+                      context,
+                      context.tr('must_complete_payment'),
                     );
                     return;
                   }
@@ -2057,29 +2039,15 @@ class _OrderDetailViewState extends State<OrderDetailView> {
     BuildContext context,
     OrdersViewModel viewModel,
     OrderModel order,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(context.tr('confirm_completion_title')),
-        content: Text(context.tr('confirm_completion_message')),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              context.tr('cancel_order'),
-            ), // استخدام كلمة إلغاء العامة
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context); // إغلاق التنبيه
-              _showReviewDialog(context, viewModel, order); // الانتقال للتقييم
-            },
-            child: Text(context.tr('ok')),
-          ),
-        ],
-      ),
+  ) async {
+    final confirmed = await QSAlerts.showConfirm(
+      context,
+      title: context.tr('confirm_completion_title'),
+      message: context.tr('confirm_completion_message'),
     );
+    if (confirmed && context.mounted) {
+      _showReviewDialog(context, viewModel, order); // الانتقال للتقييم
+    }
   }
 
   // 🚀 نافذة التقييم والتعليق (The Feedback UI)

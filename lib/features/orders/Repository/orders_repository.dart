@@ -25,8 +25,34 @@ class OrdersRepository {
       final data = ApiErrorHandler.handleResponse(response);
 
       // السيرفر قد يرسل الطلب داخل مفتاح 'request' أو 'data' أو مباشرة
-      final Map<String, dynamic> orderJson =
-          data['request'] ?? data['data'] ?? data;
+      Map<String, dynamic> orderJson = {};
+      if (data is Map) {
+        final Map<String, dynamic> dataMap = Map<String, dynamic>.from(data);
+        if (dataMap.containsKey('request') && dataMap['request'] is Map) {
+          orderJson.addAll(Map<String, dynamic>.from(dataMap['request']));
+          // دمج بقية المفاتيح من جذر الـ JSON لضمان عدم ضياع العلاقات مثل sub_services و main_service والسندات
+          dataMap.forEach((key, value) {
+            if (key != 'request' && value != null) {
+              if (orderJson[key] == null || (orderJson[key] is List && (orderJson[key] as List).isEmpty)) {
+                orderJson[key] = value;
+              }
+            }
+          });
+        } else if (dataMap.containsKey('data') && dataMap['data'] is Map) {
+          orderJson.addAll(Map<String, dynamic>.from(dataMap['data']));
+          dataMap.forEach((key, value) {
+            if (key != 'data' && value != null) {
+              if (orderJson[key] == null || (orderJson[key] is List && (orderJson[key] as List).isEmpty)) {
+                orderJson[key] = value;
+              }
+            }
+          });
+        } else {
+          orderJson = dataMap;
+        }
+      } else {
+        orderJson = Map<String, dynamic>.from(data);
+      }
 
       return OrderModel.fromJson(orderJson);
     } catch (e) {

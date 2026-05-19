@@ -32,6 +32,7 @@ class ForgotPasswordView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.qsColors;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -66,7 +67,7 @@ class ForgotPasswordView extends StatelessWidget {
 
                         // 2️⃣ نصوص العنوان والوصف
                         Text(
-                          _getStepTitle(viewModel.currentStep),
+                          _getStepTitle(l10n, viewModel.currentStep),
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -76,7 +77,7 @@ class ForgotPasswordView extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          _getStepSubtitle(viewModel.currentStep),
+                          _getStepSubtitle(l10n, viewModel.currentStep),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 14,
@@ -140,7 +141,7 @@ class ForgotPasswordView extends StatelessWidget {
                                           ),
                                           const SizedBox(width: 8),
                                           Text(
-                                            _getButtonText(viewModel.currentStep),
+                                            _getButtonText(l10n, viewModel.currentStep),
                                             style: const TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
@@ -158,7 +159,7 @@ class ForgotPasswordView extends StatelessWidget {
                                 TextButton(
                                   onPressed: () => viewModel.setStep(0),
                                   child: Text(
-                                    'تغيير البريد الإلكتروني',
+                                    l10n.changeEmail,
                                     style: TextStyle(
                                       color: colors.primary,
                                       fontWeight: FontWeight.bold,
@@ -214,44 +215,44 @@ class ForgotPasswordView extends StatelessWidget {
   }
 
   // الحصول على عنوان الخطوة
-  String _getStepTitle(int step) {
+  String _getStepTitle(AppLocalizations l10n, int step) {
     switch (step) {
       case 0:
-        return 'استعادة كلمة المرور';
+        return l10n.forgotPasswordTitle;
       case 1:
-        return 'التحقق من الرمز';
+        return l10n.verifyCodeTitle;
       case 2:
-        return 'تعيين كلمة المرور الجديدة';
+        return l10n.resetPasswordTitle;
       default:
-        return 'استعادة الحساب';
+        return l10n.recoverAccountTitle;
     }
   }
 
   // الحصول على وصف الخطوة
-  String _getStepSubtitle(int step) {
+  String _getStepSubtitle(AppLocalizations l10n, int step) {
     switch (step) {
       case 0:
-        return 'أدخل بريدك الإلكتروني المسجل وسنقوم بإرسال رمز OTP لتغيير كلمة المرور.';
+        return l10n.forgotPasswordStep1Desc;
       case 1:
-        return 'أدخل الرمز المكون من 6 أرقام المرسل إلى البريد الإلكتروني الخاص بك.';
+        return l10n.forgotPasswordStep2Desc;
       case 2:
-        return 'أدخل كلمة المرور الجديدة وتأكيدها لإتمام عملية تعيين كلمة المرور.';
+        return l10n.forgotPasswordStep3Desc;
       default:
         return '';
     }
   }
 
   // الحصول على نص زر الإجراء
-  String _getButtonText(int step) {
+  String _getButtonText(AppLocalizations l10n, int step) {
     switch (step) {
       case 0:
-        return 'إرسال رمز التحقق';
+        return l10n.sendVerificationCode;
       case 1:
-        return 'التحقق من الكود';
+        return l10n.verifyCodeBtn;
       case 2:
-        return 'تحديث كلمة المرور';
+        return l10n.updatePasswordBtn;
       default:
-        return 'استمرار';
+        return l10n.continueBtn;
     }
   }
 
@@ -291,7 +292,7 @@ class ForgotPasswordView extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildLabel(context, 'رمز التحقق (OTP)'),
+            _buildLabel(context, l10n.verificationCodeOtp),
             const SizedBox(height: 8),
             CustomTextField(
               labelText: '',
@@ -305,21 +306,21 @@ class ForgotPasswordView extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildLabel(context, 'كلمة المرور الجديدة'),
+            _buildLabel(context, l10n.newPasswordLabel),
             const SizedBox(height: 8),
             CustomTextField(
               labelText: '',
-              hintText: 'كلمة المرور الجديدة',
+              hintText: l10n.newPasswordLabel,
               controller: viewModel.passwordController,
               icon: Icons.lock_outline,
               isPassword: true,
             ),
             const SizedBox(height: 20),
-            _buildLabel(context, 'تأكيد كلمة المرور'),
+            _buildLabel(context, l10n.confirmPasswordLabel),
             const SizedBox(height: 8),
             CustomTextField(
               labelText: '',
-              hintText: 'تأكيد كلمة المرور',
+              hintText: l10n.confirmPasswordLabel,
               controller: viewModel.confirmPasswordController,
               icon: Icons.lock_outline,
               isPassword: true,

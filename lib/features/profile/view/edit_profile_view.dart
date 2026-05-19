@@ -281,7 +281,12 @@ class EditProfileView extends StatelessWidget {
             await QSAlerts.showSuccess(context, context.tr('profile_updated_success'));
             if (context.mounted) Navigator.pop(context, true); 
           } else if (vm.errorMessage != null && context.mounted) {
-            await QSAlerts.showError(context, vm.errorMessage!);
+            await QSAlerts.showError(
+              context,
+              vm.errorMessage!.contains(' ')
+                  ? vm.errorMessage!
+                  : context.tr(vm.errorMessage!),
+            );
           }
         },
         style: ElevatedButton.styleFrom(

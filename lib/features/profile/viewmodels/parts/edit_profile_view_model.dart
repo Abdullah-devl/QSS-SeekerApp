@@ -8,6 +8,7 @@ import 'package:seeker/features/profile/models/profile_model.dart';
 import 'package:seeker/features/profile/models/phone_model.dart'; // ✅ تمت الإضافة
 import 'package:seeker/features/profile/repositories/profile_repository.dart';
 import 'dart:developer' as developer;
+import '../../../../core/errors/api_error_handler.dart';
 
 class PhoneEntry {
   final int? id;
@@ -127,7 +128,7 @@ class EditProfileViewModel extends ChangeNotifier {
       
       developer.log('📍 New Location & Address: $_latitude, $_longitude, $_address');
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiErrorHandler.handle(e).message;
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -197,14 +198,7 @@ class EditProfileViewModel extends ChangeNotifier {
 
       return true;
     } catch (e) {
-      if (e is DioException && e.response?.data != null) {
-        final data = e.response!.data;
-        _errorMessage = (data is Map && data.containsKey('message')) 
-            ? data['message'].toString() 
-            : e.message;
-      } else {
-        _errorMessage = e.toString().replaceAll('Exception: ', '');
-      }
+      _errorMessage = ApiErrorHandler.handle(e).message;
       developer.log('❌ EditProfileViewModel Save Error: $e');
       return false;
     } finally {

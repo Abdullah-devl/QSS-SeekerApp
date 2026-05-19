@@ -4,6 +4,7 @@ import '../repositories/profile_repository.dart';
 import '../models/profile_model.dart';
 import '../models/profile_review_model.dart';
 import 'dart:developer' as developer;
+import '../../../core/errors/api_error_handler.dart';
 
 /// 📂 اسم الملف: profile_view_model.dart
 /// 📝 الوصف: مسؤول عن إدارة حالة صفحة الملف الشخصي.
@@ -62,7 +63,7 @@ class ProfileViewModel extends ChangeNotifier {
 
       developer.log('✅ ProfileViewModel: Profile loaded for ${_profile?.name}');
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiErrorHandler.handle(e).message;
       developer.log('❌ ProfileViewModel: Error: $e');
     } finally {
       _isLoading = false;

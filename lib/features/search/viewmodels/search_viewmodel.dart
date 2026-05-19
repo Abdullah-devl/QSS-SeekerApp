@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../home/services/models/service_model.dart';
 import '../repositories/search_repository.dart';
+import '../../../core/errors/api_error_handler.dart';
 
 /// 📂 اسم الملف: search_viewmodel.dart
 /// 📝 الوصف: إدارة حالة صفحة البحث المتقدم والفلترة.
@@ -162,7 +163,7 @@ class SearchViewModel extends ChangeNotifier {
         lng: _isLocationFilterEnabled ? (_pickedLng ?? _currentPosition?.longitude) : null,
       );
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiErrorHandler.handle(e).message;
       _results = [];
     } finally {
       _isLoading = false;

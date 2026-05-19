@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import '../models/points_package_model.dart';
 import '../repositories/points_repository.dart';
+import '../../../core/errors/api_error_handler.dart';
 
 class PointsViewModel extends ChangeNotifier {
   final PointsRepository _repository;
@@ -30,7 +31,7 @@ class PointsViewModel extends ChangeNotifier {
     try {
       _packages = await _repository.getAvailablePackages();
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiErrorHandler.handle(e).message;
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -46,7 +47,7 @@ class PointsViewModel extends ChangeNotifier {
     try {
       _myPackages = await _repository.getMyPointsPackages();
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiErrorHandler.handle(e).message;
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -73,7 +74,7 @@ class PointsViewModel extends ChangeNotifier {
       );
       return true;
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = ApiErrorHandler.handle(e).message;
       return false;
     } finally {
       _isLoading = false;

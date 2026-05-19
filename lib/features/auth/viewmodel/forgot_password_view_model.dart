@@ -48,7 +48,7 @@ class ForgotPasswordViewModel extends ChangeNotifier {
     try {
       await authRepository.forgotPassword(email);
       if (context.mounted) {
-        QSAlerts.showSuccess(context, 'تم إرسال رمز استعادة كلمة المرور إلى بريدك الإلكتروني');
+        QSAlerts.showSuccess(context, l10n.resetOtpSentSuccess);
         _currentStep = 1; // الانتقال لخطوة كود الـ OTP
       }
     } catch (e) {
@@ -79,7 +79,7 @@ class ForgotPasswordViewModel extends ChangeNotifier {
     try {
       await authRepository.verifyResetCode(email, code);
       if (context.mounted) {
-        QSAlerts.showSuccess(context, 'رمز التحقق صحيح ومطابق');
+        QSAlerts.showSuccess(context, l10n.resetCodeVerifiedSuccess);
         _currentStep = 2; // الانتقال لخطوة تعيين كلمة المرور الجديدة
       }
     } catch (e) {
@@ -122,7 +122,7 @@ class ForgotPasswordViewModel extends ChangeNotifier {
         passwordConfirmation: confirmPassword,
       );
       if (context.mounted) {
-        await QSAlerts.showSuccess(context, 'تم إعادة تعيين كلمة المرور بنجاح');
+        await QSAlerts.showSuccess(context, l10n.resetPasswordSuccess);
         if (context.mounted) {
           // إعادة تصفير الحقول والخطوة
           emailController.clear();

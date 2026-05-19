@@ -8,6 +8,7 @@ import '../models/category_model.dart';
 import '../services/models/service_model.dart';
 import '../models/advertisement_model.dart';
 import '../repositories/advertisement_repository.dart';
+import '../../../core/errors/api_error_handler.dart';
 
 /// 🧠 اسم الملف: home_view_model.dart
 /// 📝 الوصف: مسؤول عن إدارة حالة ومنطق الصفحة الرئيسية.
@@ -117,7 +118,7 @@ class HomeViewModel extends ChangeNotifier {
       }
     } catch (e) {
       print('❌ [HOME VM]: Error loading home data: $e');
-      _errorMessage = e.toString();
+      _errorMessage = ApiErrorHandler.handle(e).message;
     } finally {
       _isLoading = false;
       notifyListeners(); // تحديث الواجهة لعرض البيانات أو الخطأ

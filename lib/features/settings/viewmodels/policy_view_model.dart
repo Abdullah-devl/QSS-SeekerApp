@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../repositories/settings_repository.dart';
+import '../../../core/errors/api_error_handler.dart';
 
 class PolicyViewModel extends ChangeNotifier {
   final SettingsRepository _settingsRepository;
@@ -63,7 +64,7 @@ class PolicyViewModel extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     } catch (e) {
-      _errorMessage = e.toString().replaceAll('Exception: ', '');
+      _errorMessage = ApiErrorHandler.handle(e).message;
       _isLoading = false;
       notifyListeners();
     }
@@ -81,7 +82,7 @@ class PolicyViewModel extends ChangeNotifier {
       notifyListeners();
       return true;
     } catch (e) {
-      _errorMessage = e.toString().replaceAll('Exception: ', '');
+      _errorMessage = ApiErrorHandler.handle(e).message;
       _isLoading = false;
       notifyListeners();
       return false;

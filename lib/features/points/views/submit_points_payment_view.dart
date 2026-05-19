@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/core/localization/app_localizations.dart';
+import 'package:seeker/core/utils/qs_alerts.dart';
 import '../models/points_package_model.dart';
 import '../viewmodels/points_viewmodel.dart';
 
@@ -31,9 +32,7 @@ class _SubmitPointsPaymentViewState extends State<SubmitPointsPaymentView> {
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.tr('errorSelectingImage'))),
-      );
+      QSAlerts.showError(context, context.tr('errorSelectingImage'));
     }
   }
 
@@ -59,35 +58,26 @@ class _SubmitPointsPaymentViewState extends State<SubmitPointsPaymentView> {
     );
 
     if (success && mounted) {
-      showDialog(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text(context.tr('success')),
-          content: Text(context.tr('rechargeRequestSubmittedSuccess')),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(ctx);
-                Navigator.pop(context);
-              },
-              child: Text(context.tr('ok')),
-            ),
-          ],
-        ),
+      await QSAlerts.showSuccess(
+        context,
+        context.tr('rechargeRequestSubmittedSuccess'),
       );
+      if (mounted) {
+        Navigator.pop(context);
+      }
     } else if (mounted) {
       _showError(
         viewModel.errorMessage != null
-            ? context.tr(viewModel.errorMessage!)
+            ? (viewModel.errorMessage!.contains(' ')
+                ? viewModel.errorMessage!
+                : context.tr(viewModel.errorMessage!))
             : context.tr('submitFailed'),
       );
     }
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.red),
-    );
+    QSAlerts.showError(context, message);
   }
 
   @override

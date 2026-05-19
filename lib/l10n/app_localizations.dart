@@ -2773,6 +2773,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You will get {count} points'**
   String pointsGainPrompt(num count);
+
+  /// No description provided for @changeEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Email'**
+  String get changeEmail;
+
+  /// No description provided for @forgotPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password'**
+  String get forgotPasswordTitle;
+
+  /// No description provided for @verifyCodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify Code'**
+  String get verifyCodeTitle;
+
+  /// No description provided for @resetPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get resetPasswordTitle;
+
+  /// No description provided for @recoverAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recover Account'**
+  String get recoverAccountTitle;
+
+  /// No description provided for @forgotPasswordStep1Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your registered email and we will send an OTP code to reset your password.'**
+  String get forgotPasswordStep1Desc;
+
+  /// No description provided for @forgotPasswordStep2Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6-digit code sent to your email.'**
+  String get forgotPasswordStep2Desc;
+
+  /// No description provided for @forgotPasswordStep3Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the new password and confirm it to complete the reset process.'**
+  String get forgotPasswordStep3Desc;
+
+  /// No description provided for @sendVerificationCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Verification Code'**
+  String get sendVerificationCode;
+
+  /// No description provided for @verifyCodeBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify Code'**
+  String get verifyCodeBtn;
+
+  /// No description provided for @updatePasswordBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Password'**
+  String get updatePasswordBtn;
+
+  /// No description provided for @continueBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueBtn;
+
+  /// No description provided for @verificationCodeOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Code (OTP)'**
+  String get verificationCodeOtp;
+
+  /// No description provided for @newPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get newPasswordLabel;
+
+  /// No description provided for @confirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPasswordLabel;
+
+  /// No description provided for @resetOtpSentSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset password code has been sent to your email.'**
+  String get resetOtpSentSuccess;
+
+  /// No description provided for @resetCodeVerifiedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification code is correct.'**
+  String get resetCodeVerifiedSuccess;
+
+  /// No description provided for @resetPasswordSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Password has been reset successfully.'**
+  String get resetPasswordSuccess;
 }
 
 class _AppLocalizationsDelegate

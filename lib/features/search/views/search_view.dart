@@ -348,11 +348,11 @@ class _SearchViewState extends State<SearchView> {
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text(
-                      'عرض الموثقين فقط',
+                      context.tr('verifiedOnly'),
                       style: TextStyle(fontWeight: FontWeight.bold, color: colors.text),
                     ),
                     subtitle: Text(
-                      'عرض الخدمات التابعة لمزودين لديهم توثيق سارٍ',
+                      context.tr('verifiedOnlyDesc'),
                       style: TextStyle(fontSize: 12, color: colors.textSub),
                     ),
                     activeColor: colors.primary,

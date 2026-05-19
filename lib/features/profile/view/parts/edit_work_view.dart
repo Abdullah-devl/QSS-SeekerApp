@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
 
 class EditWorkView extends StatelessWidget {
   const EditWorkView({super.key});
@@ -6,8 +7,8 @@ class EditWorkView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('تعديل العمل')),
-      body: const Center(child: Text('شاشة تعديل بيانات عمل سابق')),
+      appBar: AppBar(title: Text(context.tr('edit_work_title'))),
+      body: Center(child: Text(context.tr('edit_work_desc'))),
     );
   }
 }

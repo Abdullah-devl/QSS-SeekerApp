@@ -529,10 +529,10 @@ class _OrderDetailViewState extends State<OrderDetailView> {
           children: [
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF90A4AE),
+                color: colors.textSub,
               ),
             ),
             const SizedBox(height: 8),
@@ -811,7 +811,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "معلومات التواصل",
+                          context.l10n.contactInfo,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w900,
@@ -825,7 +825,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                         _buildDialogContactCard(
                           context: context,
                           icon: Icons.phone_android,
-                          title: "رقم الجوال",
+                          title: context.l10n.phoneNumber,
                           value: providerPhone.isNotEmpty ? providerPhone : '---',
                           onCopy: providerPhone.isNotEmpty && providerPhone != '---'
                               ? () {
@@ -840,7 +840,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                         _buildDialogContactCard(
                           context: context,
                           icon: Icons.email_outlined,
-                          title: "البريد الإلكتروني",
+                          title: context.l10n.email,
                           value: providerEmail.isNotEmpty ? providerEmail : '---',
                           onCopy: providerEmail.isNotEmpty && providerEmail != '---'
                               ? () {
@@ -854,7 +854,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                         if (order.providerBanks.isNotEmpty) ...[
                           const SizedBox(height: 24),
                           Text(
-                            "الحسابات البنكية",
+                            context.l10n.bankAccounts,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w900,
@@ -903,7 +903,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                                     Row(
                                       children: [
                                         Text(
-                                          "اسم صاحب الحساب: ",
+                                          context.l10n.accountOwnerName,
                                           style: TextStyle(
                                             fontSize: 11,
                                             color: colors.textSub,
@@ -993,24 +993,24 @@ class _OrderDetailViewState extends State<OrderDetailView> {
     switch (currentStatus.toLowerCase()) {
       case 'approved':
       case 'success':
-        statusColor = const Color(0xFF2E7D32); // أخضر داكن
-        statusBgColor = const Color(0xFFE8F5E9); // أخضر فاتح
+        statusColor = colors.success;
+        statusBgColor = colors.success.withOpacity(0.1);
         statusIcon = Icons.check_circle_rounded;
-        statusTitle = "سند مقبول ومعتمد";
+        statusTitle = context.l10n.bondApproved;
         break;
       case 'rejected':
       case 'failed':
-        statusColor = const Color(0xFFC62828); // أحمر داكن
-        statusBgColor = const Color(0xFFFFEBEE); // أحمر فاتح
+        statusColor = colors.error;
+        statusBgColor = colors.error.withOpacity(0.1);
         statusIcon = Icons.cancel_rounded;
-        statusTitle = "سند مرفوض";
+        statusTitle = context.l10n.bondRejected;
         break;
       case 'pending':
       default:
-        statusColor = const Color(0xFFEF6C00); // برتقالي داكن
-        statusBgColor = const Color(0xFFFFF3E0); // برتقالي فاتح
+        statusColor = colors.warning;
+        statusBgColor = colors.warning.withOpacity(0.1);
         statusIcon = Icons.watch_later_rounded;
-        statusTitle = "سند قيد المراجعة والتدقيق";
+        statusTitle = context.l10n.bondPending;
         break;
     }
 
@@ -1154,14 +1154,14 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                                     child: Container(
                                       padding: const EdgeInsets.symmetric(vertical: 8),
                                       color: Colors.black.withOpacity(0.55),
-                                      child: const Row(
+                                      child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
-                                          Icon(Icons.zoom_in, color: Colors.white, size: 16),
-                                          SizedBox(width: 6),
+                                          const Icon(Icons.zoom_in, color: Colors.white, size: 16),
+                                          const SizedBox(width: 6),
                                           Text(
-                                            "اضغط لتكبير الصورة ملء الشاشة",
-                                            style: TextStyle(
+                                            context.l10n.clickToZoom,
+                                            style: const TextStyle(
                                               color: Colors.white,
                                               fontSize: 11,
                                               fontWeight: FontWeight.bold,
@@ -1182,7 +1182,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
 
                         // 3️⃣ تفاصيل ومعلومات السند
                         Text(
-                          "تفاصيل الحوالة / السند",
+                          context.l10n.bondDetailsHeader,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w900,
@@ -1196,10 +1196,10 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                         _buildDialogContactCard(
                           context: context,
                           icon: Icons.confirmation_number_outlined,
-                          title: "رقم السند",
+                          title: context.l10n.bondNumberLabel,
                           value: (bond.bondNumber != null && bond.bondNumber!.isNotEmpty)
                               ? bond.bondNumber!
-                              : 'غير متوفر حالياً',
+                              : context.l10n.notAvailableNow,
                           onCopy: (bond.bondNumber != null && bond.bondNumber!.isNotEmpty)
                               ? () {
                                   Clipboard.setData(ClipboardData(text: bond.bondNumber!));
@@ -1213,7 +1213,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                         _buildDialogContactCard(
                           context: context,
                           icon: Icons.payments_outlined,
-                          title: "المبلغ المدفوع",
+                          title: context.l10n.paid_amount,
                           value: "${bond.amount.toInt()} ${context.tr('currency_sar')}",
                           onCopy: () {
                             Clipboard.setData(ClipboardData(text: bond.amount.toInt().toString()));
@@ -1228,7 +1228,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                           _buildDialogContactCard(
                             context: context,
                             icon: Icons.description_outlined,
-                            title: "الوصف والملاحظات",
+                            title: context.l10n.description_label,
                             value: bond.description!,
                           ),
                         ],
@@ -1248,9 +1248,9 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                               elevation: 0,
                             ),
                             onPressed: () => Navigator.pop(context),
-                            child: const Text(
-                              "إغلاق النافذة",
-                              style: TextStyle(
+                            child: Text(
+                              context.l10n.closeWindow,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w900,
                                 fontFamily: 'Cairo',
@@ -1677,9 +1677,9 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        "المجموع الإجمالي",
-                        style: TextStyle(
+                      Text(
+                        context.tr('final_total'),
+                        style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w900,
                           color: Color(0xFF1D2126),
@@ -1762,12 +1762,12 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                   );
                 } else {
                   if (context.mounted) {
-                    QSAlerts.showError(context, "تعذر فتح الخريطة");
+                    QSAlerts.showError(context, context.l10n.unableToOpenMap);
                   }
                 }
               } catch (e) {
                 if (context.mounted) {
-                  QSAlerts.showError(context, "تعذر فتح الخريطة");
+                  QSAlerts.showError(context, context.l10n.unableToOpenMap);
                 }
               }
             }
@@ -2322,10 +2322,10 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                           if (selectedType == null ||
                               titleController.text.isEmpty ||
                               contentController.text.isEmpty) {
-                            QSAlerts.showWarning(
-                              context,
-                              'يرجى ملء جميع الحقول',
-                            );
+                             QSAlerts.showWarning(
+                               context,
+                               context.l10n.pleaseFillFields,
+                             );
                             return;
                           }
 

@@ -62,7 +62,7 @@ class FavoriteViewModel extends ChangeNotifier {
       
       // 3. بناء قائمة التصنيفات للفلترة مع إضافة خيار "الكل"
       _filterCategories = [
-        CategoryModel(id: 0, name: 'الكل', iconPath: 'grid_view'),
+        CategoryModel(id: 0, name: 'all', iconPath: 'grid_view'),
         ...realCategories,
       ];
 

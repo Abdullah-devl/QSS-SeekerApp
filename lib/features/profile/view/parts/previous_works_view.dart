@@ -55,7 +55,7 @@ class PreviousWorksView extends StatelessWidget {
               ),
             )
           : vm.works.isEmpty
-          ? const Center(child: Text('لا توجد أعمال سابقة'))
+          ? Center(child: Text(l10n?.noPreviousWorks ?? ''))
           : RefreshIndicator(
               color: colors.primary,
               backgroundColor: colors.card,
@@ -77,6 +77,7 @@ class PreviousWorksView extends StatelessWidget {
 
   Widget _buildWorkCard(BuildContext context, dynamic work) {
     final colors = context.qsColors;
+    final l10n = AppLocalizations.of(context);
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(
@@ -113,7 +114,7 @@ class PreviousWorksView extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '${profile.jobTitle} • الرياض',
+                        '${profile.jobTitle} • ${l10n?.riyadh ?? ''}',
                         style: TextStyle(
                           fontSize: 12,
                           color: colors.textSub,
@@ -225,9 +226,9 @@ class PreviousWorksView extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                _buildTag('#الرياض', colors),
+                _buildTag('#${l10n?.riyadh ?? ''}', colors),
                 const SizedBox(width: 8),
-                _buildTag('#صيانة', colors),
+                _buildTag('#${l10n?.maintenance ?? ''}', colors),
               ],
             ),
           ),

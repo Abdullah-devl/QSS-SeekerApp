@@ -63,15 +63,15 @@ class _MyPackagesViewState extends State<MyPackagesView> {
 
     switch (status) {
       case 'approved':
-        statusColor = Colors.green;
+        statusColor = colors.success;
         statusText = context.tr('approved');
         break;
       case 'rejected':
-        statusColor = Colors.red;
+        statusColor = colors.error;
         statusText = context.tr('rejected');
         break;
       default:
-        statusColor = Colors.orange;
+        statusColor = colors.warning;
         statusText = context.tr('pendingStatus');
     }
 

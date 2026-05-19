@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/core/utils/qs_alerts.dart';
 import 'package:seeker/l10n/app_localizations.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
 import '../viewmodel/change_password_view_model.dart';
 
 class ChangePasswordView extends StatelessWidget {
@@ -203,7 +204,7 @@ class ChangePasswordView extends StatelessWidget {
         if (context.mounted) Navigator.pop(context); // العودة للإعدادات
       } else if (vm.errorMessage != null && context.mounted) {
         // فشل التغيير
-        await QSAlerts.showError(context, vm.errorMessage!);
+        await QSAlerts.showError(context, context.tr(vm.errorMessage!));
       }
     }
   }

@@ -31,7 +31,7 @@ class AuthRepository {
 
       if (response.statusCode != 200 && response.statusCode != 201) {
         throw Exception(
-          'فشل تفعيل البريد الإلكتروني: ${response.statusMessage}',
+          'emailVerificationFailed',
         );
       }
       
@@ -39,7 +39,7 @@ class AuthRepository {
       if (e is DioException) {
         if (e.response?.statusCode == 422) {
           final data = e.response?.data;
-          String errorMessage = data['message'] ?? 'بيانات غير صالحة';
+          String errorMessage = data['message'] ?? 'invalidData';
 
           if (data['errors'] != null && data['errors'] is Map) {
             final errorsMap = data['errors'] as Map<String, dynamic>;
@@ -71,13 +71,13 @@ class AuthRepository {
       );
 
       if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception('فشل إعادة إرسال الكود: ${response.statusMessage}');
+        throw Exception('codeResendFailed');
       }
     } catch (e) {
       if (e is DioException) {
         if (e.response?.statusCode == 422) {
           final data = e.response?.data;
-          String errorMessage = data['message'] ?? 'بيانات غير صالحة';
+          String errorMessage = data['message'] ?? 'invalidData';
 
           if (data['errors'] != null && data['errors'] is Map) {
             final errorsMap = data['errors'] as Map<String, dynamic>;
@@ -136,19 +136,19 @@ class AuthRepository {
 
         return user;
       } else {
-        throw Exception('فشل تسجيل الدخول: ${response.statusMessage}');
+        throw Exception('loginFailed');
       }
     } catch (e) {
       // معالجة الأخطاء القادمة من Dio
       if (e is DioException) {
         // خطأ 401: بيانات الدخول غير صحيحة
         if (e.response?.statusCode == 401) {
-          throw Exception('البريد الإلكتروني أو كلمة المرور غير صحيحة');
+          throw Exception('invalidCredentials');
         }
         // خطأ 422: فشل التحقق من البيانات (Validation Error)
         if (e.response?.statusCode == 422) {
           final data = e.response?.data;
-          String errorMessage = data['message'] ?? 'بيانات غير صالحة';
+          String errorMessage = data['message'] ?? 'invalidData';
 
           // تجميع رسائل الأخطاء التفصيلية من السيرفر
           if (data['errors'] != null && data['errors'] is Map) {
@@ -189,7 +189,7 @@ class AuthRepository {
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
       if (googleUser == null) {
-        throw Exception('تم إلغاء عملية تسجيل الدخول بجوجل');
+        throw Exception('googleLoginCanceled');
       }
 
       // 3. الحصول على التوكنات
@@ -227,11 +227,11 @@ class AuthRepository {
         
         return user;
       } else {
-        throw Exception('فشل تسجيل الدخول عبر جوجل من قبل السيرفر');
+        throw Exception('googleLoginFailed');
       }
     } catch (e) {
       if (e is DioException) {
-        throw Exception(e.response?.data['message'] ?? 'خطأ في الاتصال بالسيرفر');
+        throw Exception(e.response?.data['message'] ?? 'serverConnectionError');
       }
       rethrow;
     }
@@ -321,7 +321,7 @@ class AuthRepository {
       return;
     }
 
-    throw Exception('فشل إنشاء الحساب');
+    throw Exception('accountCreationFailed');
   }
 
   // ===========================================================================
@@ -369,13 +369,13 @@ class AuthRepository {
       );
 
       if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception('فشل تغيير كلمة المرور');
+        throw Exception('changePasswordFailed');
       }
     } catch (e) {
       if (e is DioException) {
         if (e.response?.statusCode == 422 || e.response?.statusCode == 400) {
           final data = e.response?.data;
-          String errorMessage = data['message'] ?? 'بيانات غير صالحة';
+          String errorMessage = data['message'] ?? 'invalidData';
 
           if (data['errors'] != null && data['errors'] is Map) {
             final errorsMap = data['errors'] as Map<String, dynamic>;
@@ -411,13 +411,13 @@ class AuthRepository {
       );
 
       if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception('فشل طلب استعادة كلمة المرور: ${response.statusMessage}');
+        throw Exception('forgotPasswordFailed');
       }
     } catch (e) {
       if (e is DioException) {
         if (e.response?.statusCode == 422 || e.response?.statusCode == 400) {
           final data = e.response?.data;
-          String errorMessage = data['message'] ?? 'البريد الإلكتروني غير مسجل لدينا';
+          String errorMessage = data['message'] ?? 'emailNotRegistered';
           if (data['errors'] != null && data['errors'] is Map) {
             final errorsMap = data['errors'] as Map<String, dynamic>;
             final messages = <String>[];
@@ -448,13 +448,13 @@ class AuthRepository {
       );
 
       if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception('فشل التحقق من رمز الاستعادة: ${response.statusMessage}');
+        throw Exception('verifyResetCodeFailed');
       }
     } catch (e) {
       if (e is DioException) {
         if (e.response?.statusCode == 422 || e.response?.statusCode == 400) {
           final data = e.response?.data;
-          String errorMessage = data['message'] ?? 'رمز التحقق غير صحيح أو منتهي الصلاحية';
+          String errorMessage = data['message'] ?? 'invalidOrExpiredCode';
           if (data['errors'] != null && data['errors'] is Map) {
             final errorsMap = data['errors'] as Map<String, dynamic>;
             final messages = <String>[];
@@ -495,13 +495,13 @@ class AuthRepository {
       );
 
       if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception('فشل إعادة تعيين كلمة المرور: ${response.statusMessage}');
+        throw Exception('resetPasswordFailed');
       }
     } catch (e) {
       if (e is DioException) {
         if (e.response?.statusCode == 422 || e.response?.statusCode == 400) {
           final data = e.response?.data;
-          String errorMessage = data['message'] ?? 'فشل إعادة تعيين كلمة المرور';
+          String errorMessage = data['message'] ?? 'resetPasswordFailed';
           if (data['errors'] != null && data['errors'] is Map) {
             final errorsMap = data['errors'] as Map<String, dynamic>;
             final messages = <String>[];

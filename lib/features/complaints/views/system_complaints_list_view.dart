@@ -197,7 +197,7 @@ class _SystemComplaintsListViewState extends State<SystemComplaintsListView> {
         break;
       case 'in_progress':
       case 'processing':
-        color = Colors.blue;
+        color = colors.primary;
         label = l10n.statusInProgress;
         break;
       case 'rejected':
@@ -206,7 +206,7 @@ class _SystemComplaintsListViewState extends State<SystemComplaintsListView> {
         break;
       case 'pending':
       default:
-        color = Colors.orange;
+        color = colors.warning;
         label = l10n.statusPending;
     }
 

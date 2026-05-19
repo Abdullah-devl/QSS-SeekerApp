@@ -2881,6 +2881,324 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password has been reset successfully.'**
   String get resetPasswordSuccess;
+
+  /// No description provided for @bondApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Bond Approved'**
+  String get bondApproved;
+
+  /// No description provided for @bondRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Bond Rejected'**
+  String get bondRejected;
+
+  /// No description provided for @bondPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Bond Pending Review'**
+  String get bondPending;
+
+  /// No description provided for @accountOwnerName.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Owner: '**
+  String get accountOwnerName;
+
+  /// No description provided for @clickToZoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Click to zoom image full screen'**
+  String get clickToZoom;
+
+  /// No description provided for @bondDetailsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer / Bond Details'**
+  String get bondDetailsHeader;
+
+  /// No description provided for @bondNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bond Number'**
+  String get bondNumberLabel;
+
+  /// No description provided for @notAvailableNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available now'**
+  String get notAvailableNow;
+
+  /// No description provided for @unableToOpenMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to open map'**
+  String get unableToOpenMap;
+
+  /// No description provided for @closeWindow.
+  ///
+  /// In en, this message translates to:
+  /// **'Close Window'**
+  String get closeWindow;
+
+  /// No description provided for @policyConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you agree to all the mentioned terms and policies?'**
+  String get policyConfirmMessage;
+
+  /// No description provided for @policySubmitError.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while submitting agreement'**
+  String get policySubmitError;
+
+  /// No description provided for @invalidCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Email or password incorrect'**
+  String get invalidCredentials;
+
+  /// No description provided for @invalidData.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid data'**
+  String get invalidData;
+
+  /// No description provided for @emailVerificationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Email verification failed'**
+  String get emailVerificationFailed;
+
+  /// No description provided for @codeResendFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to resend code'**
+  String get codeResendFailed;
+
+  /// No description provided for @loginFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Login failed'**
+  String get loginFailed;
+
+  /// No description provided for @googleLoginCanceled.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in was canceled'**
+  String get googleLoginCanceled;
+
+  /// No description provided for @googleLoginFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in failed by the server'**
+  String get googleLoginFailed;
+
+  /// No description provided for @serverConnectionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Server connection error'**
+  String get serverConnectionError;
+
+  /// No description provided for @accountCreationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Account creation failed'**
+  String get accountCreationFailed;
+
+  /// No description provided for @forgotPasswordFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to request password reset'**
+  String get forgotPasswordFailed;
+
+  /// No description provided for @emailNotRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is not registered'**
+  String get emailNotRegistered;
+
+  /// No description provided for @verifyResetCodeFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to verify reset code'**
+  String get verifyResetCodeFailed;
+
+  /// No description provided for @invalidOrExpiredCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid or expired verification code'**
+  String get invalidOrExpiredCode;
+
+  /// No description provided for @resetPasswordFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to reset password'**
+  String get resetPasswordFailed;
+
+  /// No description provided for @custom_service.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Service'**
+  String get custom_service;
+
+  /// No description provided for @attendance_service.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance Service'**
+  String get attendance_service;
+
+  /// No description provided for @service_provider.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Provider'**
+  String get service_provider;
+
+  /// No description provided for @requestsCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests'**
+  String get requestsCountLabel;
+
+  /// No description provided for @servicesCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Services Count'**
+  String get servicesCountLabel;
+
+  /// No description provided for @totalRatingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Rating'**
+  String get totalRatingLabel;
+
+  /// No description provided for @customRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Request'**
+  String get customRequest;
+
+  /// No description provided for @meetingRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance Request'**
+  String get meetingRequest;
+
+  /// No description provided for @services.
+  ///
+  /// In en, this message translates to:
+  /// **'Services'**
+  String get services;
+
+  /// No description provided for @add_work_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Previous Work'**
+  String get add_work_title;
+
+  /// No description provided for @add_work_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Here you can add your previous works to the gallery'**
+  String get add_work_desc;
+
+  /// No description provided for @edit_work_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Work'**
+  String get edit_work_title;
+
+  /// No description provided for @edit_work_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit previous work details page'**
+  String get edit_work_desc;
+
+  /// No description provided for @edit_profile_placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile Details'**
+  String get edit_profile_placeholder;
+
+  /// No description provided for @edit_profile_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Here you can edit your personal details'**
+  String get edit_profile_desc;
+
+  /// No description provided for @noServicesAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No services available currently'**
+  String get noServicesAvailable;
+
+  /// No description provided for @riyadh.
+  ///
+  /// In en, this message translates to:
+  /// **'Riyadh'**
+  String get riyadh;
+
+  /// No description provided for @maintenance.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintenance'**
+  String get maintenance;
+
+  /// No description provided for @noContactPhonesRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'No contact phone numbers registered'**
+  String get noContactPhonesRegistered;
+
+  /// No description provided for @whatsappOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp Only'**
+  String get whatsappOnly;
+
+  /// No description provided for @callOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Call Only'**
+  String get callOnly;
+
+  /// No description provided for @callAndWhatsapp.
+  ///
+  /// In en, this message translates to:
+  /// **'Call & WhatsApp'**
+  String get callAndWhatsapp;
+
+  /// No description provided for @numberCopiedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number copied successfully'**
+  String get numberCopiedSuccess;
+
+  /// No description provided for @ibanCopiedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'IBAN copied successfully'**
+  String get ibanCopiedSuccess;
+
+  /// No description provided for @accountOwnerNotRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'Account owner not registered'**
+  String get accountOwnerNotRegistered;
+
+  /// No description provided for @verifiedOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Verified Only'**
+  String get verifiedOnly;
+
+  /// No description provided for @verifiedOnlyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Show services of providers with active verification'**
+  String get verifiedOnlyDesc;
 }
 
 class _AppLocalizationsDelegate

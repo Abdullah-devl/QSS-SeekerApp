@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
+import 'package:seeker/l10n/app_localizations.dart';
 import 'package:seeker/core/utils/qs_alerts.dart'; // ✅ تمت الإضافة
 import 'dart:developer' as developer;
 import 'package:seeker/core/theme/qs_color_extension.dart';
@@ -20,17 +22,17 @@ class ContactInfoView extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSectionHeader(
-            'بيانات التواصل',
+            AppLocalizations.of(context)!.contactInfo,
             Icons.contact_phone_rounded,
             colors,
           ),
           const SizedBox(height: 16),
 
           if (profile.phones.isEmpty)
-            const Center(
+            Center(
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child: Text('لا توجد أرقام تواصل مسجلة'),
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Text(context.tr('noContactPhonesRegistered')),
               ),
             )
           else
@@ -41,14 +43,14 @@ class ContactInfoView extends StatelessWidget {
           const Divider(height: 40),
 
           _buildSectionHeader(
-            'الحسابات البنكية',
+            AppLocalizations.of(context)!.bankAccounts,
             Icons.account_balance_rounded,
             colors,
           ),
           const SizedBox(height: 16),
 
           if (profile.banks.isEmpty)
-            const Center(child: Text('لا توجد حسابات بنكية مضافة'))
+            Center(child: Text(AppLocalizations.of(context)!.noBankAccounts))
           else
             ...profile.banks.map(
               (bank) => _buildBankCard(context, bank, colors),
@@ -129,8 +131,8 @@ class ContactInfoView extends StatelessWidget {
                 ),
                 Text(
                   phone.type == 'whatsapp'
-                      ? 'واتساب فقط'
-                      : (phone.type == 'phone' ? 'اتصال فقط' : 'اتصال وواتساب'),
+                      ? context.tr('whatsappOnly')
+                      : (phone.type == 'phone' ? context.tr('callOnly') : context.tr('callAndWhatsapp')),
                   style: TextStyle(color: colors.textSub, fontSize: 12),
                 ),
               ],
@@ -180,7 +182,7 @@ class ContactInfoView extends StatelessWidget {
 
   void _copyToClipboard(BuildContext context, String text, dynamic colors) {
     Clipboard.setData(ClipboardData(text: text));
-    QSAlerts.showSuccess(context, 'تم نسخ الرقم بنجاح');
+    QSAlerts.showSuccess(context, context.tr('numberCopiedSuccess'));
   }
 
   void _launchURL(String url) async {
@@ -259,7 +261,7 @@ class ContactInfoView extends StatelessWidget {
                 Text(
                   bank.accountName.isNotEmpty
                       ? bank.accountName
-                      : 'صاحب الحساب غير مسجل',
+                      : context.tr('accountOwnerNotRegistered'),
                   style: TextStyle(color: colors.textSub, fontSize: 13),
                 ),
                 const SizedBox(height: 12),
@@ -293,7 +295,7 @@ class ContactInfoView extends StatelessWidget {
                         ),
                         onPressed: () {
                           Clipboard.setData(ClipboardData(text: bank.iban));
-                          QSAlerts.showSuccess(context, 'تم نسخ رقم الحساب بنجاح');
+                          QSAlerts.showSuccess(context, context.tr('ibanCopiedSuccess'));
                         },
                       ),
                     ],

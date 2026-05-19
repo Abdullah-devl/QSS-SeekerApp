@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:seeker/l10n/app_localizations.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
 import '../repositories/auth_repository.dart';
 
 class ChangePasswordViewModel extends ChangeNotifier {
@@ -70,10 +71,10 @@ class ChangePasswordViewModel extends ChangeNotifier {
       if (e is DioException && e.response?.data != null) {
         final data = e.response!.data;
         _errorMessage = (data is Map && data.containsKey('message')) 
-            ? data['message'].toString() 
+            ? context.tr(data['message'].toString()) 
             : l10n.changePasswordFailed;
       } else {
-        _errorMessage = e.toString().replaceAll('Exception: ', '');
+        _errorMessage = context.tr(e.toString().replaceAll('Exception: ', ''));
       }
       _setLoading(false);
       return false;

@@ -1485,4 +1485,167 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get resetPasswordSuccess => 'Password has been reset successfully.';
+
+  @override
+  String get bondApproved => 'Bond Approved';
+
+  @override
+  String get bondRejected => 'Bond Rejected';
+
+  @override
+  String get bondPending => 'Bond Pending Review';
+
+  @override
+  String get accountOwnerName => 'Account Owner: ';
+
+  @override
+  String get clickToZoom => 'Click to zoom image full screen';
+
+  @override
+  String get bondDetailsHeader => 'Transfer / Bond Details';
+
+  @override
+  String get bondNumberLabel => 'Bond Number';
+
+  @override
+  String get notAvailableNow => 'Not available now';
+
+  @override
+  String get unableToOpenMap => 'Unable to open map';
+
+  @override
+  String get closeWindow => 'Close Window';
+
+  @override
+  String get policyConfirmMessage =>
+      'Do you agree to all the mentioned terms and policies?';
+
+  @override
+  String get policySubmitError =>
+      'An error occurred while submitting agreement';
+
+  @override
+  String get invalidCredentials => 'Email or password incorrect';
+
+  @override
+  String get invalidData => 'Invalid data';
+
+  @override
+  String get emailVerificationFailed => 'Email verification failed';
+
+  @override
+  String get codeResendFailed => 'Failed to resend code';
+
+  @override
+  String get loginFailed => 'Login failed';
+
+  @override
+  String get googleLoginCanceled => 'Google sign-in was canceled';
+
+  @override
+  String get googleLoginFailed => 'Google sign-in failed by the server';
+
+  @override
+  String get serverConnectionError => 'Server connection error';
+
+  @override
+  String get accountCreationFailed => 'Account creation failed';
+
+  @override
+  String get forgotPasswordFailed => 'Failed to request password reset';
+
+  @override
+  String get emailNotRegistered => 'Email is not registered';
+
+  @override
+  String get verifyResetCodeFailed => 'Failed to verify reset code';
+
+  @override
+  String get invalidOrExpiredCode => 'Invalid or expired verification code';
+
+  @override
+  String get resetPasswordFailed => 'Failed to reset password';
+
+  @override
+  String get custom_service => 'Custom Service';
+
+  @override
+  String get attendance_service => 'Attendance Service';
+
+  @override
+  String get service_provider => 'Service Provider';
+
+  @override
+  String get requestsCountLabel => 'Requests';
+
+  @override
+  String get servicesCountLabel => 'Services Count';
+
+  @override
+  String get totalRatingLabel => 'Total Rating';
+
+  @override
+  String get customRequest => 'Custom Request';
+
+  @override
+  String get meetingRequest => 'Attendance Request';
+
+  @override
+  String get services => 'Services';
+
+  @override
+  String get add_work_title => 'Add Previous Work';
+
+  @override
+  String get add_work_desc =>
+      'Here you can add your previous works to the gallery';
+
+  @override
+  String get edit_work_title => 'Edit Work';
+
+  @override
+  String get edit_work_desc => 'Edit previous work details page';
+
+  @override
+  String get edit_profile_placeholder => 'Edit Profile Details';
+
+  @override
+  String get edit_profile_desc => 'Here you can edit your personal details';
+
+  @override
+  String get noServicesAvailable => 'No services available currently';
+
+  @override
+  String get riyadh => 'Riyadh';
+
+  @override
+  String get maintenance => 'Maintenance';
+
+  @override
+  String get noContactPhonesRegistered => 'No contact phone numbers registered';
+
+  @override
+  String get whatsappOnly => 'WhatsApp Only';
+
+  @override
+  String get callOnly => 'Call Only';
+
+  @override
+  String get callAndWhatsapp => 'Call & WhatsApp';
+
+  @override
+  String get numberCopiedSuccess => 'Phone number copied successfully';
+
+  @override
+  String get ibanCopiedSuccess => 'IBAN copied successfully';
+
+  @override
+  String get accountOwnerNotRegistered => 'Account owner not registered';
+
+  @override
+  String get verifiedOnly => 'Show Verified Only';
+
+  @override
+  String get verifiedOnlyDesc =>
+      'Show services of providers with active verification';
 }

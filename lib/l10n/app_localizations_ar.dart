@@ -1470,4 +1470,164 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get resetPasswordSuccess => 'تم إعادة تعيين كلمة المرور بنجاح';
+
+  @override
+  String get bondApproved => 'سند مقبول ومعتمد';
+
+  @override
+  String get bondRejected => 'سند مرفوض';
+
+  @override
+  String get bondPending => 'سند قيد المراجعة والتدقيق';
+
+  @override
+  String get accountOwnerName => 'اسم صاحب الحساب: ';
+
+  @override
+  String get clickToZoom => 'اضغط لتكبير الصورة ملء الشاشة';
+
+  @override
+  String get bondDetailsHeader => 'تفاصيل الحوالة / السند';
+
+  @override
+  String get bondNumberLabel => 'رقم السند';
+
+  @override
+  String get notAvailableNow => 'غير متوفر حالياً';
+
+  @override
+  String get unableToOpenMap => 'تعذر فتح الخريطة';
+
+  @override
+  String get closeWindow => 'إغلاق النافذة';
+
+  @override
+  String get policyConfirmMessage =>
+      'هل أنت موافق على جميع الشروط والسياسات المذكورة؟';
+
+  @override
+  String get policySubmitError => 'حدث خطأ أثناء إرسال الموافقة';
+
+  @override
+  String get invalidCredentials => 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+
+  @override
+  String get invalidData => 'بيانات غير صالحة';
+
+  @override
+  String get emailVerificationFailed => 'فشل تفعيل البريد الإلكتروني';
+
+  @override
+  String get codeResendFailed => 'فشل إعادة إرسال الكود';
+
+  @override
+  String get loginFailed => 'فشل تسجيل الدخول';
+
+  @override
+  String get googleLoginCanceled => 'تم إلغاء عملية تسجيل الدخول بجوجل';
+
+  @override
+  String get googleLoginFailed => 'فشل تسجيل الدخول عبر جوجل من قبل السيرفر';
+
+  @override
+  String get serverConnectionError => 'خطأ في الاتصال بالسيرفر';
+
+  @override
+  String get accountCreationFailed => 'فشل إنشاء الحساب';
+
+  @override
+  String get forgotPasswordFailed => 'فشل طلب استعادة كلمة المرور';
+
+  @override
+  String get emailNotRegistered => 'البريد الإلكتروني غير مسجل لدينا';
+
+  @override
+  String get verifyResetCodeFailed => 'فشل التحقق من رمز الاستعادة';
+
+  @override
+  String get invalidOrExpiredCode => 'رمز التحقق غير صحيح أو منتهي الصلاحية';
+
+  @override
+  String get resetPasswordFailed => 'فشل إعادة تعيين كلمة المرور';
+
+  @override
+  String get custom_service => 'خدمة مخصصة';
+
+  @override
+  String get attendance_service => 'خدمة حضور';
+
+  @override
+  String get service_provider => 'مزود الخدمة';
+
+  @override
+  String get requestsCountLabel => 'عدد الطلبات';
+
+  @override
+  String get servicesCountLabel => 'عدد الخدمات';
+
+  @override
+  String get totalRatingLabel => 'التقييم الكامل';
+
+  @override
+  String get customRequest => 'طلب مخصص';
+
+  @override
+  String get meetingRequest => 'طلب حضور';
+
+  @override
+  String get services => 'الخدمات';
+
+  @override
+  String get add_work_title => 'إضافة عمل سابق';
+
+  @override
+  String get add_work_desc => 'هنا يمكنك إضافة أعمالك السابقة للمعرض';
+
+  @override
+  String get edit_work_title => 'تعديل العمل';
+
+  @override
+  String get edit_work_desc => 'شاشة تعديل بيانات عمل سابق';
+
+  @override
+  String get edit_profile_placeholder => 'تعديل الملف الشخصي';
+
+  @override
+  String get edit_profile_desc => 'هنا يمكنك تعديل بياناتك الشخصية';
+
+  @override
+  String get noServicesAvailable => 'لا توجد خدمات متاحة حالياً';
+
+  @override
+  String get riyadh => 'الرياض';
+
+  @override
+  String get maintenance => 'صيانة';
+
+  @override
+  String get noContactPhonesRegistered => 'لا توجد أرقام تواصل مسجلة';
+
+  @override
+  String get whatsappOnly => 'واتساب فقط';
+
+  @override
+  String get callOnly => 'اتصال فقط';
+
+  @override
+  String get callAndWhatsapp => 'اتصال وواتساب';
+
+  @override
+  String get numberCopiedSuccess => 'تم نسخ الرقم بنجاح';
+
+  @override
+  String get ibanCopiedSuccess => 'تم نسخ رقم الحساب بنجاح';
+
+  @override
+  String get accountOwnerNotRegistered => 'صاحب الحساب غير مسجل';
+
+  @override
+  String get verifiedOnly => 'عرض الموثقين فقط';
+
+  @override
+  String get verifiedOnlyDesc => 'عرض الخدمات التابعة لمزودين لديهم توثيق سارٍ';
 }

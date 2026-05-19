@@ -452,9 +452,9 @@ class _OrderCardWidget extends StatelessWidget {
     // تحديد اسم الخدمة المعروض بناءً على الشروط المطلوبة
     final String displayServiceName;
     if (order.serviceName.trim() == '_custom') {
-      displayServiceName = 'خدمة مخصصة';
+      displayServiceName = context.tr('custom_service');
     } else if (order.serviceName.trim() == '_meeting') {
-      displayServiceName = 'خدمة حضور';
+      displayServiceName = context.tr('attendance_service');
     } else {
       displayServiceName = order.serviceName;
     }

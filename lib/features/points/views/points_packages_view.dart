@@ -149,14 +149,14 @@ class _PointsPackagesViewState extends State<PointsPackagesView> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.orange.shade700,
+                color: colors.warning,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
                   bottomRight: Radius.circular(15),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.orange.withValues(alpha: 0.3),
+                    color: colors.warning.withOpacity(0.3),
                     blurRadius: 4,
                     offset: const Offset(2, 2),
                   ),
@@ -184,11 +184,12 @@ class _PointsPackagesViewState extends State<PointsPackagesView> {
   }
 
   Widget _buildErrorWidget(BuildContext context, String error) {
+    final colors = context.qsColors;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline, color: Colors.red, size: 48),
+          Icon(Icons.error_outline, color: colors.error, size: 48),
           const SizedBox(height: 16),
           Text(context.tr('errorLoadingPackages')),
           TextButton(

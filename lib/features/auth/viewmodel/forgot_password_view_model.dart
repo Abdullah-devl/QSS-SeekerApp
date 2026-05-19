@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:seeker/core/utils/qs_alerts.dart';
 import 'package:seeker/l10n/app_localizations.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
 import '../repositories/auth_repository.dart';
 
 class ForgotPasswordViewModel extends ChangeNotifier {
@@ -54,7 +55,7 @@ class ForgotPasswordViewModel extends ChangeNotifier {
     } catch (e) {
       if (context.mounted) {
         final msg = e.toString().replaceAll('Exception: ', '');
-        QSAlerts.showError(context, msg);
+        QSAlerts.showError(context, context.tr(msg));
       }
     } finally {
       _isLoading = false;
@@ -85,7 +86,7 @@ class ForgotPasswordViewModel extends ChangeNotifier {
     } catch (e) {
       if (context.mounted) {
         final msg = e.toString().replaceAll('Exception: ', '');
-        QSAlerts.showError(context, msg);
+        QSAlerts.showError(context, context.tr(msg));
       }
     } finally {
       _isLoading = false;
@@ -136,7 +137,7 @@ class ForgotPasswordViewModel extends ChangeNotifier {
     } catch (e) {
       if (context.mounted) {
         final msg = e.toString().replaceAll('Exception: ', '');
-        QSAlerts.showError(context, msg);
+        QSAlerts.showError(context, context.tr(msg));
       }
     } finally {
       _isLoading = false;

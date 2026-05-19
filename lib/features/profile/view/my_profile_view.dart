@@ -151,7 +151,7 @@ class MyProfileView extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildPointsStat(
-                      label: 'رصيد النقاط',
+                      label: l10n.available_points,
                       value: profile.bonusPoints.toStringAsFixed(0),
                       icon: Icons.stars_rounded,
                       colors: colors,

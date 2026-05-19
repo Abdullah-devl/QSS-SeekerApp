@@ -50,7 +50,7 @@ class ComplaintsView extends StatelessWidget {
               title: l10n.orderComplaintsTitle,
               description: l10n.orderComplaintsDesc,
               icon: Icons.assignment_rounded,
-              color: Colors.orange.shade700,
+              color: colors.warning,
               onTap: () {
                 Navigator.push(
                   context,

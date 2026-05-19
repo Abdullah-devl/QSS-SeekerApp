@@ -4,6 +4,7 @@ import 'package:seeker/core/utils/qs_alerts.dart';
 import 'package:seeker/core/services/notification_service.dart';
 import 'package:seeker/core/storage/token_storage.dart';
 import 'package:seeker/l10n/app_localizations.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
 import '../repositories/auth_repository.dart';
 
 /// 📂 اسم الملف: login_view_model.dart
@@ -83,7 +84,7 @@ class LoginViewModel extends ChangeNotifier {
     } catch (e) {
       // 5. في حال الفشل، عرض رسالة الخطأ للمستخدم
       if (context.mounted) {
-        QSAlerts.showError(context, e.toString().replaceAll('Exception: ', ''));
+        QSAlerts.showError(context, context.tr(e.toString().replaceAll('Exception: ', '')));
       }
     } finally {
       // 6. إيقاف حالة التحميل في جميع الأحوال (نجاح أو فشل)
@@ -129,7 +130,7 @@ class LoginViewModel extends ChangeNotifier {
       if (context.mounted) {
         // إذا ألغى المستخدم الدخول فلا نعرض رسالة خطأ، عدا ذلك نعرضها
         if (!e.toString().contains('إلغاء') && !e.toString().contains('canceled') && !e.toString().contains('cancel')) {
-          QSAlerts.showError(context, e.toString().replaceAll('Exception: ', ''));
+          QSAlerts.showError(context, context.tr(e.toString().replaceAll('Exception: ', '')));
         }
       }
     } finally {
@@ -154,7 +155,7 @@ class LoginViewModel extends ChangeNotifier {
       }
     } catch (e) {
       if (context.mounted) {
-        QSAlerts.showError(context, e.toString().replaceAll('Exception: ', ''));
+        QSAlerts.showError(context, context.tr(e.toString().replaceAll('Exception: ', '')));
       }
     } finally {
       _isLoading = false;

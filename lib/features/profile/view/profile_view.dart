@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
 import 'package:seeker/core/network/api_service.dart';
 import 'package:seeker/core/storage/token_storage.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
@@ -157,9 +158,9 @@ class ProfileView extends StatelessWidget {
                   ),
                 ),
               ),
-              _buildStatItem(context, '${profile.requestsCount}', 'عدد الطلبات', colors),
-              _buildStatItem(context, '${profile.servicesCount}', 'عدد الخدمات', colors),
-              _buildStatItem(context, '${profile.ratingAvg}', 'التقييم الكامل', colors),
+              _buildStatItem(context, '${profile.requestsCount}', context.tr('requestsCountLabel'), colors),
+              _buildStatItem(context, '${profile.servicesCount}', context.tr('servicesCountLabel'), colors),
+              _buildStatItem(context, '${profile.ratingAvg}', context.tr('totalRatingLabel'), colors),
             ],
           ),
           const SizedBox(height: 16),
@@ -248,7 +249,7 @@ class ProfileView extends StatelessWidget {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  child: const Text('طلب مخصص', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  child: Text(context.tr('customRequest'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
               ),
               const SizedBox(width: 12),
@@ -275,7 +276,7 @@ class ProfileView extends StatelessWidget {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  child: Text('طلب حضور', textAlign: TextAlign.center, style: TextStyle(color: colors.text, fontWeight: FontWeight.bold)),
+                  child: Text(context.tr('meetingRequest'), textAlign: TextAlign.center, style: TextStyle(color: colors.text, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
@@ -308,7 +309,7 @@ class ProfileView extends StatelessWidget {
               Icon(Icons.star_outline_rounded, size: 64, color: colors.textSub.withOpacity(0.3)),
               const SizedBox(height: 16),
               Text(
-                'لا توجد تقييمات حالياً',
+                context.tr('noReviews'),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -335,7 +336,7 @@ class ProfileView extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 24.0),
             child: Center(
               child: Text(
-                'لا توجد تقييمات عامة حالياً',
+                context.tr('noPublicReviews'),
                 style: TextStyle(color: colors.textSub, fontSize: 13),
               ),
             ),
@@ -354,8 +355,8 @@ class ProfileView extends StatelessWidget {
               ),
               label: Text(
                 vm.showHiddenReviews
-                    ? 'إخفاء التقييمات المخفية (${hiddenReviews.length})'
-                    : 'عرض التقييمات المخفية (${hiddenReviews.length})',
+                    ? context.tr('hideHiddenReviews', args: {'count': hiddenReviews.length})
+                    : context.tr('showHiddenReviews', args: {'count': hiddenReviews.length}),
                 style: TextStyle(
                   color: colors.primary,
                   fontWeight: FontWeight.bold,
@@ -511,7 +512,7 @@ class ProfileView extends StatelessWidget {
       indicatorWeight: 3,
       tabs: [
         Tab(icon: const Icon(Icons.grid_view_rounded), text: AppLocalizations.of(context)!.previousWorks),
-        const Tab(icon: Icon(Icons.build_rounded), text: 'الخدمات'),
+        Tab(icon: const Icon(Icons.build_rounded), text: context.tr('services')),
         Tab(icon: const Icon(Icons.star_rate_rounded), text: AppLocalizations.of(context)!.customerReviews),
         Tab(icon: const Icon(Icons.contact_phone_rounded), text: AppLocalizations.of(context)!.contactInfo),
       ],

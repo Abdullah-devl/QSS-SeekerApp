@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:seeker/core/routes/app_routes.dart';
 import 'package:seeker/core/utils/qs_alerts.dart';
 import 'package:seeker/l10n/app_localizations.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
 import '../repositories/auth_repository.dart';
 
 class RegisterViewModel extends ChangeNotifier {
@@ -102,7 +103,7 @@ class RegisterViewModel extends ChangeNotifier {
       // 7. معالجة الأخطاء وعرضها
       if (context.mounted) {
         final msg = e.toString().replaceAll('Exception: ', '');
-        QSAlerts.showError(context, msg);
+        QSAlerts.showError(context, context.tr(msg));
       }
     } finally {
       _isLoading = false;

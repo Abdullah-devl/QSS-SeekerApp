@@ -45,7 +45,7 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
     final confirmed = await QSAlerts.showConfirm(
       context,
       title: context.tr('confirm_completion_title'),
-      message: 'هل أنت موافق على جميع الشروط والسياسات المذكورة؟',
+      message: context.l10n.policyConfirmMessage,
     );
 
     if (confirmed && mounted) {
@@ -58,7 +58,7 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
         // حفظ الحالة محلياً
         await context.read<TokenStorage>().savePolicyAgreement(true);
         if (mounted) {
-          await QSAlerts.showSuccess(context, 'مرحباً بك في تطبيق Seeker!');
+          await QSAlerts.showSuccess(context, context.l10n.welcomeTitle);
           if (mounted) {
             Navigator.pushNamedAndRemoveUntil(
               context,
@@ -72,7 +72,7 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
           context,
           vm.errorMessage != null
               ? (vm.errorMessage!.contains(' ') ? vm.errorMessage! : context.tr(vm.errorMessage!))
-              : 'حدث خطأ أثناء إرسال الموافقة',
+              : context.l10n.policySubmitError,
         );
       }
     }
@@ -216,9 +216,9 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                   elevation: 5,
                 ),
-                child: const Text(
-                  'الموافقة والمتابعة',
-                  style: TextStyle(
+                child: Text(
+                  l10n.agree_and_continue,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

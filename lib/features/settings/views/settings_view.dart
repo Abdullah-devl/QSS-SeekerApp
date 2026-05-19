@@ -148,7 +148,9 @@ class _SettingsViewState extends State<SettingsView> {
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
-                                  userRole == 'provider' ? 'مزود خدمة' : 'طالب خدمة',
+                                  userRole == 'provider'
+                                      ? AppLocalizations.of(context)!.provider_role
+                                      : AppLocalizations.of(context)!.seeker_role,
                                   style: TextStyle(
                                     fontSize: 11,
                                     color: colors.primary,
@@ -160,10 +162,10 @@ class _SettingsViewState extends State<SettingsView> {
                               // 💰 عرض رصيد النقاط في الإعدادات
                               Row(
                                 children: [
-                                  Icon(Icons.stars_rounded, size: 14, color: Colors.orange.shade700),
+                                  Icon(Icons.stars_rounded, size: 14, color: colors.warning),
                                   const SizedBox(width: 4),
                                   Text(
-                                    'رصيد النقاط: ${(profile?.bonusPoints ?? 0).toStringAsFixed(0)}',
+                                    '${AppLocalizations.of(context)!.available_points}: ${(profile?.bonusPoints ?? 0).toStringAsFixed(0)}',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.bold,
@@ -237,7 +239,7 @@ class _SettingsViewState extends State<SettingsView> {
                 _buildDivider(colors.textSub),
                 _buildSettingsTile(
                   icon: Icons.monetization_on_outlined,
-                  title: 'شراء النقاط',
+                  title: AppLocalizations.of(context)!.pointsManagementTitle,
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.pointsManagement);
                   },
@@ -383,7 +385,7 @@ class _SettingsViewState extends State<SettingsView> {
                 _buildDivider(colors.textSub),
                 _buildSettingsTile(
                   icon: Icons.feedback_outlined,
-                  title: 'مركز الشكاوى والبلاغات',
+                  title: AppLocalizations.of(context)!.complaintsHub,
                   onTap: () {
                     Navigator.pushNamed(context, AppRoutes.systemComplaints);
                   },

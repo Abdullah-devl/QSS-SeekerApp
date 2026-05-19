@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:seeker/core/utils/qs_alerts.dart';
 import 'package:seeker/l10n/app_localizations.dart';
 import '../../../../core/routes/app_routes.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
 import '../repositories/auth_repository.dart';
 
 class VerifyEmailViewModel extends ChangeNotifier {
@@ -65,7 +66,7 @@ class VerifyEmailViewModel extends ChangeNotifier {
     } catch (e) {
       // 5. معالجة الأخطاء
       if (context.mounted) {
-        QSAlerts.showError(context, e.toString().replaceAll('Exception: ', ''));
+        QSAlerts.showError(context, context.tr(e.toString().replaceAll('Exception: ', '')));
       }
     } finally {
       _isLoading = false;
@@ -126,7 +127,7 @@ class VerifyEmailViewModel extends ChangeNotifier {
       startTimer();
     } catch (e) {
       if (context.mounted) {
-        QSAlerts.showError(context, e.toString().replaceAll('Exception: ', ''));
+        QSAlerts.showError(context, context.tr(e.toString().replaceAll('Exception: ', '')));
       }
     } finally {
       _isLoading = false;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:seeker/core/localization/app_localizations.dart';
 import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/features/profile/view/parts/profile_service_card.dart';
 import 'package:seeker/features/home/services/models/service_model.dart';
@@ -24,7 +25,7 @@ class ServicesView extends StatelessWidget {
             Icon(Icons.miscellaneous_services_rounded, size: 60, color: colors.textSub.withValues(alpha: 0.2)),
             const SizedBox(height: 16),
             Text(
-              'لا توجد خدمات متاحة حالياً',
+              context.tr('noServicesAvailable'),
               style: TextStyle(color: colors.textSub, fontSize: 16),
             ),
           ],

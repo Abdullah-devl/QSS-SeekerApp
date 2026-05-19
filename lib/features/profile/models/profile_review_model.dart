@@ -23,13 +23,21 @@ class ProfileReviewModel {
     final ratingVal = int.tryParse(json['rating']?.toString() ?? '0') ?? 0;
     final commentVal = json['comment']?.toString() ?? '';
     final createdAtVal = json['created_at']?.toString() ?? '';
-    final isHiddenVal = json['is_hidden'] == true || json['is_hidden'] == 1 || json['hidden'] == true || json['hidden'] == 1;
+    final isHiddenVal =
+        json['is_hidden'] == true ||
+        json['is_hidden'] == 1 ||
+        json['hidden'] == true ||
+        json['hidden'] == 1;
 
     // قراءة بيانات المستخدم بشكل مرن
     final userObj = json['user'] ?? json['provider'] ?? {};
     final userNameVal = userObj['name']?.toString() ?? 'مستخدم';
-    
-    final rawImg = userObj['image_url'] ?? userObj['image_path'] ?? userObj['avatar'] ?? '';
+
+    final rawImg =
+        userObj['image_url'] ??
+        userObj['image_path'] ??
+        userObj['avatar'] ??
+        '';
     final userImageUrlVal = ApiEndpoints.getImageUrl(rawImg.toString());
 
     return ProfileReviewModel(

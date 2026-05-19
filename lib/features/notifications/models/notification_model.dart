@@ -27,8 +27,8 @@ class NotificationModel {
       type: json['type'] ?? 'general',
       data: json['data'] is Map ? Map<String, dynamic>.from(json['data']) : {},
       isRead: json['is_read'] == 1 || json['is_read'] == true,
-      createdAt: json['created_at'] != null 
-          ? DateTime.parse(json['created_at']) 
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
           : DateTime.now(),
     );
   }

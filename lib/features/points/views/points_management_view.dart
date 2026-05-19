@@ -38,7 +38,8 @@ class PointsManagementView extends StatelessWidget {
               title: context.tr('pointsPackages'),
               subtitle: context.tr('pointsPackagesSubtitle'),
               icon: Icons.grid_view_rounded,
-              onTap: () => Navigator.pushNamed(context, AppRoutes.availablePackages),
+              onTap: () =>
+                  Navigator.pushNamed(context, AppRoutes.availablePackages),
             ),
           ],
         ),
@@ -96,10 +97,7 @@ class PointsManagementView extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: colors.textSub,
-                    ),
+                    style: TextStyle(fontSize: 13, color: colors.textSub),
                   ),
                 ],
               ),

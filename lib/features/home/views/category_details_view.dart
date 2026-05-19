@@ -87,7 +87,10 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
                 children: [
                   // 1️⃣ التصنيفات الفرعية (Sub Categories)
                   if (data.subCategories.isNotEmpty) ...[
-                    _buildSectionTitle(AppLocalizations.of(context)!.subCategories, colors),
+                    _buildSectionTitle(
+                      AppLocalizations.of(context)!.subCategories,
+                      colors,
+                    ),
                     const SizedBox(height: 12),
                     _buildSubCategoriesList(data.subCategories, colors),
                     const SizedBox(height: 24),
@@ -95,7 +98,10 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
 
                   // 2️⃣ الموصى بهم (Recommended Providers)
                   if (data.recommendedProviders.isNotEmpty) ...[
-                    _buildSectionTitle(AppLocalizations.of(context)!.recommendedProviders, colors),
+                    _buildSectionTitle(
+                      AppLocalizations.of(context)!.recommendedProviders,
+                      colors,
+                    ),
                     const SizedBox(height: 12),
                     _buildProvidersList(data.recommendedProviders, colors),
                     const SizedBox(height: 24),
@@ -103,7 +109,10 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
 
                   // 3️⃣ الخدمات (Services) بتصميم screen.png المطابق
                   if (data.services.isNotEmpty) ...[
-                    _buildSectionTitle(AppLocalizations.of(context)!.availableServices, colors),
+                    _buildSectionTitle(
+                      AppLocalizations.of(context)!.availableServices,
+                      colors,
+                    ),
                     const SizedBox(height: 12),
                     _buildServicesList(data.services, colors, vm),
                   ] else ...[
@@ -166,16 +175,18 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
               decoration: BoxDecoration(
                 color: colors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: colors.primary.withValues(alpha: 0.2)),
+                border: Border.all(
+                  color: colors.primary.withValues(alpha: 0.2),
+                ),
               ),
               padding: const EdgeInsets.all(8),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   cat.iconPath.isNotEmpty
-                      ? (cat.iconPath.startsWith('http') 
-                          ? Image.network(cat.iconPath, width: 30, height: 30)
-                          : Image.asset(cat.iconPath, width: 30, height: 30))
+                      ? (cat.iconPath.startsWith('http')
+                            ? Image.network(cat.iconPath, width: 30, height: 30)
+                            : Image.asset(cat.iconPath, width: 30, height: 30))
                       : Icon(Icons.category, color: colors.primary, size: 30),
                   const SizedBox(height: 6),
                   Text(
@@ -236,14 +247,25 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
                       : null,
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  provider.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: colors.text,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        provider.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: colors.text,
+                        ),
+                      ),
+                    ),
+                    if (provider.isVerified == true) ...[
+                      const SizedBox(width: 4),
+                      const Icon(Icons.verified, size: 14, color: Colors.blue),
+                    ],
+                  ],
                 ),
                 Text(
                   provider.specialty,
@@ -294,9 +316,8 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
               context,
               MaterialPageRoute(
                 builder: (context) => ChangeNotifierProvider(
-                  create: (context) => ServiceDetailsViewModel(
-                    context.read<HomeRepository>(),
-                  ),
+                  create: (context) =>
+                      ServiceDetailsViewModel(context.read<HomeRepository>()),
                   child: ServiceDetailsView(initialService: services[i]),
                 ),
               ),
@@ -346,10 +367,7 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
             borderRadius: BorderRadius.circular(16),
             gradient: LinearGradient(
               begin: Alignment.bottomRight,
-              colors: [
-                Colors.black.withValues(alpha: 0.6),
-                Colors.transparent,
-              ],
+              colors: [Colors.black.withValues(alpha: 0.6), Colors.transparent],
             ),
           ),
           padding: const EdgeInsets.all(16),
@@ -386,54 +404,66 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
 
   /// 🚀 نفس منطق التوجيه الموجود في الصفحة الرئيسية
   void _handleAdNavigation(AdvertisementModel ad) {
-    debugPrint('📢 [Section Ad Tap]: ID=${ad.id}, Type=${ad.targetType}, TargetId=${ad.targetId}');
+    debugPrint(
+      '📢 [Section Ad Tap]: ID=${ad.id}, Type=${ad.targetType}, TargetId=${ad.targetId}',
+    );
     final homeRepo = context.read<HomeRepository>();
     final String target = ad.targetType.toLowerCase().trim();
 
     if (target == 'service' && ad.targetId != null) {
       debugPrint('🚀 Fetching Service for Navigation: ${ad.targetId}');
-      homeRepo.fetchServiceById(ad.targetId!).then((service) {
-        if (mounted) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChangeNotifierProvider(
-                create: (context) => ServiceDetailsViewModel(homeRepo),
-                child: ServiceDetailsView(initialService: service),
-              ),
-            ),
-          );
-        }
-      }).catchError((e) => debugPrint('❌ Error fetching service: $e'));
+      homeRepo
+          .fetchServiceById(ad.targetId!)
+          .then((service) {
+            if (mounted) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChangeNotifierProvider(
+                    create: (context) => ServiceDetailsViewModel(homeRepo),
+                    child: ServiceDetailsView(initialService: service),
+                  ),
+                ),
+              );
+            }
+          })
+          .catchError((e) => debugPrint('❌ Error fetching service: $e'));
     } else if (target == 'category' && ad.targetId != null) {
       debugPrint('🚀 Fetching Categories for Navigation: ${ad.targetId}');
-      homeRepo.fetchCategories().then((categories) {
-        final category = categories.firstWhere((c) => c.id == ad.targetId);
-        if (mounted) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChangeNotifierProvider(
-                create: (context) => CategoryDetailsViewModel(
-                  homeRepo,
-                  context.read<AdvertisementRepository>(),
+      homeRepo
+          .fetchCategories()
+          .then((categories) {
+            final category = categories.firstWhere((c) => c.id == ad.targetId);
+            if (mounted) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChangeNotifierProvider(
+                    create: (context) => CategoryDetailsViewModel(
+                      homeRepo,
+                      context.read<AdvertisementRepository>(),
+                    ),
+                    child: CategoryDetailsView(category: category),
+                  ),
                 ),
-                child: CategoryDetailsView(category: category),
-              ),
-            ),
-          );
-        }
-      }).catchError((e) => debugPrint('❌ Error fetching categories: $e'));
-    } else if (target == 'external' && ad.externalLink != null && ad.externalLink!.isNotEmpty) {
+              );
+            }
+          })
+          .catchError((e) => debugPrint('❌ Error fetching categories: $e'));
+    } else if (target == 'external' &&
+        ad.externalLink != null &&
+        ad.externalLink!.isNotEmpty) {
       debugPrint('🚀 Opening External Link: ${ad.externalLink}');
       final url = Uri.parse(ad.externalLink!.trim());
-      canLaunchUrl(url).then((can) {
-        if (can) {
-          launchUrl(url, mode: LaunchMode.externalApplication);
-        } else {
-          debugPrint('❌ Cannot launch URL: ${ad.externalLink}');
-        }
-      }).catchError((e) => debugPrint('❌ URL Launch Error: $e'));
+      canLaunchUrl(url)
+          .then((can) {
+            if (can) {
+              launchUrl(url, mode: LaunchMode.externalApplication);
+            } else {
+              debugPrint('❌ Cannot launch URL: ${ad.externalLink}');
+            }
+          })
+          .catchError((e) => debugPrint('❌ URL Launch Error: $e'));
     } else {
       debugPrint('ℹ️ No navigation action for target: $target');
     }

@@ -45,8 +45,11 @@ class ChangePasswordView extends StatelessWidget {
                       color: colors.primary.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.lock_reset_rounded,
-                        color: colors.primary, size: 60),
+                    child: Icon(
+                      Icons.lock_reset_rounded,
+                      color: colors.primary,
+                      size: 60,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 40),
@@ -84,19 +87,23 @@ class ChangePasswordView extends StatelessWidget {
                   width: double.infinity,
                   height: 55,
                   child: ElevatedButton(
-                    onPressed:
-                        vm.isLoading ? null : () => _handleUpdate(context, vm),
+                    onPressed: vm.isLoading
+                        ? null
+                        : () => _handleUpdate(context, vm),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: colors.primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                       elevation: 0,
                     ),
                     child: Text(
                       l10n.updatePassword,
-                      style:
-                          const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -118,7 +125,7 @@ class ChangePasswordView extends StatelessWidget {
                         color: Colors.black.withOpacity(0.1),
                         blurRadius: 20,
                         spreadRadius: 5,
-                      )
+                      ),
                     ],
                   ),
                   child: Column(
@@ -135,7 +142,7 @@ class ChangePasswordView extends StatelessWidget {
                           color: colors.text,
                           fontWeight: FontWeight.bold,
                         ),
-                      )
+                      ),
                     ],
                   ),
                 ),
@@ -161,7 +168,10 @@ class ChangePasswordView extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-              fontWeight: FontWeight.bold, color: colors.text, fontSize: 14),
+            fontWeight: FontWeight.bold,
+            color: colors.text,
+            fontSize: 14,
+          ),
         ),
         const SizedBox(height: 8),
         TextFormField(
@@ -177,8 +187,11 @@ class ChangePasswordView extends StatelessWidget {
               borderSide: BorderSide.none,
             ),
             suffixIcon: IconButton(
-              icon: Icon(obscure ? Icons.visibility_off : Icons.visibility,
-                  size: 20, color: colors.textSub),
+              icon: Icon(
+                obscure ? Icons.visibility_off : Icons.visibility,
+                size: 20,
+                color: colors.textSub,
+              ),
               onPressed: enabled ? toggle : null,
             ),
           ),
@@ -187,7 +200,10 @@ class ChangePasswordView extends StatelessWidget {
     );
   }
 
-  Future<void> _handleUpdate(BuildContext context, ChangePasswordViewModel vm) async {
+  Future<void> _handleUpdate(
+    BuildContext context,
+    ChangePasswordViewModel vm,
+  ) async {
     final l10n = AppLocalizations.of(context)!;
     // 1. طلب التأكيد أولاً
     final bool confirmed = await QSAlerts.showConfirm(
@@ -200,7 +216,10 @@ class ChangePasswordView extends StatelessWidget {
       final success = await vm.changePassword(context);
       if (success && context.mounted) {
         // نجاح التغيير
-        await QSAlerts.showSuccess(context, l10n.changePasswordSuccess);
+        await QSAlerts.showSuccess(
+          context,
+          vm.successMessage ?? l10n.changePasswordSuccess,
+        );
         if (context.mounted) Navigator.pop(context); // العودة للإعدادات
       } else if (vm.errorMessage != null && context.mounted) {
         // فشل التغيير

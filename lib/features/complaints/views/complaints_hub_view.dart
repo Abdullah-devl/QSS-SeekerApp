@@ -40,7 +40,9 @@ class ComplaintsView extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const SystemComplaintsListView()),
+                  MaterialPageRoute(
+                    builder: (_) => const SystemComplaintsListView(),
+                  ),
                 );
               },
             ),
@@ -129,12 +131,14 @@ class ComplaintsView extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios_rounded, color: context.qsColors.textSub, size: 16),
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: context.qsColors.textSub,
+              size: 16,
+            ),
           ],
         ),
       ),
     );
   }
 }
-
-

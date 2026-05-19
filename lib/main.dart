@@ -95,7 +95,7 @@ import 'package:seeker/l10n/app_localizations.dart';
 /// 📂 اسم الملف: main.dart
 /// 📝 الوصف: نقطة انطلاق التطبيق (Entry Point).
 /// يقوم بتهيئة الاعتمادات (Dependency Injection) باستخدام Provider، وإعداد الثيم، واللغة، والمسارات (Routes).
-
+  
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -112,8 +112,6 @@ void main() async {
   } catch (e) {
     debugPrint('❌ Firebase Initialization Error: $e');
   }
-
-
 
   HttpOverrides.global = BadCertificateHttpOverrides();
 
@@ -181,7 +179,7 @@ void main() async {
         ProxyProvider<ApiService, SearchRepository>(
           update: (_, apiService, __) => SearchRepository(apiService),
         ),
-      
+
         // 👤 ProfileRepository
         ProxyProvider<ApiService, ProfileRepository>(
           update: (_, apiService, __) => ProfileRepository(apiService),
@@ -211,7 +209,9 @@ void main() async {
         // 3️⃣ طبقة إدارة الحالة (ViewModels Layer)
         // ----------------------------------------------------------
         // مزود الثيم (Theme)
-        ChangeNotifierProvider(create: (_) => ThemeProvider(initialDarkMode: isDarkMode)),
+        ChangeNotifierProvider(
+          create: (_) => ThemeProvider(initialDarkMode: isDarkMode),
+        ),
 
         // Login ViewModel - يحتاج AuthRepository
         ChangeNotifierProvider<LoginViewModel>(
@@ -294,45 +294,38 @@ void main() async {
         ),
         // ChangePassword ViewModel
         ChangeNotifierProvider<ChangePasswordViewModel>(
-          create: (context) => ChangePasswordViewModel(
-            context.read<AuthRepository>(),
-          ),
+          create: (context) =>
+              ChangePasswordViewModel(context.read<AuthRepository>()),
         ),
 
         // Policy ViewModel
         ChangeNotifierProvider<PolicyViewModel>(
-          create: (context) => PolicyViewModel(
-            context.read<SettingsRepository>(),
-          ),
+          create: (context) =>
+              PolicyViewModel(context.read<SettingsRepository>()),
         ),
 
         // 🛡️ Complaints ViewModels
         ChangeNotifierProvider<SystemComplaintsViewModel>(
-          create: (context) => SystemComplaintsViewModel(
-            context.read<ComplaintsRepository>(),
-          ),
+          create: (context) =>
+              SystemComplaintsViewModel(context.read<ComplaintsRepository>()),
         ),
         ChangeNotifierProvider<OrderComplaintsViewModel>(
-          create: (context) => OrderComplaintsViewModel(
-            context.read<ComplaintsRepository>(),
-          ),
+          create: (context) =>
+              OrderComplaintsViewModel(context.read<ComplaintsRepository>()),
         ),
         ChangeNotifierProvider<SubmitComplaintViewModel>(
-          create: (context) => SubmitComplaintViewModel(
-            context.read<ComplaintsRepository>(),
-          ),
+          create: (context) =>
+              SubmitComplaintViewModel(context.read<ComplaintsRepository>()),
         ),
         // 🔔 Notification ViewModel
         ChangeNotifierProvider<NotificationViewModel>(
-          create: (context) => NotificationViewModel(
-            context.read<NotificationRepository>(),
-          ),
+          create: (context) =>
+              NotificationViewModel(context.read<NotificationRepository>()),
         ),
         // 💰 Points ViewModel
         ChangeNotifierProvider<PointsViewModel>(
-          create: (context) => PointsViewModel(
-            context.read<PointsRepository>(),
-          ),
+          create: (context) =>
+              PointsViewModel(context.read<PointsRepository>()),
         ),
       ],
       child: const MyApp(),
@@ -357,7 +350,7 @@ class _MyAppState extends State<MyApp> {
       try {
         final notificationRepo = context.read<NotificationRepository>();
         await NotificationService().initialize(notificationRepo);
-        
+
         // الاستماع لتيار الإشعارات للتوجيه الذكي
         NotificationService().notificationStream.listen((data) {
           _handleNotificationNavigation(data);
@@ -385,9 +378,8 @@ class _MyAppState extends State<MyApp> {
 
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, _) {
-        return MaterialApp
-        (
-          title: 'QSS',
+        return MaterialApp(
+          title: 'QSS Pro',
           debugShowCheckedModeBanner: false,
 
           // 🌍 إعدادات اللغة (Localization)
@@ -411,7 +403,7 @@ class _MyAppState extends State<MyApp> {
               create: (_) => VerifyEmailViewModel(
                 authRepository: context.read<AuthRepository>(),
               ),
-              child:  VerifyEmailView(),
+              child: VerifyEmailView(),
             ),
             AppRoutes.home: (context) => HomeView(title: 'Home'), // الرئيسية
             AppRoutes.settings: (context) => SettingsView(), // الإعدادات
@@ -434,16 +426,17 @@ class _MyAppState extends State<MyApp> {
             AppRoutes.forgotPassword: (context) => const ForgotPasswordView(),
             '/notifications': (context) => const NotificationsView(),
             AppRoutes.privacyPolicy: (context) => ChangeNotifierProvider(
-              create: (context) => PolicyViewModel(
-                context.read<SettingsRepository>(),
-              ),
+              create: (context) =>
+                  PolicyViewModel(context.read<SettingsRepository>()),
               child: const PrivacyPolicyView(),
             ),
             AppRoutes.systemComplaints: (context) => const ComplaintsView(),
 
             // 💰 مسارات النقاط
-            AppRoutes.pointsManagement: (context) => const PointsManagementView(),
-            AppRoutes.availablePackages: (context) => const PointsPackagesView(),
+            AppRoutes.pointsManagement: (context) =>
+                const PointsManagementView(),
+            AppRoutes.availablePackages: (context) =>
+                const PointsPackagesView(),
             AppRoutes.myPackages: (context) => const MyPackagesView(),
           },
         );

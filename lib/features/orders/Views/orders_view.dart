@@ -120,7 +120,11 @@ class _OrdersBody extends StatelessWidget {
                 color: colors.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.shopping_bag_outlined, size: 80, color: colors.primary),
+              child: Icon(
+                Icons.shopping_bag_outlined,
+                size: 80,
+                color: colors.primary,
+              ),
             ),
             const SizedBox(height: 24),
             Text(
@@ -159,7 +163,10 @@ class _OrdersBody extends StatelessWidget {
                 ),
                 child: Text(
                   context.tr('login'),
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -179,13 +186,20 @@ class _OrdersBody extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             context.tr('error_loading_orders'),
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: colors.text),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: colors.text,
+            ),
           ),
           const SizedBox(height: 8),
           ElevatedButton(
             onPressed: () => viewModel.fetchOrders(),
             style: ElevatedButton.styleFrom(backgroundColor: colors.primary),
-            child: Text(context.tr('retry'), style: const TextStyle(color: Colors.white)),
+            child: Text(
+              context.tr('retry'),
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -206,7 +220,11 @@ class _OrdersBody extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             context.tr('no_orders_yet'),
-            style: TextStyle(fontSize: 18, color: colors.textSub, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 18,
+              color: colors.textSub,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),
@@ -230,7 +248,9 @@ class _OrdersBody extends StatelessWidget {
                 color: isSelected ? colors.primary : colors.background,
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: isSelected ? Colors.transparent : colors.textSub.withOpacity(0.2),
+                  color: isSelected
+                      ? Colors.transparent
+                      : colors.textSub.withOpacity(0.2),
                 ),
               ),
               child: Text(
@@ -285,7 +305,7 @@ class _ProviderInfoRowState extends State<_ProviderInfoRow> {
       final apiService = context.read<ApiService>();
       final repo = ProfileRepository(apiService);
       final profile = await repo.fetchUserProfile(providerId);
-      
+
       _profilesCache[providerId] = profile;
     } catch (e) {
       debugPrint('❌ Error loading provider profile: $e');
@@ -302,11 +322,12 @@ class _ProviderInfoRowState extends State<_ProviderInfoRow> {
   Widget build(BuildContext context) {
     final colors = context.qsColors;
     final providerId = widget.order.providerId;
-    
+
     // استخدام البيانات المخبأة إن وجدت، وإلا نستخدم البيانات الحالية من الطلب
     final profile = providerId != null ? _profilesCache[providerId] : null;
     final String providerName = profile?.name ?? widget.order.providerName;
-    final String providerImage = profile?.avatarUrl ?? widget.order.providerImage;
+    final String providerImage =
+        profile?.avatarUrl ?? widget.order.providerImage;
 
     return GestureDetector(
       onTap: providerId != null
@@ -359,7 +380,8 @@ class _ProviderInfoRowState extends State<_ProviderInfoRow> {
                         ),
                 ),
               ),
-              if (widget.order.isVerified || (profile?.verificationProvider ?? false))
+              if (widget.order.isVerified ||
+                  (profile?.verificationProvider ?? false))
                 Positioned(
                   bottom: 0,
                   left: 0,
@@ -400,9 +422,7 @@ class _ProviderInfoRowState extends State<_ProviderInfoRow> {
                         const SizedBox(
                           width: 14,
                           height: 14,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
+                          child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       else
                         Icon(
@@ -485,9 +505,7 @@ class _OrderCardWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             decoration: const BoxDecoration(
               color: Colors.transparent,
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(24),
-              ),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -607,15 +625,16 @@ class _OrderCardWidget extends StatelessWidget {
                       backgroundColor: colors.textSub.withOpacity(0.05),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
-                        side: BorderSide(color: colors.textSub.withOpacity(0.1)),
+                        side: BorderSide(
+                          color: colors.textSub.withOpacity(0.1),
+                        ),
                       ),
                     ),
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              OrderDetailView(order: order),
+                          builder: (context) => OrderDetailView(order: order),
                         ),
                       );
                     },
@@ -647,6 +666,7 @@ class _OrderCardWidget extends StatelessWidget {
       case 'in_progress':
       case 'accepted_initial':
       case 'accepted_partial_paid':
+      case 'accepted_full_paid':
         return context.qsColors.warning;
       case 'completed':
       case 'finished':
@@ -675,8 +695,13 @@ class _OrderCardWidget extends StatelessWidget {
         textKey = 'accepted_initial';
         break;
       case 'in_progress':
-      case 'accepted_partial_paid':
         textKey = 'in_progress';
+        break;
+      case 'accepted_partial_paid':
+        textKey = 'accepted_partial_paid';
+        break;
+      case 'accepted_full_paid':
+        textKey = 'accepted_full_paid';
         break;
       case 'completed':
       case 'finished':

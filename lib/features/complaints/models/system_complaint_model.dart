@@ -5,6 +5,7 @@ class SystemComplaintModel {
   final String content;
   final String appSource;
   final String status;
+  final String? statusLabel;
   final DateTime? createdAt;
 
   SystemComplaintModel({
@@ -14,6 +15,7 @@ class SystemComplaintModel {
     required this.content,
     this.appSource = "seeker",
     this.status = "pending",
+    this.statusLabel,
     this.createdAt,
   });
 
@@ -34,8 +36,13 @@ class SystemComplaintModel {
       content: json['content'] ?? '',
       appSource: json['app_source'] ?? 'seeker',
       status: json['status'] ?? 'pending',
-      createdAt: json['created_at'] != null 
-          ? DateTime.tryParse(json['created_at']) 
+      statusLabel: json['status_text'] ??
+          json['status_label'] ??
+          json['status_name'] ??
+          json['status_ar'] ??
+          json['status_en'],
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'])
           : null,
     );
   }

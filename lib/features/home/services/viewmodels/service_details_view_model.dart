@@ -72,7 +72,10 @@ class ServiceDetailsViewModel extends ChangeNotifier {
   bool get isFavorite => _isFavorite;
 
   /// 🚀 جلب بيانات الخدمة وتفاصيل المزود من الـ API
-  Future<void> fetchServiceDetails(int serviceId, ServiceModel initialData) async {
+  Future<void> fetchServiceDetails(
+    int serviceId,
+    ServiceModel initialData,
+  ) async {
     // 1️⃣ تعيين البيانات الأولية (Optimistic UI)
     _service = initialData;
     _isLoading = true;
@@ -82,25 +85,42 @@ class ServiceDetailsViewModel extends ChangeNotifier {
     try {
       // 2️⃣ جلب تفاصيل الخدمة الكاملة (للحصول على الخدمات الفرعية)
       _service = await _repository.fetchServiceById(serviceId);
-      
-      developer.log('🔍 ServiceDetails: Loaded service $serviceId, ProviderId: ${_service?.providerId}', name: 'ServiceDetails');
+
+      developer.log(
+        '🔍 ServiceDetails: Loaded service $serviceId, ProviderId: ${_service?.providerId}',
+        name: 'ServiceDetails',
+      );
 
       // 3️⃣ جلب ملف المزود (باستخدام معرف المزود المستخرج من الخدمة)
       if (_service != null && _service!.providerId != 0) {
-        developer.log('👤 ServiceDetails: Fetching profile for Provider ID: ${_service!.providerId}', name: 'ServiceDetails');
-        _providerProfile = await _repository.fetchUserProfile(_service!.providerId);
-        developer.log('✅ ServiceDetails: Profile loaded for ${_providerProfile?.name}. Banks: ${_providerProfile?.banks.length}', name: 'ServiceDetails');
+        developer.log(
+          '👤 ServiceDetails: Fetching profile for Provider ID: ${_service!.providerId}',
+          name: 'ServiceDetails',
+        );
+        _providerProfile = await _repository.fetchUserProfile(
+          _service!.providerId,
+        );
+        developer.log(
+          '✅ ServiceDetails: Profile loaded for ${_providerProfile?.name}. Banks: ${_providerProfile?.banks.length}',
+          name: 'ServiceDetails',
+        );
       } else {
-        developer.log('⚠️ ServiceDetails: No ProviderId found or Id is 0 for service $serviceId', name: 'ServiceDetails');
+        developer.log(
+          '⚠️ ServiceDetails: No ProviderId found or Id is 0 for service $serviceId',
+          name: 'ServiceDetails',
+        );
       }
-      
     } catch (e) {
       // لا نعين خطأ فادحاً لأننا نملك البيانات الأولية على الأقل
       _errorMessage = 'errorServerUpdate';
-      developer.log('❌ ServiceDetails: ViewModel Error: $e', name: 'ServiceDetails', error: e);
+      developer.log(
+        '❌ ServiceDetails: ViewModel Error: $e',
+        name: 'ServiceDetails',
+        error: e,
+      );
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
-}
+}

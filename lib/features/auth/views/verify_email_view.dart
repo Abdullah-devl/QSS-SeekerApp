@@ -74,7 +74,10 @@ class VerifyEmailView extends StatelessWidget {
 
                   // 3️⃣ نص الشرح (Instructions)
                   Text(
-                    context.tr('activation_code_sent', args: {'email': email ?? ''}),
+                    context.tr(
+                      'activation_code_sent',
+                      args: {'email': email ?? ''},
+                    ),
                     style: TextStyle(
                       fontSize: 16,
                       color: colors.textSub,
@@ -184,7 +187,7 @@ class VerifyEmailView extends StatelessWidget {
                                 strokeWidth: 2,
                               ),
                             )
-                           : Text(
+                          : Text(
                               AppLocalizations.of(context)!.activateAccount,
                               style: const TextStyle(
                                 fontSize: 16,
@@ -211,7 +214,13 @@ class VerifyEmailView extends StatelessWidget {
                         },
                         child: Text(
                           viewModel.isTimerRunning
-                              ? context.tr('resend_code_timer', args: {'timer': viewModel.timerCurrentValue.toString()})
+                              ? context.tr(
+                                  'resend_code_timer',
+                                  args: {
+                                    'timer': viewModel.timerCurrentValue
+                                        .toString(),
+                                  },
+                                )
                               : context.tr('resend_code'),
                           style: TextStyle(
                             color: viewModel.isTimerRunning

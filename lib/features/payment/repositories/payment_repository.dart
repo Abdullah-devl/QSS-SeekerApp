@@ -25,25 +25,26 @@ class PaymentRepository {
   }
 
   /// 🌟 السداد بالنقاط
-  Future<void> payByPoints({
+  Future<String> payByPoints({
     required String requestId,
     required double transferredPoints,
   }) async {
     try {
       final response = await _apiService.post(
         ApiEndpoints.payByPoints(requestId),
-        data: {
-          'transferred_points': transferredPoints,
-        },
+        data: {'transferred_points': transferredPoints},
       );
-      ApiErrorHandler.handleResponse(response);
+      final data = ApiErrorHandler.handleResponse(response);
+      return (data is Map && data['message'] != null)
+          ? data['message']
+          : 'تم الدفع بالنقاط بنجاح';
     } catch (e) {
       throw ApiErrorHandler.handle(e);
     }
   }
 
   /// 📄 السداد برفع سند (Multipart)
-  Future<void> submitBond({
+  Future<String> submitBond({
     required String requestId,
     required double amount,
     required File image,
@@ -65,7 +66,10 @@ class PaymentRepository {
         data: formData,
         options: Options(contentType: 'multipart/form-data'),
       );
-      ApiErrorHandler.handleResponse(response);
+      final data = ApiErrorHandler.handleResponse(response);
+      return (data is Map && data['message'] != null)
+          ? data['message']
+          : 'تم رفع السند بنجاح وبانتظار التأكيد';
     } catch (e) {
       throw ApiErrorHandler.handle(e);
     }

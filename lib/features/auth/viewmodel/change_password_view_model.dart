@@ -19,6 +19,9 @@ class ChangePasswordViewModel extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  String? _successMessage;
+  String? get successMessage => _successMessage;
+
   bool _obscureOld = true;
   bool get obscureOld => _obscureOld;
 
@@ -28,9 +31,20 @@ class ChangePasswordViewModel extends ChangeNotifier {
   bool _obscureConfirm = true;
   bool get obscureConfirm => _obscureConfirm;
 
-  void toggleOld() { _obscureOld = !_obscureOld; notifyListeners(); }
-  void toggleNew() { _obscureNew = !_obscureNew; notifyListeners(); }
-  void toggleConfirm() { _obscureConfirm = !_obscureConfirm; notifyListeners(); }
+  void toggleOld() {
+    _obscureOld = !_obscureOld;
+    notifyListeners();
+  }
+
+  void toggleNew() {
+    _obscureNew = !_obscureNew;
+    notifyListeners();
+  }
+
+  void toggleConfirm() {
+    _obscureConfirm = !_obscureConfirm;
+    notifyListeners();
+  }
 
   Future<bool> changePassword(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
@@ -60,7 +74,7 @@ class ChangePasswordViewModel extends ChangeNotifier {
     _errorMessage = null;
 
     try {
-      await _authRepository.changePassword(
+      _successMessage = await _authRepository.changePassword(
         oldPassword: oldPass,
         password: newPass,
         passwordConfirmation: confirmPass,
@@ -70,8 +84,8 @@ class ChangePasswordViewModel extends ChangeNotifier {
     } catch (e) {
       if (e is DioException && e.response?.data != null) {
         final data = e.response!.data;
-        _errorMessage = (data is Map && data.containsKey('message')) 
-            ? context.tr(data['message'].toString()) 
+        _errorMessage = (data is Map && data.containsKey('message'))
+            ? context.tr(data['message'].toString())
             : l10n.changePasswordFailed;
       } else {
         _errorMessage = context.tr(e.toString().replaceAll('Exception: ', ''));

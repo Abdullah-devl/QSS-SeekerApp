@@ -16,9 +16,7 @@ class ProviderWorksView extends StatelessWidget {
 
     // 🚀 عرض حالة التحميل
     if (vm.isLoading && vm.works.isEmpty) {
-      return Center(
-        child: CircularProgressIndicator(color: colors.primary),
-      );
+      return Center(child: CircularProgressIndicator(color: colors.primary));
     }
 
     // ❌ عرض حالة الخطأ
@@ -38,7 +36,11 @@ class ProviderWorksView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.photo_library_outlined, size: 48, color: colors.textSub.withOpacity(0.2)),
+            Icon(
+              Icons.photo_library_outlined,
+              size: 48,
+              color: colors.textSub.withOpacity(0.2),
+            ),
             const SizedBox(height: 12),
             Text(
               'لا توجد أعمال سابقة لهذا المزود.',
@@ -71,7 +73,7 @@ class ProviderWorksView extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                   Image.network(
+                  Image.network(
                     work.imageUrl,
                     fit: BoxFit.cover,
                     loadingBuilder: (context, child, loadingProgress) {
@@ -79,7 +81,8 @@ class ProviderWorksView extends StatelessWidget {
                       return Center(
                         child: CircularProgressIndicator(
                           value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
                               : null,
                           color: colors.primary.withOpacity(0.3),
                           strokeWidth: 2,

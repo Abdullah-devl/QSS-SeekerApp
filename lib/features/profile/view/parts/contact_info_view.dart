@@ -132,7 +132,9 @@ class ContactInfoView extends StatelessWidget {
                 Text(
                   phone.type == 'whatsapp'
                       ? context.tr('whatsappOnly')
-                      : (phone.type == 'phone' ? context.tr('callOnly') : context.tr('callAndWhatsapp')),
+                      : (phone.type == 'phone'
+                            ? context.tr('callOnly')
+                            : context.tr('callAndWhatsapp')),
                   style: TextStyle(color: colors.textSub, fontSize: 12),
                 ),
               ],
@@ -273,7 +275,9 @@ class ContactInfoView extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: colors.card,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: colors.text.withValues(alpha: 0.1)),
+                    border: Border.all(
+                      color: colors.text.withValues(alpha: 0.1),
+                    ),
                   ),
                   child: Row(
                     children: [
@@ -295,7 +299,10 @@ class ContactInfoView extends StatelessWidget {
                         ),
                         onPressed: () {
                           Clipboard.setData(ClipboardData(text: bank.iban));
-                          QSAlerts.showSuccess(context, context.tr('ibanCopiedSuccess'));
+                          QSAlerts.showSuccess(
+                            context,
+                            context.tr('ibanCopiedSuccess'),
+                          );
                         },
                       ),
                     ],

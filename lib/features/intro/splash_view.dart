@@ -47,7 +47,7 @@ class _SplashViewState extends State<SplashView> {
         Navigator.pushReplacementNamed(context, AppRoutes.welcome);
       } else if (hasToken || isGuest) {
         // 2️⃣ المستخدم مسجل دخول سابقاً (لديه توكن) أو زائر
-        
+
         // إذا كان مسجل دخول وليس زائراً، نتحقق من الموافقة على السياسة
         if (hasToken && !isGuest) {
           final isPolicyAgreed = await tokenStorage.isPolicyAgreed();
@@ -58,7 +58,7 @@ class _SplashViewState extends State<SplashView> {
             return;
           }
         }
-        
+
         // موافق أو زائر -> نذهب للرئيسية (Home)
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, AppRoutes.home);

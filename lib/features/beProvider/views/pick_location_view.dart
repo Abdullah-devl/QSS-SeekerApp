@@ -128,7 +128,8 @@ class _PickLocationViewState extends State<PickLocationView> {
       debugPrint('Error getting address: $e');
       setState(() {
         // في حال فشل جلب النص، نعرض الإحداثيات كبديل موثوق
-        _address = '${AppLocalizations.of(context)!.customLocation} (${position.latitude.toStringAsFixed(4)})';
+        _address =
+            '${AppLocalizations.of(context)!.customLocation} (${position.latitude.toStringAsFixed(4)})';
         _isAddressing = false;
       });
     }

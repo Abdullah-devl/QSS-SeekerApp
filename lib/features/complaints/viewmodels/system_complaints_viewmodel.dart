@@ -62,7 +62,7 @@ class SystemComplaintsViewModel extends ChangeNotifier {
       );
 
       await _repository.submitSystemComplaint(complaint);
-      
+
       _isSubmitting = false;
       await fetchComplaints(); // Refresh list
       return true;

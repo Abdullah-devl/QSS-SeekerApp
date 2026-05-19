@@ -40,6 +40,14 @@ class ProfileModel {
   int get requestsCount => _requestsCount ?? 0;
   int get servicesCount => _servicesCount ?? 0;
 
+  bool get isVerified {
+    if (providerVerifiedUntil == null) return verificationProvider;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    return providerVerifiedUntil!.isAtSameMomentAs(today) ||
+        providerVerifiedUntil!.isAfter(today);
+  }
+
   // 📞 بيانات التواصل الإضافية والحسابات البنكية من الباك إند
   final List<PhoneModel> phones;
   final List<BankModel> banks;
@@ -77,22 +85,22 @@ class ProfileModel {
     this.banks = const [],
     this.latitude,
     this.longitude,
-  })  : _requestsCount = requestsCount,
-        _servicesCount = servicesCount;
+  }) : _requestsCount = requestsCount,
+       _servicesCount = servicesCount;
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
     // 🚀 جلب البيانات بناءً على هيكل السيرفر الملاحظ في السجلات
     // السيرفر يرسل: { "profile": { "user": { ... }, "profile_phones": [...], ... } }
     final profileData = json['profile'] ?? json;
     final userJson = profileData['user'] ?? json['user'] ?? profileData;
-    
+
     // 🔍 البحث عن الاسم في كل الأماكن الممكنة
     String findName() {
-      return userJson['name'] ?? 
-             profileData['name'] ?? 
-             json['name'] ?? 
-             userJson['full_name'] ?? 
-             'مستخدم غير معروف';
+      return userJson['name'] ??
+          profileData['name'] ??
+          json['name'] ??
+          userJson['full_name'] ??
+          'مستخدم غير معروف';
     }
 
     // 🔍 البحث عن الصورة في كل الأماكن الممكنة
@@ -103,38 +111,48 @@ class ProfileModel {
         return pathVal;
       }
 
-      final val = profileData['image_url'] ?? 
-                  profileData['image_path'] ?? 
-                  profileData['avatar'] ?? 
-                  userJson['image_url'] ?? 
-                  userJson['avatar'] ?? '';
+      final val =
+          profileData['image_url'] ??
+          profileData['image_path'] ??
+          profileData['avatar'] ??
+          userJson['image_url'] ??
+          userJson['avatar'] ??
+          '';
       return ApiEndpoints.getImageUrl(val?.toString());
     }
 
     // 🔍 البحث عن المعرف (ID) - الأولوية لمعرف المستخدم الفعلي
-    final int parsedId = int.tryParse((
-      userJson['id'] ?? 
-      profileData['user_id'] ?? 
-      json['user_id'] ?? 
-      profileData['id'] ?? 
-      json['id'] ?? 
-      '0'
-    ).toString()) ?? 0;
+    final int parsedId =
+        int.tryParse(
+          (userJson['id'] ??
+                  profileData['user_id'] ??
+                  json['user_id'] ??
+                  profileData['id'] ??
+                  json['id'] ??
+                  '0')
+              .toString(),
+        ) ??
+        0;
 
-    final double? lat = (profileData['latitude'] is num) 
-        ? (profileData['latitude'] as num).toDouble() 
+    final double? lat = (profileData['latitude'] is num)
+        ? (profileData['latitude'] as num).toDouble()
         : double.tryParse(profileData['latitude']?.toString() ?? '');
-        
-    final double? lng = (profileData['longitude'] is num) 
-        ? (profileData['longitude'] as num).toDouble() 
+
+    final double? lng = (profileData['longitude'] is num)
+        ? (profileData['longitude'] as num).toDouble()
         : double.tryParse(profileData['longitude']?.toString() ?? '');
 
     // 📊 قراءة إحصائيات مزود الخدمة من السيرفر
     final stats = profileData['provider_stats'] ?? {};
-    final int requestsCountVal = int.tryParse(stats['requests_count']?.toString() ?? '0') ?? 0;
-    final int servicesCountVal = int.tryParse(stats['services_count']?.toString() ?? '0') ?? 0;
+    final int requestsCountVal =
+        int.tryParse(stats['requests_count']?.toString() ?? '0') ?? 0;
+    final int servicesCountVal =
+        int.tryParse(stats['services_count']?.toString() ?? '0') ?? 0;
 
-    developer.log('🔍 [ProfileModel.fromJson] Parsed ID: $parsedId, Name: ${findName()}, Lat: $lat, Lng: $lng, Requests: $requestsCountVal, Services: $servicesCountVal', name: 'ProfileModel');
+    developer.log(
+      '🔍 [ProfileModel.fromJson] Parsed ID: $parsedId, Name: ${findName()}, Lat: $lat, Lng: $lng, Requests: $requestsCountVal, Services: $servicesCountVal',
+      name: 'ProfileModel',
+    );
 
     return ProfileModel(
       id: parsedId,
@@ -142,20 +160,48 @@ class ProfileModel {
       email: userJson['email'] ?? json['email'] ?? '',
       role: userJson['role'] ?? json['role'] ?? 'provider',
       ratingAvg:
-          double.tryParse(userJson['rating_avg']?.toString() ?? profileData['rating_avg']?.toString() ?? '0') ?? 0.0,
+          double.tryParse(
+            userJson['rating_avg']?.toString() ??
+                profileData['rating_avg']?.toString() ??
+                '0',
+          ) ??
+          0.0,
       noCommission:
-          userJson['no_commission'] == 1 || userJson['no_commission'] == true || profileData['no_commission'] == 1,
+          userJson['no_commission'] == 1 ||
+          userJson['no_commission'] == true ||
+          profileData['no_commission'] == 1,
       commission:
-          double.tryParse(userJson['commission']?.toString() ?? profileData['commission']?.toString() ?? '0') ?? 0.0,
+          double.tryParse(
+            userJson['commission']?.toString() ??
+                profileData['commission']?.toString() ??
+                '0',
+          ) ??
+          0.0,
       seekerPolicy:
-          userJson['seeker_policy'] == 1 || userJson['seeker_policy'] == true || profileData['seeker_policy'] == 1,
+          userJson['seeker_policy'] == 1 ||
+          userJson['seeker_policy'] == true ||
+          profileData['seeker_policy'] == 1,
       providerPolicy:
-          userJson['provider_policy'] == 1 || userJson['provider_policy'] == true,
+          userJson['provider_policy'] == 1 ||
+          userJson['provider_policy'] == true,
       verificationProvider:
-          userJson['verification_provider'] == 1 || userJson['verification_provider'] == true || userJson['is_verified'] == 1,
+          userJson['verification_provider'] == 1 ||
+          userJson['verification_provider'] == true ||
+          userJson['is_verified'] == 1 ||
+          userJson['is_verified'] == true ||
+          profileData['is_verified'] == 1 ||
+          profileData['is_verified'] == true ||
+          profileData['verification_provider'] == 1 ||
+          profileData['verification_provider'] == true ||
+          json['is_verified'] == 1 ||
+          json['is_verified'] == true ||
+          json['verification_provider'] == 1 ||
+          json['verification_provider'] == true,
       providerVerifiedUntil: () {
-        final dateStr = (userJson['provider_verified_until']?.toString() ?? 
-                         userJson['verified_until']?.toString() ?? '');
+        final dateStr =
+            (userJson['provider_verified_until']?.toString() ??
+            userJson['verified_until']?.toString() ??
+            '');
         if (dateStr.isEmpty || dateStr.contains('0000-00-00')) return null;
         return DateTime.tryParse(dateStr);
       }(),
@@ -172,9 +218,10 @@ class ProfileModel {
       yearsExperience: profileData['years_experience'] ?? 0,
       previousWorks: () {
         final List<WorkModel> works = [];
-        final dynamic rawWorks = profileData['previous_works'] ?? 
-                                 profileData['previousWorks'] ?? 
-                                 profileData['works'];
+        final dynamic rawWorks =
+            profileData['previous_works'] ??
+            profileData['previousWorks'] ??
+            profileData['works'];
         if (rawWorks is List) {
           for (final work in rawWorks) {
             if (work is Map) {
@@ -186,13 +233,14 @@ class ProfileModel {
       }(),
       mainServices: () {
         final List<ServiceModel> services = [];
-        final dynamic rawServices = profileData['main_services'] ?? 
-                                    profileData['mainServices'] ?? 
-                                    profileData['services'] ??
-                                    userJson['main_services'] ??
-                                    userJson['services'] ??
-                                    json['main_services'] ??
-                                    json['services'];
+        final dynamic rawServices =
+            profileData['main_services'] ??
+            profileData['mainServices'] ??
+            profileData['services'] ??
+            userJson['main_services'] ??
+            userJson['services'] ??
+            json['main_services'] ??
+            json['services'];
         if (rawServices is List) {
           for (final s in rawServices) {
             if (s is Map) {
@@ -202,15 +250,21 @@ class ProfileModel {
         }
         return services;
       }(),
-      isAvailable: profileData['is_available'] == 1 || profileData['is_available'] == true,
+      isAvailable:
+          profileData['is_available'] == 1 ||
+          profileData['is_available'] == true,
       requestsCount: requestsCountVal,
       servicesCount: servicesCountVal,
       phones: () {
         final List<PhoneModel> list = [];
-        final dynamic raw = profileData['profile_phones'] ?? profileData['phones'] ?? json['phones'];
+        final dynamic raw =
+            profileData['profile_phones'] ??
+            profileData['phones'] ??
+            json['phones'];
         if (raw is List) {
           for (final p in raw) {
-            if (p is Map) list.add(PhoneModel.fromJson(Map<String, dynamic>.from(p)));
+            if (p is Map)
+              list.add(PhoneModel.fromJson(Map<String, dynamic>.from(p)));
           }
         }
         return list;
@@ -220,7 +274,8 @@ class ProfileModel {
         final dynamic raw = userJson['banks'] ?? json['banks'];
         if (raw is List) {
           for (final b in raw) {
-            if (b is Map) list.add(BankModel.fromJson(Map<String, dynamic>.from(b)));
+            if (b is Map)
+              list.add(BankModel.fromJson(Map<String, dynamic>.from(b)));
           }
         }
         return list;

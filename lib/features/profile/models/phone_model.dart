@@ -7,7 +7,7 @@ class PhoneModel {
   final bool isActive;
 
   PhoneModel({
-    required this.id, 
+    required this.id,
     required this.phone,
     this.countryCode,
     this.type,

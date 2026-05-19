@@ -11,18 +11,19 @@ class BeProviderRepository {
   BeProviderRepository(this._apiService);
 
   /// 🚀 إرسال طلب الانضمام
-  Future<void> submitRequest(ProviderRequestModel request) async {
+  Future<String> submitRequest(ProviderRequestModel request) async {
     try {
       final formData = await request.toFormData();
       // ملاحظة: المسار '/provider-requests' يجب أن يضاف إلى ApiEndpoints إذا لم يكن موجوداً
       // أو نستخدمه مباشرة هنا بناءً على طلب المستخدم
       // const endpoint = ApiEndpoints.providerRequests;
 
-      await _apiService.post(
+      final response = await _apiService.post(
         ApiEndpoints.beProvider,
         data: await request.toFormData(),
         options: Options(contentType: 'multipart/form-data'),
       );
+      return response.data['message'] ?? 'تم إرسال الطلب بنجاح';
     } catch (e) {
       if (e is DioException) {
         if (e.response?.statusCode == 422 || e.response?.statusCode == 403) {

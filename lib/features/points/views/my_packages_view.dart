@@ -28,7 +28,10 @@ class _MyPackagesViewState extends State<MyPackagesView> {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: Text(context.tr('myPackages'), style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          context.tr('myPackages'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         backgroundColor: colors.background,
         elevation: 0,
@@ -38,24 +41,26 @@ class _MyPackagesViewState extends State<MyPackagesView> {
         child: vm.isLoading
             ? const Center(child: CircularProgressIndicator())
             : vm.myPackages.isEmpty
-                ? _buildEmptyState(colors)
-                : ListView.builder(
-                    padding: const EdgeInsets.all(20),
-                    itemCount: vm.myPackages.length,
-                    itemBuilder: (context, index) {
-                      final package = vm.myPackages[index];
-                      return _buildPackageItem(package, colors);
-                    },
-                  ),
+            ? _buildEmptyState(colors)
+            : ListView.builder(
+                padding: const EdgeInsets.all(20),
+                itemCount: vm.myPackages.length,
+                itemBuilder: (context, index) {
+                  final package = vm.myPackages[index];
+                  return _buildPackageItem(package, colors);
+                },
+              ),
       ),
     );
   }
 
   Widget _buildPackageItem(Map<String, dynamic> package, dynamic colors) {
     // استخراج البيانات بناءً على هيكل الـ API المتوقع
-    final String name = package['package']?['name'] ?? context.tr('defaultPackageName');
+    final String name =
+        package['package']?['name'] ?? context.tr('defaultPackageName');
     final String status = package['status'] ?? 'pending';
-    final String date = package['created_at']?.toString().split('T').first ?? '';
+    final String date =
+        package['created_at']?.toString().split('T').first ?? '';
     final String price = package['package']?['price']?.toString() ?? '0';
 
     Color statusColor;
@@ -97,7 +102,11 @@ class _MyPackagesViewState extends State<MyPackagesView> {
               color: statusColor.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.history_edu_rounded, color: statusColor, size: 24),
+            child: Icon(
+              Icons.history_edu_rounded,
+              color: statusColor,
+              size: 24,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -106,7 +115,11 @@ class _MyPackagesViewState extends State<MyPackagesView> {
               children: [
                 Text(
                   name,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: colors.text),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: colors.text,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -121,7 +134,10 @@ class _MyPackagesViewState extends State<MyPackagesView> {
             children: [
               Text(
                 '$price ${context.tr('currency_sar')}',
-                style: TextStyle(fontWeight: FontWeight.bold, color: colors.primary),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: colors.primary,
+                ),
               ),
               const SizedBox(height: 4),
               Container(
@@ -132,7 +148,11 @@ class _MyPackagesViewState extends State<MyPackagesView> {
                 ),
                 child: Text(
                   statusText,
-                  style: TextStyle(color: statusColor, fontSize: 10, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: statusColor,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
@@ -147,7 +167,11 @@ class _MyPackagesViewState extends State<MyPackagesView> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.inventory_2_outlined, size: 64, color: colors.textSub.withValues(alpha: 0.3)),
+          Icon(
+            Icons.inventory_2_outlined,
+            size: 64,
+            color: colors.textSub.withValues(alpha: 0.3),
+          ),
           const SizedBox(height: 16),
           Text(
             context.tr('noPurchasedPackages'),

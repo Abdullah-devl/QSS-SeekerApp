@@ -33,7 +33,9 @@ class OrdersRepository {
           // دمج بقية المفاتيح من جذر الـ JSON لضمان عدم ضياع العلاقات مثل sub_services و main_service والسندات
           dataMap.forEach((key, value) {
             if (key != 'request' && value != null) {
-              if (orderJson[key] == null || (orderJson[key] is List && (orderJson[key] as List).isEmpty)) {
+              if (orderJson[key] == null ||
+                  (orderJson[key] is List &&
+                      (orderJson[key] as List).isEmpty)) {
                 orderJson[key] = value;
               }
             }
@@ -42,7 +44,9 @@ class OrdersRepository {
           orderJson.addAll(Map<String, dynamic>.from(dataMap['data']));
           dataMap.forEach((key, value) {
             if (key != 'data' && value != null) {
-              if (orderJson[key] == null || (orderJson[key] is List && (orderJson[key] as List).isEmpty)) {
+              if (orderJson[key] == null ||
+                  (orderJson[key] is List &&
+                      (orderJson[key] as List).isEmpty)) {
                 orderJson[key] = value;
               }
             }
@@ -105,8 +109,7 @@ class OrdersRepository {
               .map((e) => OrderModel.fromJson(Map<String, dynamic>.from(e)))
               .toList();
         }
-      } catch (hiveError) {
-      }
+      } catch (hiveError) {}
 
       // إذا فشل السيرفر ولا يوجد كاش مسبق، نعرض رسالة الخطأ للمستخدم
       throw ApiErrorHandler.handle(e);
@@ -114,20 +117,23 @@ class OrdersRepository {
   }
 
   // 🚀 تحديث حالة الطلب (PATCH /api/requests/{id}/status)
-  Future<void> updateOrderStatus(String requestId, String status) async {
+  Future<String> updateOrderStatus(String requestId, String status) async {
     try {
       final response = await _apiService.patch(
         ApiEndpoints.updateStatus(requestId),
         data: {'status': status},
       );
-      ApiErrorHandler.handleResponse(response);
+      final data = ApiErrorHandler.handleResponse(response);
+      return (data is Map && data['message'] != null)
+          ? data['message']
+          : 'تم تحديث حالة الطلب بنجاح';
     } catch (e) {
       throw ApiErrorHandler.handle(e);
     }
   }
 
   // 🚀 إضافة مبلغ مدفوع (POST /api/requests/{id}/addAmountToMoneyPaid)
-  Future<void> addPaidAmount(String requestId, double amount) async {
+  Future<String> addPaidAmount(String requestId, double amount) async {
     try {
       final url = ApiEndpoints.addAmount(requestId);
 
@@ -135,14 +141,17 @@ class OrdersRepository {
         url,
         data: {'added_amount': amount},
       );
-      ApiErrorHandler.handleResponse(response);
+      final data = ApiErrorHandler.handleResponse(response);
+      return (data is Map && data['message'] != null)
+          ? data['message']
+          : 'تم إضافة المبلغ بنجاح';
     } catch (e) {
       throw ApiErrorHandler.handle(e);
     }
   }
 
   // 🚀 إضافة تقييم للطلب (POST /api/reviews)
-  Future<void> submitReview({
+  Future<String> submitReview({
     required String requestId,
     required double rating,
     required String comment,
@@ -152,14 +161,17 @@ class OrdersRepository {
         ApiEndpoints.reviews,
         data: {'request_id': requestId, 'rating': rating, 'comment': comment},
       );
-      ApiErrorHandler.handleResponse(response);
+      final data = ApiErrorHandler.handleResponse(response);
+      return (data is Map && data['message'] != null)
+          ? data['message']
+          : 'تم إرسال التقييم بنجاح';
     } catch (e) {
       throw ApiErrorHandler.handle(e);
     }
   }
 
   // 🚀 إرسال شكوى على الطلب (POST /api/request-complaints)
-  Future<void> submitComplaint({
+  Future<String> submitComplaint({
     required String requestId,
     required String title,
     required String type,
@@ -175,7 +187,10 @@ class OrdersRepository {
           'content': content,
         },
       );
-      ApiErrorHandler.handleResponse(response);
+      final data = ApiErrorHandler.handleResponse(response);
+      return (data is Map && data['message'] != null)
+          ? data['message']
+          : 'تم إرسال الشكوى بنجاح';
     } catch (e) {
       throw ApiErrorHandler.handle(e);
     }

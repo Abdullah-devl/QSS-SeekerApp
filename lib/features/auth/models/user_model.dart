@@ -37,13 +37,17 @@ class UserModel {
       role: userJson['role'], // استخراج الدور
       phone: userJson['phone'], // استخراج الهاتف
       address: userJson['address'], // استخراج العنوان
-      token: json['token'] ?? json['access_token'], // يدعم كلاً من login العادي و Google login
-      isVerified: json['email_verified'] == true || 
-                  json['email_verified'] == 1 || 
-                  json['is_verified'] == true || 
-                  json['is_verified'] == 1 ||
-                  json['user']?['email_verified_at'] != null,
-      seekerPolicy: userJson['seeker_policy'] == 1 || userJson['seeker_policy'] == true,
+      token:
+          json['token'] ??
+          json['access_token'], // يدعم كلاً من login العادي و Google login
+      isVerified:
+          json['email_verified'] == true ||
+          json['email_verified'] == 1 ||
+          json['is_verified'] == true ||
+          json['is_verified'] == 1 ||
+          json['user']?['email_verified_at'] != null,
+      seekerPolicy:
+          userJson['seeker_policy'] == 1 || userJson['seeker_policy'] == true,
     );
   }
 }

@@ -20,7 +20,10 @@ class MeetingRequestView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('طلب حضور', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'طلب حضور',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new),
@@ -49,7 +52,11 @@ class MeetingRequestView extends StatelessWidget {
       children: [
         Text(
           'طلب لقاء جسدي',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: colors.text),
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: colors.text,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
@@ -60,7 +67,11 @@ class MeetingRequestView extends StatelessWidget {
     );
   }
 
-  Widget _buildLocationSection(BuildContext context, MeetingRequestViewModel vm, dynamic colors) {
+  Widget _buildLocationSection(
+    BuildContext context,
+    MeetingRequestViewModel vm,
+    dynamic colors,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -74,15 +85,21 @@ class MeetingRequestView extends StatelessWidget {
             TextButton.icon(
               onPressed: () async {
                 try {
-                  LocationPermission permission = await Geolocator.checkPermission();
+                  LocationPermission permission =
+                      await Geolocator.checkPermission();
                   if (permission == LocationPermission.denied) {
                     permission = await Geolocator.requestPermission();
                   }
-                  if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+                  if (permission == LocationPermission.whileInUse ||
+                      permission == LocationPermission.always) {
                     Position position = await Geolocator.getCurrentPosition();
                     String address = '';
                     try {
-                      List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+                      List<Placemark> placemarks =
+                          await placemarkFromCoordinates(
+                            position.latitude,
+                            position.longitude,
+                          );
                       if (placemarks.isNotEmpty) {
                         Placemark place = placemarks[0];
                         address = '${place.street}، ${place.locality}';
@@ -90,14 +107,21 @@ class MeetingRequestView extends StatelessWidget {
                     } catch (e) {
                       address = 'موقع مخصص';
                     }
-                    vm.updateLocation(position.latitude, position.longitude, address);
+                    vm.updateLocation(
+                      position.latitude,
+                      position.longitude,
+                      address,
+                    );
                   }
                 } catch (e) {
                   QSAlerts.showError(context, 'فشل تحديد الموقع');
                 }
               },
               icon: Icon(Icons.my_location, size: 18, color: colors.primary),
-              label: Text('تحديد موقعي الحالي', style: TextStyle(color: colors.primary)),
+              label: Text(
+                'تحديد موقعي الحالي',
+                style: TextStyle(color: colors.primary),
+              ),
             ),
           ],
         ),
@@ -127,7 +151,10 @@ class MeetingRequestView extends StatelessWidget {
                 const SizedBox(width: 12),
                 Text(
                   'اختيار من الخريطة',
-                  style: TextStyle(color: colors.primary, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: colors.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const Spacer(),
                 Icon(Icons.arrow_forward_ios, size: 14, color: colors.primary),
@@ -164,13 +191,20 @@ class MeetingRequestView extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           'تأكد من دقة الموقع لضمان وصول مقدم الخدمة.',
-          style: TextStyle(fontSize: 12, color: colors.textSub.withOpacity(0.6)),
+          style: TextStyle(
+            fontSize: 12,
+            color: colors.textSub.withOpacity(0.6),
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildSubmitButton(BuildContext context, MeetingRequestViewModel vm, dynamic colors) {
+  Widget _buildSubmitButton(
+    BuildContext context,
+    MeetingRequestViewModel vm,
+    dynamic colors,
+  ) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -179,17 +213,32 @@ class MeetingRequestView extends StatelessWidget {
           backgroundColor: colors.primary,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           elevation: 0,
         ),
         child: vm.isLoading
-            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-            : const Text('إرسال طلب الحضور', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : const Text(
+                'إرسال طلب الحضور',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
       ),
     );
   }
 
-  void _handleSubmission(BuildContext context, MeetingRequestViewModel vm) async {
+  void _handleSubmission(
+    BuildContext context,
+    MeetingRequestViewModel vm,
+  ) async {
     await vm.sendRequest();
     if (context.mounted) {
       if (vm.successMessage != null) {

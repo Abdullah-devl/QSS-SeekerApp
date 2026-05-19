@@ -36,7 +36,7 @@ class CustomRequestViewModel extends ChangeNotifier {
   /// 🚀 إرسال الطلب إلى السيرفر.
   Future<void> sendRequest() async {
     final message = messageController.text.trim();
-    
+
     if (message.isEmpty) {
       _errorMessage = 'الرجاء كتابة تفاصيل الطلب';
       notifyListeners();
@@ -54,32 +54,46 @@ class CustomRequestViewModel extends ChangeNotifier {
     _successMessage = null;
     notifyListeners();
 
-    developer.log('🚀 [CustomRequestViewModel] Starting submission for provider: $providerId', name: 'CustomRequestViewModel');
+    developer.log(
+      '🚀 [CustomRequestViewModel] Starting submission for provider: $providerId',
+      name: 'CustomRequestViewModel',
+    );
 
     try {
       final lat = double.tryParse(latController.text);
       final long = double.tryParse(longController.text);
 
-      final success = await _repository.sendCustomRequest(
+      final successMsg = await _repository.sendCustomRequest(
         providerId: providerId,
-        message: message,
+        message: messageController.text.trim(),
         latitude: lat,
         longitude: long,
       );
 
-      if (success) {
-        developer.log('✨ [CustomRequestViewModel] Submission Success!', name: 'CustomRequestViewModel');
-        _successMessage = 'تم إرسال طلبك المخصص بنجاح!';
+      if (successMsg != null) {
+        developer.log(
+          '✨ [CustomRequestViewModel] Submission Success!',
+          name: 'CustomRequestViewModel',
+        );
+        _successMessage = successMsg;
         messageController.clear();
         latController.clear();
         longController.clear();
       } else {
-        developer.log('⚠️ [CustomRequestViewModel] Submission failed but no error thrown', name: 'CustomRequestViewModel');
+        developer.log(
+          '⚠️ [CustomRequestViewModel] Submission failed but no error thrown',
+          name: 'CustomRequestViewModel',
+        );
         _errorMessage = 'حدث خطأ غير متوقع أثناء إرسال الطلب';
       }
     } catch (e) {
-      _errorMessage = e.toString().contains('Exception:') ? e.toString().split('Exception:').last.trim() : e.toString();
-      developer.log('❌ [CustomRequestViewModel] Submission Error: $_errorMessage', name: 'CustomRequestViewModel');
+      _errorMessage = e.toString().contains('Exception:')
+          ? e.toString().split('Exception:').last.trim()
+          : e.toString();
+      developer.log(
+        '❌ [CustomRequestViewModel] Submission Error: $_errorMessage',
+        name: 'CustomRequestViewModel',
+      );
     } finally {
       _isLoading = false;
       notifyListeners();

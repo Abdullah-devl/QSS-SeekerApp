@@ -14,6 +14,4 @@ class BeServicProvider extends StatelessWidget {
   }
 }
 
-class TextInPut {
- 
-}
+class TextInPut {}

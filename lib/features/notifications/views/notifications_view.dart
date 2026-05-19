@@ -19,13 +19,19 @@ class NotificationsView extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(l10n.notifications, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          l10n.notifications,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         actions: [
           if (viewModel.notifications.isNotEmpty)
             TextButton(
               onPressed: () => viewModel.markAllAsRead(),
-              child: Text(l10n.markAllAsRead, style: TextStyle(color: colors.primary, fontSize: 12)),
+              child: Text(
+                l10n.markAllAsRead,
+                style: TextStyle(color: colors.primary, fontSize: 12),
+              ),
             ),
         ],
       ),
@@ -34,27 +40,38 @@ class NotificationsView extends StatelessWidget {
           _buildFilters(context, viewModel, colors),
           Expanded(
             child: viewModel.isLoading
-                ? Center(child: CircularProgressIndicator(color: colors.primary))
+                ? Center(
+                    child: CircularProgressIndicator(color: colors.primary),
+                  )
                 : viewModel.notifications.isEmpty
-                    ? _buildEmptyState(context, colors)
-                    : RefreshIndicator(
-                        onRefresh: () => viewModel.fetchNotifications(),
-                        child: ListView.builder(
-                          itemCount: viewModel.notifications.length,
-                          padding: const EdgeInsets.all(16),
-                          itemBuilder: (context, index) {
-                            final notification = viewModel.notifications[index];
-                            return _buildNotificationItem(context, notification, viewModel, colors);
-                          },
-                        ),
-                      ),
+                ? _buildEmptyState(context, colors)
+                : RefreshIndicator(
+                    onRefresh: () => viewModel.fetchNotifications(),
+                    child: ListView.builder(
+                      itemCount: viewModel.notifications.length,
+                      padding: const EdgeInsets.all(16),
+                      itemBuilder: (context, index) {
+                        final notification = viewModel.notifications[index];
+                        return _buildNotificationItem(
+                          context,
+                          notification,
+                          viewModel,
+                          colors,
+                        );
+                      },
+                    ),
+                  ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildFilters(BuildContext context, NotificationViewModel viewModel, dynamic colors) {
+  Widget _buildFilters(
+    BuildContext context,
+    NotificationViewModel viewModel,
+    dynamic colors,
+  ) {
     final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -71,15 +88,39 @@ class NotificationsView extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildFilterChip(context, l10n.all, NotificationFilter.all, viewModel, colors),
-          _buildFilterChip(context, l10n.unread, NotificationFilter.unread, viewModel, colors),
-          _buildFilterChip(context, l10n.read, NotificationFilter.read, viewModel, colors),
+          _buildFilterChip(
+            context,
+            l10n.all,
+            NotificationFilter.all,
+            viewModel,
+            colors,
+          ),
+          _buildFilterChip(
+            context,
+            l10n.unread,
+            NotificationFilter.unread,
+            viewModel,
+            colors,
+          ),
+          _buildFilterChip(
+            context,
+            l10n.read,
+            NotificationFilter.read,
+            viewModel,
+            colors,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildFilterChip(BuildContext context, String label, NotificationFilter filter, NotificationViewModel viewModel, dynamic colors) {
+  Widget _buildFilterChip(
+    BuildContext context,
+    String label,
+    NotificationFilter filter,
+    NotificationViewModel viewModel,
+    dynamic colors,
+  ) {
     final isSelected = viewModel.currentFilter == filter;
     return GestureDetector(
       onTap: () => viewModel.setFilter(filter),
@@ -107,15 +148,27 @@ class NotificationsView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.notifications_off_outlined, size: 80, color: colors.textSub.withOpacity(0.2)),
+          Icon(
+            Icons.notifications_off_outlined,
+            size: 80,
+            color: colors.textSub.withOpacity(0.2),
+          ),
           const SizedBox(height: 16),
-          Text(AppLocalizations.of(context)!.noNotifications, style: TextStyle(color: colors.textSub, fontSize: 16)),
+          Text(
+            AppLocalizations.of(context)!.noNotifications,
+            style: TextStyle(color: colors.textSub, fontSize: 16),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildNotificationItem(BuildContext context, dynamic notification, NotificationViewModel viewModel, dynamic colors) {
+  Widget _buildNotificationItem(
+    BuildContext context,
+    dynamic notification,
+    NotificationViewModel viewModel,
+    dynamic colors,
+  ) {
     return GestureDetector(
       onTap: () {
         viewModel.markAsRead(notification.id);
@@ -125,10 +178,14 @@ class NotificationsView extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: notification.isRead ? colors.card : colors.primary.withOpacity(0.05),
+          color: notification.isRead
+              ? colors.card
+              : colors.primary.withOpacity(0.05),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: notification.isRead ? Colors.transparent : colors.primary.withOpacity(0.1),
+            color: notification.isRead
+                ? Colors.transparent
+                : colors.primary.withOpacity(0.1),
           ),
         ),
         child: Row(
@@ -137,10 +194,17 @@ class NotificationsView extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: _getIconColor(notification.type, colors).withOpacity(0.1),
+                color: _getIconColor(
+                  notification.type,
+                  colors,
+                ).withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(_getIcon(notification.type), color: _getIconColor(notification.type, colors), size: 20),
+              child: Icon(
+                _getIcon(notification.type),
+                color: _getIconColor(notification.type, colors),
+                size: 20,
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -153,7 +217,9 @@ class NotificationsView extends StatelessWidget {
                       Text(
                         notification.title,
                         style: TextStyle(
-                          fontWeight: notification.isRead ? FontWeight.normal : FontWeight.bold,
+                          fontWeight: notification.isRead
+                              ? FontWeight.normal
+                              : FontWeight.bold,
                           fontSize: 14,
                         ),
                       ),
@@ -168,7 +234,11 @@ class NotificationsView extends StatelessWidget {
                     notification.message,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: colors.textSub, fontSize: 12, height: 1.4),
+                    style: TextStyle(
+                      color: colors.textSub,
+                      fontSize: 12,
+                      height: 1.4,
+                    ),
                   ),
                 ],
               ),
@@ -179,7 +249,11 @@ class NotificationsView extends StatelessWidget {
     );
   }
 
-  void _showNotificationDetails(BuildContext context, dynamic notification, dynamic colors) {
+  void _showNotificationDetails(
+    BuildContext context,
+    dynamic notification,
+    dynamic colors,
+  ) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -207,10 +281,17 @@ class NotificationsView extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: _getIconColor(notification.type, colors).withOpacity(0.1),
+                    color: _getIconColor(
+                      notification.type,
+                      colors,
+                    ).withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(_getIcon(notification.type), color: _getIconColor(notification.type, colors), size: 24),
+                  child: Icon(
+                    _getIcon(notification.type),
+                    color: _getIconColor(notification.type, colors),
+                    size: 24,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -219,10 +300,15 @@ class NotificationsView extends StatelessWidget {
                     children: [
                       Text(
                         notification.title,
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       Text(
-                        DateFormat('yyyy/MM/dd HH:mm').format(notification.createdAt),
+                        DateFormat(
+                          'yyyy/MM/dd HH:mm',
+                        ).format(notification.createdAt),
                         style: TextStyle(color: colors.textSub, fontSize: 12),
                       ),
                     ],
@@ -243,9 +329,17 @@ class NotificationsView extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
-                child: Text(AppLocalizations.of(context)!.close, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                child: Text(
+                  AppLocalizations.of(context)!.close,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
           ],
@@ -256,21 +350,31 @@ class NotificationsView extends StatelessWidget {
 
   IconData _getIcon(String type) {
     switch (type) {
-      case 'new_request': return Icons.add_shopping_cart_rounded;
-      case 'request_accepted': return Icons.check_circle_outline_rounded;
-      case 'points_received': return Icons.account_balance_wallet_outlined;
-      case 'admin_message': return Icons.admin_panel_settings_outlined;
-      default: return Icons.notifications_none_rounded;
+      case 'new_request':
+        return Icons.add_shopping_cart_rounded;
+      case 'request_accepted':
+        return Icons.check_circle_outline_rounded;
+      case 'points_received':
+        return Icons.account_balance_wallet_outlined;
+      case 'admin_message':
+        return Icons.admin_panel_settings_outlined;
+      default:
+        return Icons.notifications_none_rounded;
     }
   }
 
   Color _getIconColor(String type, dynamic colors) {
     switch (type) {
-      case 'new_request': return colors.primary;
-      case 'request_accepted': return colors.success;
-      case 'points_received': return colors.warning;
-      case 'admin_message': return colors.error;
-      default: return colors.primary;
+      case 'new_request':
+        return colors.primary;
+      case 'request_accepted':
+        return colors.success;
+      case 'points_received':
+        return colors.warning;
+      case 'admin_message':
+        return colors.error;
+      default:
+        return colors.primary;
     }
   }
 }

@@ -22,6 +22,9 @@ class PointsViewModel extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  String? _successMessage;
+  String? get successMessage => _successMessage;
+
   // 📥 جلب باقات شحن النقاط المتاحة
   Future<void> fetchAvailablePackages() async {
     _isLoading = true;
@@ -66,7 +69,7 @@ class PointsViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await _repository.subscribeToPackage(
+      _successMessage = await _repository.subscribeToPackage(
         packageId: packageId,
         bondNumber: bondNumber,
         bankName: bankName,

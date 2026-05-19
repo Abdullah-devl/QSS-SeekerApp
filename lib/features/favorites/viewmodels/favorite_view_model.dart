@@ -59,13 +59,12 @@ class FavoriteViewModel extends ChangeNotifier {
 
       // 2. جلب التصنيفات الحقيقية من السيرفر
       final realCategories = await _homeRepository.fetchCategories();
-      
+
       // 3. بناء قائمة التصنيفات للفلترة مع إضافة خيار "الكل"
       _filterCategories = [
         CategoryModel(id: 0, name: 'all', iconPath: 'grid_view'),
         ...realCategories,
       ];
-
     } catch (e) {
       _errorMessage = 'errorLoadingFavorites';
     } finally {
@@ -90,7 +89,7 @@ class FavoriteViewModel extends ChangeNotifier {
   /// ❤️ تبديل حالة المفضلة (إضافة/حذف)
   Future<void> toggleFavorite(ServiceModel service) async {
     final originalState = service.isFavorite;
-    
+
     // التحديث المحلي الفوري (Optimistic UI)
     service.isFavorite = !service.isFavorite;
     if (!service.isFavorite) {

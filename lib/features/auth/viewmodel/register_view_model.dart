@@ -76,7 +76,7 @@ class RegisterViewModel extends ChangeNotifier {
 
     try {
       // 5. استدعاء الدالة من الـ Repository
-      await authRepository.register(
+      final successMsg = await authRepository.register(
         name: nameController.text.trim(),
         email: emailController.text.trim(),
         password: passwordController.text.trim(),
@@ -86,11 +86,8 @@ class RegisterViewModel extends ChangeNotifier {
 
       // 6. في حال النجاح، التوجيه لصفحة التحقق من الإيميل (OTP)
       if (context.mounted) {
-        await QSAlerts.showSuccess(
-          context,
-          l10n.accountCreatedSuccess,
-        );
-        
+        await QSAlerts.showSuccess(context, successMsg);
+
         if (context.mounted) {
           Navigator.pushReplacementNamed(
             context,

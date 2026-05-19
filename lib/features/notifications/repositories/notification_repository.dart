@@ -15,11 +15,16 @@ class NotificationRepository {
     final fullUrl = ApiEndpoints.storeToken;
     print('📡 [NOTIFICATION REPO]: Attempting to store token at: $fullUrl');
     try {
-      final response = await _apiService.post(fullUrl, data: {
-        'token': token, // ✅ تم التعديل حسب التوثيق
-      });
+      final response = await _apiService.post(
+        fullUrl,
+        data: {
+          'token': token, // ✅ تم التعديل حسب التوثيق
+        },
+      );
       print('✅ [NOTIFICATION REPO]: Success! Status: ${response.statusCode}');
-      developer.log('✅ NotificationRepository: Token stored. Status: ${response.statusCode}');
+      developer.log(
+        '✅ NotificationRepository: Token stored. Status: ${response.statusCode}',
+      );
     } catch (e) {
       print('❌ [NOTIFICATION REPO]: Failed to store token at: $fullUrl');
       print('❌ Error details: $e');
@@ -32,10 +37,10 @@ class NotificationRepository {
     final fullUrl = "${ApiEndpoints.baseUrl}/remove-token";
     print('📡 [NOTIFICATION REPO]: Attempting to remove token at: $fullUrl');
     try {
-      final response = await _apiService.post(fullUrl, data: {
-        'token': token,
-      });
-      print('✅ [NOTIFICATION REPO]: Token removed successfully. Status: ${response.statusCode}');
+      final response = await _apiService.post(fullUrl, data: {'token': token});
+      print(
+        '✅ [NOTIFICATION REPO]: Token removed successfully. Status: ${response.statusCode}',
+      );
     } catch (e) {
       print('❌ [NOTIFICATION REPO]: Failed to remove token: $e');
     }
@@ -46,14 +51,17 @@ class NotificationRepository {
     try {
       final response = await _apiService.get(ApiEndpoints.notifications);
       if (response.statusCode == 200) {
-        final List data = (response.data is Map && response.data.containsKey('data')) 
-            ? response.data['data'] 
+        final List data =
+            (response.data is Map && response.data.containsKey('data'))
+            ? response.data['data']
             : response.data;
         return data.map((json) => NotificationModel.fromJson(json)).toList();
       }
       return [];
     } catch (e) {
-      developer.log('❌ NotificationRepository: Error fetching notifications: $e');
+      developer.log(
+        '❌ NotificationRepository: Error fetching notifications: $e',
+      );
       return [];
     }
   }

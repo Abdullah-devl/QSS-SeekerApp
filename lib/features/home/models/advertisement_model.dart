@@ -32,10 +32,14 @@ class AdvertisementModel {
       id: json['id'] ?? 0,
       title: json['title'] ?? '',
       description: json['description'],
-      imageUrl: ApiEndpoints.getImageUrl(json['image_url'] ?? json['image'] ?? json['image_path']),
+      imageUrl: ApiEndpoints.getImageUrl(
+        json['image_url'] ?? json['image'] ?? json['image_path'],
+      ),
       type: json['type'] ?? 'banner',
       targetType: json['target_type'] ?? 'none',
-      targetId: json['target_id'] != null ? int.tryParse(json['target_id'].toString()) : null,
+      targetId: json['target_id'] != null
+          ? int.tryParse(json['target_id'].toString())
+          : null,
       externalLink: json['external_link'],
       metrics: AdMetrics.fromJson(json['metrics'] ?? {}),
     );
@@ -49,9 +53,6 @@ class AdMetrics {
   AdMetrics({this.views = 0, this.clicks = 0});
 
   factory AdMetrics.fromJson(Map<String, dynamic> json) {
-    return AdMetrics(
-      views: json['views'] ?? 0,
-      clicks: json['clicks'] ?? 0,
-    );
+    return AdMetrics(views: json['views'] ?? 0, clicks: json['clicks'] ?? 0);
   }
 }

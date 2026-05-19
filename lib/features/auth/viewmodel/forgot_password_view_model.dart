@@ -17,7 +17,8 @@ class ForgotPasswordViewModel extends ChangeNotifier {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController codeController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   // ⏳ حالة التحميل
   bool _isLoading = false;
@@ -47,9 +48,9 @@ class ForgotPasswordViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await authRepository.forgotPassword(email);
+      final successMsg = await authRepository.forgotPassword(email);
       if (context.mounted) {
-        QSAlerts.showSuccess(context, l10n.resetOtpSentSuccess);
+        QSAlerts.showSuccess(context, successMsg);
         _currentStep = 1; // الانتقال لخطوة كود الـ OTP
       }
     } catch (e) {
@@ -78,9 +79,9 @@ class ForgotPasswordViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await authRepository.verifyResetCode(email, code);
+      final successMsg = await authRepository.verifyResetCode(email, code);
       if (context.mounted) {
-        QSAlerts.showSuccess(context, l10n.resetCodeVerifiedSuccess);
+        QSAlerts.showSuccess(context, successMsg);
         _currentStep = 2; // الانتقال لخطوة تعيين كلمة المرور الجديدة
       }
     } catch (e) {
@@ -116,14 +117,14 @@ class ForgotPasswordViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await authRepository.resetPassword(
+      final successMsg = await authRepository.resetPassword(
         email: email,
         code: code,
         password: password,
         passwordConfirmation: confirmPassword,
       );
       if (context.mounted) {
-        await QSAlerts.showSuccess(context, l10n.resetPasswordSuccess);
+        await QSAlerts.showSuccess(context, successMsg);
         if (context.mounted) {
           // إعادة تصفير الحقول والخطوة
           emailController.clear();

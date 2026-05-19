@@ -44,9 +44,7 @@ class PreviousWorksView extends StatelessWidget {
         ],
       ),
       body: vm.isLoading
-          ? Center(
-              child: CircularProgressIndicator(color: colors.primary),
-            )
+          ? Center(child: CircularProgressIndicator(color: colors.primary))
           : vm.errorMessage != null
           ? Center(
               child: Text(
@@ -115,10 +113,7 @@ class PreviousWorksView extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         '${profile.jobTitle} • ${l10n?.riyadh ?? ''}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: colors.textSub,
-                        ),
+                        style: TextStyle(fontSize: 12, color: colors.textSub),
                       ),
                     ],
                   ),

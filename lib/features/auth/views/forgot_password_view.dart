@@ -112,11 +112,16 @@ class ForgotPasswordView extends StatelessWidget {
                               ElevatedButton(
                                 onPressed: viewModel.isLoading
                                     ? null
-                                    : () => _onPrimaryButtonPressed(context, viewModel),
+                                    : () => _onPrimaryButtonPressed(
+                                        context,
+                                        viewModel,
+                                      ),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: colors.primary,
                                   foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(15),
                                   ),
@@ -132,16 +137,22 @@ class ForgotPasswordView extends StatelessWidget {
                                         ),
                                       )
                                     : Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Icon(
-                                            _getButtonIcon(viewModel.currentStep),
+                                            _getButtonIcon(
+                                              viewModel.currentStep,
+                                            ),
                                             size: 20,
                                             color: Colors.white,
                                           ),
                                           const SizedBox(width: 8),
                                           Text(
-                                            _getButtonText(l10n, viewModel.currentStep),
+                                            _getButtonText(
+                                              l10n,
+                                              viewModel.currentStep,
+                                            ),
                                             style: const TextStyle(
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
@@ -186,7 +197,8 @@ class ForgotPasswordView extends StatelessWidget {
             right: 20,
             child: IconButton(
               icon: Directionality(
-                textDirection: TextDirection.ltr, // يمنع الانعكاس التلقائي في لغة RTL
+                textDirection:
+                    TextDirection.ltr, // يمنع الانعكاس التلقائي في لغة RTL
                 child: Icon(
                   Icons.arrow_forward, // يتجه لليمين دائماً (→)
                   color: colors.text,
@@ -271,7 +283,10 @@ class ForgotPasswordView extends StatelessWidget {
   }
 
   // بناء حقول المدخلات المناسبة للخطوة الحالية
-  Widget _buildStepFields(BuildContext context, ForgotPasswordViewModel viewModel) {
+  Widget _buildStepFields(
+    BuildContext context,
+    ForgotPasswordViewModel viewModel,
+  ) {
     final l10n = AppLocalizations.of(context)!;
     switch (viewModel.currentStep) {
       case 0:
@@ -333,7 +348,10 @@ class ForgotPasswordView extends StatelessWidget {
   }
 
   // معالجة الضغط على زر الإجراء الرئيسي للخطوات
-  void _onPrimaryButtonPressed(BuildContext context, ForgotPasswordViewModel viewModel) {
+  void _onPrimaryButtonPressed(
+    BuildContext context,
+    ForgotPasswordViewModel viewModel,
+  ) {
     switch (viewModel.currentStep) {
       case 0:
         viewModel.sendResetOtp(context);

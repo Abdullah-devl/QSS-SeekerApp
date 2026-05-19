@@ -46,10 +46,14 @@ class RegisterView extends StatelessWidget {
                           ),
                           child: IconButton(
                             icon: Icon(
-                              isDark ? Icons.light_mode : Icons.nightlight_round,
+                              isDark
+                                  ? Icons.light_mode
+                                  : Icons.nightlight_round,
                               color: colors.text,
                             ),
-                            onPressed: context.read<ThemeProvider>().toggleTheme,
+                            onPressed: context
+                                .read<ThemeProvider>()
+                                .toggleTheme,
                           ),
                         ),
 
@@ -190,7 +194,8 @@ class RegisterView extends StatelessWidget {
                                     context,
                                   )!.termsAndPrivacy,
                                   style: TextStyle(
-                                    color: colors.primary, // لون الرابط المتجاوب
+                                    color:
+                                        colors.primary, // لون الرابط المتجاوب
                                     fontWeight: FontWeight.bold,
                                   ),
                                   // عند الضغط على النص يتم فتح صفحة الشروط
@@ -233,7 +238,9 @@ class RegisterView extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       elevation: 4,
-                      disabledBackgroundColor: colors.primary.withValues(alpha: 0.5),
+                      disabledBackgroundColor: colors.primary.withValues(
+                        alpha: 0.5,
+                      ),
                     ),
                     child: viewModel.isLoading
                         ? const SizedBox(
@@ -293,7 +300,10 @@ class RegisterView extends StatelessWidget {
                         context,
                         label: 'Google',
                         icon: Icons.g_mobiledata_rounded,
-                        onTap: () => Provider.of<LoginViewModel>(context, listen: false).loginWithGoogle(context),
+                        onTap: () => Provider.of<LoginViewModel>(
+                          context,
+                          listen: false,
+                        ).loginWithGoogle(context),
                       ),
                     ),
                   ),
@@ -367,7 +377,9 @@ class RegisterView extends StatelessWidget {
         decoration: BoxDecoration(
           color: context.qsColors.card,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: context.qsColors.textSub.withValues(alpha: 0.2)),
+          border: Border.all(
+            color: context.qsColors.textSub.withValues(alpha: 0.2),
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

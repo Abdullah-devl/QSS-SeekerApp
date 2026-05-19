@@ -141,8 +141,12 @@ class HomeRepository {
       if (response.statusCode == 200) {
         // نتوقع أن تكون البيانات مصفوفة مباشرة أو داخل مفتاح 'data'
         final dynamic rawData = response.data;
-        final List<dynamic> data = (rawData is Map) ? (rawData['data'] ?? []) : (rawData as List? ?? []);
-        return data.map((json) => ServiceModel.fromJson(json as Map<String, dynamic>)).toList();
+        final List<dynamic> data = (rawData is Map)
+            ? (rawData['data'] ?? [])
+            : (rawData as List? ?? []);
+        return data
+            .map((json) => ServiceModel.fromJson(json as Map<String, dynamic>))
+            .toList();
       } else {
         return [];
       }
@@ -248,4 +252,3 @@ class HomeRepository {
     }
   }
 }
-

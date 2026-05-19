@@ -38,12 +38,21 @@ class MyProfileView extends StatelessWidget {
               children: [
                 Icon(Icons.error_outline, size: 60, color: colors.error),
                 const SizedBox(height: 16),
-                Text(vm.errorMessage!, textAlign: TextAlign.center, style: TextStyle(color: colors.text)),
+                Text(
+                  vm.errorMessage!,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: colors.text),
+                ),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => vm.fetchProfile(),
-                  style: ElevatedButton.styleFrom(backgroundColor: colors.primary),
-                  child: Text(context.tr('retry'), style: const TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colors.primary,
+                  ),
+                  child: Text(
+                    context.tr('retry'),
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             ),
@@ -81,7 +90,7 @@ class MyProfileView extends StatelessWidget {
                   ),
                 ),
               );
-              
+
               if (result == true) {
                 vm.fetchProfile(); // تحديث البيانات بعد العودة من التعديل
               }
@@ -120,23 +129,27 @@ class MyProfileView extends StatelessWidget {
                 Text(
                   profile.email,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: colors.textSub,
-                  ),
+                  style: TextStyle(fontSize: 16, color: colors.textSub),
                 ),
                 const SizedBox(height: 12),
 
                 // 🏷️ الدور (طالب خدمة / مزود خدمة)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: colors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: colors.primary.withValues(alpha: 0.2)),
+                    border: Border.all(
+                      color: colors.primary.withValues(alpha: 0.2),
+                    ),
                   ),
                   child: Text(
-                    profile.role == 'seeker' ? context.tr('seeker_role') : context.tr('provider_role'),
+                    profile.role == 'seeker'
+                        ? context.tr('seeker_role')
+                        : context.tr('provider_role'),
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
@@ -168,8 +181,8 @@ class MyProfileView extends StatelessWidget {
                   label: l10n.phoneNumber,
                   content: profile.phones.isNotEmpty
                       ? profile.phones
-                          .map((p) => '${p.countryCode ?? ''} ${p.phone}')
-                          .join('\n')
+                            .map((p) => '${p.countryCode ?? ''} ${p.phone}')
+                            .join('\n')
                       : context.tr('no_phones_added'),
                   colors: colors,
                 ),
@@ -180,13 +193,14 @@ class MyProfileView extends StatelessWidget {
                 _buildInfoSection(
                   icon: Icons.location_on_rounded,
                   label: l10n.address,
-                  content: vm.address ??
+                  content:
+                      vm.address ??
                       ((profile.latitude != null && profile.longitude != null)
                           ? context.tr('fetching_address')
                           : context.tr('location_not_set')),
                   colors: colors,
                 ),
-                
+
                 const SizedBox(height: 24),
               ],
             ),
@@ -225,11 +239,7 @@ class MyProfileView extends StatelessWidget {
   }
 
   Widget _buildPlaceholder(dynamic colors) {
-    return Icon(
-      Icons.person_rounded,
-      size: 70,
-      color: colors.primary,
-    );
+    return Icon(Icons.person_rounded, size: 70, color: colors.primary);
   }
 
   Widget _buildInfoSection({
@@ -254,11 +264,7 @@ class MyProfileView extends StatelessWidget {
         Text(
           content,
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 16,
-            color: colors.text,
-            height: 1.5,
-          ),
+          style: TextStyle(fontSize: 16, color: colors.text, height: 1.5),
         ),
       ],
     );
@@ -302,10 +308,7 @@ class MyProfileView extends StatelessWidget {
               ),
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: colors.textSub,
-                ),
+                style: TextStyle(fontSize: 12, color: colors.textSub),
               ),
             ],
           ),

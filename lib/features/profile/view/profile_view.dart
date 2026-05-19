@@ -26,7 +26,8 @@ import '../requests/repository/request_repository.dart';
 /// 📝 الوصف: شاشة الملف الشخصي بتصميم عصري (Instagram-style).
 /// تدعم التبويبات المتعددة، عرض الإحصائيات، وإدارة معرض الأعمال.
 class ProfileView extends StatelessWidget {
-  final int? userId; // إذا كان null، نعرض ملف المستخدم الحالي (أو نتركه للـ ViewModel)
+  final int?
+  userId; // إذا كان null، نعرض ملف المستخدم الحالي (أو نتركه للـ ViewModel)
 
   const ProfileView({super.key, this.userId});
 
@@ -43,13 +44,20 @@ class ProfileView extends StatelessWidget {
     );
   }
 
-  Widget _buildBody(BuildContext context, ProfileViewModel vm, dynamic colors, Color bgColor) {
+  Widget _buildBody(
+    BuildContext context,
+    ProfileViewModel vm,
+    dynamic colors,
+    Color bgColor,
+  ) {
     if (vm.isLoading && vm.profile == null) {
       return Center(child: CircularProgressIndicator(color: colors.primary));
     }
-    
+
     if (vm.errorMessage != null && vm.profile == null) {
-      return Center(child: Text(vm.errorMessage!, style: TextStyle(color: colors.error)));
+      return Center(
+        child: Text(vm.errorMessage!, style: TextStyle(color: colors.error)),
+      );
     }
 
     if (vm.profile == null) {
@@ -100,7 +108,9 @@ class ProfileView extends StatelessWidget {
               ServicesView(services: profile.mainServices),
               _buildReviewsTab(context, vm, colors),
               ChangeNotifierProvider(
-                create: (context) => ContactInfoViewModel(ProfileRepository(context.read<ApiService>())),
+                create: (context) => ContactInfoViewModel(
+                  ProfileRepository(context.read<ApiService>()),
+                ),
                 child: ContactInfoView(profile: profile),
               ),
             ],
@@ -110,7 +120,12 @@ class ProfileView extends StatelessWidget {
     );
   }
 
-  AppBar _buildAppBar(BuildContext context, ProfileViewModel vm, dynamic colors, Color bgColor) {
+  AppBar _buildAppBar(
+    BuildContext context,
+    ProfileViewModel vm,
+    dynamic colors,
+    Color bgColor,
+  ) {
     return AppBar(
       backgroundColor: bgColor,
       elevation: 0,
@@ -118,13 +133,21 @@ class ProfileView extends StatelessWidget {
       title: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            vm.profile?.name ?? '...',
-            style: TextStyle(color: colors.text, fontWeight: FontWeight.bold, fontSize: 16),
+          Flexible(
+            child: Text(
+              vm.profile?.name ?? '...',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: colors.text,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
           ),
-          if (vm.profile?.verificationProvider == true) ...[
+          if (vm.profile?.isVerified == true) ...[
             const SizedBox(width: 4),
-            Icon(Icons.verified, color: colors.primary, size: 16),
+            const Icon(Icons.verified, color: Colors.blue, size: 16),
           ],
         ],
       ),
@@ -135,7 +158,11 @@ class ProfileView extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context, ProfileModel profile, dynamic colors) {
+  Widget _buildProfileHeader(
+    BuildContext context,
+    ProfileModel profile,
+    dynamic colors,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
@@ -153,14 +180,35 @@ class ProfileView extends StatelessWidget {
                     shape: BoxShape.circle,
                     border: Border.all(color: colors.primary, width: 3),
                     image: profile.avatarUrl.isNotEmpty
-                        ? DecorationImage(image: NetworkImage(profile.avatarUrl), fit: BoxFit.cover)
-                        : const DecorationImage(image: AssetImage('assets/images/user_avatar.png'), fit: BoxFit.cover),
+                        ? DecorationImage(
+                            image: NetworkImage(profile.avatarUrl),
+                            fit: BoxFit.cover,
+                          )
+                        : const DecorationImage(
+                            image: AssetImage('assets/images/user_avatar.png'),
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ),
               ),
-              _buildStatItem(context, '${profile.requestsCount}', context.tr('requestsCountLabel'), colors),
-              _buildStatItem(context, '${profile.servicesCount}', context.tr('servicesCountLabel'), colors),
-              _buildStatItem(context, '${profile.ratingAvg}', context.tr('totalRatingLabel'), colors),
+              _buildStatItem(
+                context,
+                '${profile.requestsCount}',
+                context.tr('requestsCountLabel'),
+                colors,
+              ),
+              _buildStatItem(
+                context,
+                '${profile.servicesCount}',
+                context.tr('servicesCountLabel'),
+                colors,
+              ),
+              _buildStatItem(
+                context,
+                '${profile.ratingAvg}',
+                context.tr('totalRatingLabel'),
+                colors,
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -171,15 +219,33 @@ class ProfileView extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(profile.name, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: colors.text)),
-                    if (profile.verificationProvider) ...[
+                    Flexible(
+                      child: Text(
+                        profile.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: colors.text,
+                        ),
+                      ),
+                    ),
+                    if (profile.isVerified) ...[
                       const SizedBox(width: 6),
-                      Icon(Icons.verified, color: colors.primary, size: 22),
+                      const Icon(Icons.verified, color: Colors.blue, size: 22),
                     ],
                   ],
                 ),
                 const SizedBox(height: 4),
-                Text(profile.jobTitle, style: TextStyle(fontSize: 14, color: colors.primary, fontWeight: FontWeight.bold)),
+                Text(
+                  profile.jobTitle,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: colors.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
           ),
@@ -188,7 +254,11 @@ class ProfileView extends StatelessWidget {
             Text(
               profile.bio,
               textAlign: TextAlign.start,
-              style: TextStyle(fontSize: 13, color: colors.textSub, height: 1.6),
+              style: TextStyle(
+                fontSize: 13,
+                color: colors.textSub,
+                height: 1.6,
+              ),
             ),
           ],
         ],
@@ -196,17 +266,33 @@ class ProfileView extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(BuildContext context, String value, String label, dynamic colors) {
+  Widget _buildStatItem(
+    BuildContext context,
+    String value,
+    String label,
+    dynamic colors,
+  ) {
     return Column(
       children: [
-        Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: colors.text)),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: colors.text,
+          ),
+        ),
         const SizedBox(height: 4),
         Text(label, style: TextStyle(fontSize: 12, color: colors.primary)),
       ],
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, ProfileViewModel vm, dynamic colors) {
+  Widget _buildActionButtons(
+    BuildContext context,
+    ProfileViewModel vm,
+    dynamic colors,
+  ) {
     if (vm.profile == null) return const SizedBox.shrink();
     final profile = vm.profile!;
 
@@ -217,7 +303,7 @@ class ProfileView extends StatelessWidget {
       future: context.read<TokenStorage>().getUserData(),
       builder: (context, snapshot) {
         final currentUserId = snapshot.data?['id'];
-        
+
         // إذا كان هذا بروفايلي (UserId متطابق)، لا تظهر الأزرار
         if (currentUserId == profile.id || userId == null) {
           return const SizedBox.shrink();
@@ -246,10 +332,18 @@ class ProfileView extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colors.primary,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  child: Text(context.tr('customRequest'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  child: Text(
+                    context.tr('customRequest'),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -273,10 +367,19 @@ class ProfileView extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colors.text.withValues(alpha: 0.05),
                     elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  child: Text(context.tr('meetingRequest'), textAlign: TextAlign.center, style: TextStyle(color: colors.text, fontWeight: FontWeight.bold)),
+                  child: Text(
+                    context.tr('meetingRequest'),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: colors.text,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -286,7 +389,11 @@ class ProfileView extends StatelessWidget {
     );
   }
 
-  Widget _buildReviewsTab(BuildContext context, ProfileViewModel vm, dynamic colors) {
+  Widget _buildReviewsTab(
+    BuildContext context,
+    ProfileViewModel vm,
+    dynamic colors,
+  ) {
     if (vm.isLoadingReviews && vm.reviews.isEmpty) {
       return Center(
         child: Padding(
@@ -306,7 +413,11 @@ class ProfileView extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.star_outline_rounded, size: 64, color: colors.textSub.withOpacity(0.3)),
+              Icon(
+                Icons.star_outline_rounded,
+                size: 64,
+                color: colors.textSub.withOpacity(0.3),
+              ),
               const SizedBox(height: 16),
               Text(
                 context.tr('noReviews'),
@@ -327,10 +438,14 @@ class ProfileView extends StatelessWidget {
       children: [
         // 1. عرض التقييمات الظاهرة
         if (visibleReviews.isNotEmpty)
-          ...visibleReviews.map((r) => Padding(
-            padding: const EdgeInsets.only(bottom: 12.0),
-            child: _buildReviewCardItem(r, colors),
-          )).toList()
+          ...visibleReviews
+              .map(
+                (r) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: _buildReviewCardItem(r, colors),
+                ),
+              )
+              .toList()
         else
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 24.0),
@@ -349,14 +464,22 @@ class ProfileView extends StatelessWidget {
             child: TextButton.icon(
               onPressed: () => vm.toggleHiddenReviews(),
               icon: Icon(
-                vm.showHiddenReviews ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                vm.showHiddenReviews
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
                 color: colors.primary,
                 size: 18,
               ),
               label: Text(
                 vm.showHiddenReviews
-                    ? context.tr('hideHiddenReviews', args: {'count': hiddenReviews.length})
-                    : context.tr('showHiddenReviews', args: {'count': hiddenReviews.length}),
+                    ? context.tr(
+                        'hideHiddenReviews',
+                        args: {'count': hiddenReviews.length},
+                      )
+                    : context.tr(
+                        'showHiddenReviews',
+                        args: {'count': hiddenReviews.length},
+                      ),
                 style: TextStyle(
                   color: colors.primary,
                   fontWeight: FontWeight.bold,
@@ -364,7 +487,10 @@ class ProfileView extends StatelessWidget {
                 ),
               ),
               style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 backgroundColor: colors.primary.withOpacity(0.05),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -376,18 +502,22 @@ class ProfileView extends StatelessWidget {
 
           // 3. عرض التقييمات المخفية إذا تم التفعيل
           if (vm.showHiddenReviews)
-            ...hiddenReviews.map((r) => Padding(
-              padding: const EdgeInsets.only(bottom: 12.0),
-              child: _buildReviewCardItem(r, colors),
-            )).toList(),
+            ...hiddenReviews
+                .map(
+                  (r) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12.0),
+                    child: _buildReviewCardItem(r, colors),
+                  ),
+                )
+                .toList(),
         ],
       ],
     );
   }
 
   Widget _buildReviewCardItem(ProfileReviewModel review, dynamic colors) {
-    final String displayDate = review.createdAt.isNotEmpty 
-        ? review.createdAt.split('T').first 
+    final String displayDate = review.createdAt.isNotEmpty
+        ? review.createdAt.split('T').first
         : '';
 
     return Container(
@@ -401,7 +531,7 @@ class ProfileView extends StatelessWidget {
             color: Colors.black.withOpacity(0.01),
             blurRadius: 10,
             offset: const Offset(0, 4),
-          )
+          ),
         ],
       ),
       child: Column(
@@ -471,8 +601,8 @@ class ProfileView extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: List.generate(5, (starIndex) {
                     return Icon(
-                      starIndex < review.rating 
-                          ? Icons.star_rounded 
+                      starIndex < review.rating
+                          ? Icons.star_rounded
                           : Icons.star_border_rounded,
                       color: colors.warning,
                       size: 13,
@@ -489,8 +619,8 @@ class ProfileView extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: List.generate(5, (starIndex) {
                   return Icon(
-                    starIndex < review.rating 
-                        ? Icons.star_rounded 
+                    starIndex < review.rating
+                        ? Icons.star_rounded
                         : Icons.star_border_rounded,
                     color: colors.warning,
                     size: 13,
@@ -511,10 +641,22 @@ class ProfileView extends StatelessWidget {
       indicatorColor: colors.primary,
       indicatorWeight: 3,
       tabs: [
-        Tab(icon: const Icon(Icons.grid_view_rounded), text: AppLocalizations.of(context)!.previousWorks),
-        Tab(icon: const Icon(Icons.build_rounded), text: context.tr('services')),
-        Tab(icon: const Icon(Icons.star_rate_rounded), text: AppLocalizations.of(context)!.customerReviews),
-        Tab(icon: const Icon(Icons.contact_phone_rounded), text: AppLocalizations.of(context)!.contactInfo),
+        Tab(
+          icon: const Icon(Icons.grid_view_rounded),
+          text: AppLocalizations.of(context)!.previousWorks,
+        ),
+        Tab(
+          icon: const Icon(Icons.build_rounded),
+          text: context.tr('services'),
+        ),
+        Tab(
+          icon: const Icon(Icons.star_rate_rounded),
+          text: AppLocalizations.of(context)!.customerReviews,
+        ),
+        Tab(
+          icon: const Icon(Icons.contact_phone_rounded),
+          text: AppLocalizations.of(context)!.contactInfo,
+        ),
       ],
     );
   }
@@ -524,8 +666,16 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   final TabBar _tabBar;
   final Color backgroundColor;
   _SliverAppBarDelegate(this._tabBar, this.backgroundColor);
-  @override double get minExtent => _tabBar.preferredSize.height;
-  @override double get maxExtent => _tabBar.preferredSize.height;
-  @override Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) => Container(color: backgroundColor, child: _tabBar);
-  @override bool shouldRebuild(_SliverAppBarDelegate oldDelegate) => false;
+  @override
+  double get minExtent => _tabBar.preferredSize.height;
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) => Container(color: backgroundColor, child: _tabBar);
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) => false;
 }

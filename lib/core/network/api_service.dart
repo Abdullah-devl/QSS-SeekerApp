@@ -53,7 +53,10 @@ class ApiService {
             name: 'ApiService',
           );
           if (options.data != null) {
-            developer.log('📦 Request Data: ${options.data}', name: 'ApiService');
+            developer.log(
+              '📦 Request Data: ${options.data}',
+              name: 'ApiService',
+            );
           }
           return handler.next(options); // ✅ متابعة إرسال الطلب
         },
@@ -65,8 +68,11 @@ class ApiService {
             '✅ [${response.statusCode}] ${response.requestOptions.uri}',
             name: 'ApiService',
           );
-          developer.log('📥 Response Body: ${response.data}', name: 'ApiService');
-          
+          developer.log(
+            '📥 Response Body: ${response.data}',
+            name: 'ApiService',
+          );
+
           return handler.next(response); // ✅ تمرير الرد للكود الذي طلبه
         },
 
@@ -75,17 +81,21 @@ class ApiService {
           // 🚀 محاولة استخراج رسالة الخطأ القادمة من الباكيند (صاحب الباك)
           String? serverMessage;
           if (e.response?.data is Map) {
-             serverMessage = e.response?.data['message'] ?? e.response?.data['error'];
+            serverMessage =
+                e.response?.data['message'] ?? e.response?.data['error'];
           }
 
           developer.log(
-            '❌ [${e.response?.statusCode ?? "N/A"}] ${e.requestOptions.uri}\n📩 Server Message: ${serverMessage ?? e.message}', 
-            name: 'ApiService', 
-            error: e
+            '❌ [${e.response?.statusCode ?? "N/A"}] ${e.requestOptions.uri}\n📩 Server Message: ${serverMessage ?? e.message}',
+            name: 'ApiService',
+            error: e,
           );
-          
+
           if (e.response?.data != null) {
-             developer.log('📥 Error Body: ${e.response?.data}', name: 'ApiService');
+            developer.log(
+              '📥 Error Body: ${e.response?.data}',
+              name: 'ApiService',
+            );
           }
 
           // ⚠️ التحقق مما إذا كان الخطأ بسبب انتهاء الصلاحية (401 Unauthorized).
@@ -97,7 +107,9 @@ class ApiService {
             // 🧹 مسح بيانات المستخدم والتوكن فوراً
             _tokenStorage.clearUserData();
           }
-          return handler.next(e); // ⚠️ تمرير الخطأ ليتم معالجته في المكان المناسب
+          return handler.next(
+            e,
+          ); // ⚠️ تمرير الخطأ ليتم معالجته في المكان المناسب
         },
       ),
     );

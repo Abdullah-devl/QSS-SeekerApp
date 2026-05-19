@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:seeker/core/network/api_service.dart';
 import 'package:seeker/features/orders/Models/order_model.dart';
+import 'package:seeker/core/theme/qs_color_extension.dart';
 import 'package:seeker/features/orders/Repository/orders_repository.dart';
-import '../../../../core/theme/qs_color_extension.dart';
-import '../../../../core/localization/app_localizations.dart';
 import '../viewmodels/order_complaints_viewmodel.dart';
 import '../models/request_complaint_model.dart';
 import '../../orders/views/order_detail_view.dart';
 import '../../orders/viewmodels/orders_viewmodel.dart';
 import 'package:seeker/l10n/app_localizations.dart';
-  
+
 class OrderComplaintsListView extends StatefulWidget {
   const OrderComplaintsListView({super.key});
 
   @override
-  State<OrderComplaintsListView> createState() => _OrderComplaintsListViewState();
+  State<OrderComplaintsListView> createState() =>
+      _OrderComplaintsListViewState();
 }
 
 class _OrderComplaintsListViewState extends State<OrderComplaintsListView> {
@@ -31,11 +31,12 @@ class _OrderComplaintsListViewState extends State<OrderComplaintsListView> {
   Widget build(BuildContext context) {
     final vm = context.watch<OrderComplaintsViewModel>();
     final colors = context.qsColors;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: Text(context.tr('order_complaints')),
+        title: Text(l10n.orderComplaintsTitle),
         centerTitle: true,
         elevation: 0,
         backgroundColor: colors.card,
@@ -45,7 +46,11 @@ class _OrderComplaintsListViewState extends State<OrderComplaintsListView> {
     );
   }
 
-  Widget _buildBody(BuildContext context, OrderComplaintsViewModel vm, dynamic colors) {
+  Widget _buildBody(
+    BuildContext context,
+    OrderComplaintsViewModel vm,
+    dynamic colors,
+  ) {
     final l10n = AppLocalizations.of(context)!;
     if (vm.isLoading) {
       return Center(child: CircularProgressIndicator(color: colors.primary));
@@ -68,8 +73,13 @@ class _OrderComplaintsListViewState extends State<OrderComplaintsListView> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => vm.fetchComplaints(),
-                style: ElevatedButton.styleFrom(backgroundColor: colors.primary),
-                child: Text(context.tr('retry'), style: TextStyle(color: colors.card)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colors.primary,
+                ),
+                child: Text(
+                  l10n.retry,
+                  style: TextStyle(color: colors.card),
+                ),
               ),
             ],
           ),
@@ -103,21 +113,42 @@ class _OrderComplaintsListViewState extends State<OrderComplaintsListView> {
   }
 
   Widget _buildComplaintCard(
-      BuildContext context, RequestComplaintModel complaint, dynamic colors) {
+    BuildContext context,
+    RequestComplaintModel complaint,
+    dynamic colors,
+  ) {
     final l10n = AppLocalizations.of(context)!;
     // تحديد لون وحالة الشكوى بناءً على الحالة
     final String statusText;
     final Color statusColor;
 
-    if (complaint.status == 'resolved') {
+    final String statusKey = complaint.status.toLowerCase();
+    if (statusKey == 'resolved' || statusKey == 'solved') {
       statusColor = colors.success;
-      statusText = l10n.resolved;
-    } else if (complaint.status == 'closed') {
+    } else if (statusKey == 'closed') {
       statusColor = colors.textSub;
-      statusText = l10n.closed;
+    } else if (statusKey == 'rejected' || statusKey == 'cancelled' || statusKey == 'canceled') {
+      statusColor = colors.error;
+    } else if (statusKey == 'in_progress' || statusKey == 'processing') {
+      statusColor = colors.primary;
     } else {
       statusColor = colors.warning;
-      statusText = l10n.pending;
+    }
+
+    if (complaint.statusLabel != null && complaint.statusLabel!.isNotEmpty) {
+      statusText = complaint.statusLabel!;
+    } else {
+      if (statusKey == 'resolved' || statusKey == 'solved') {
+        statusText = l10n.statusResolved;
+      } else if (statusKey == 'closed') {
+        statusText = l10n.statusClosed;
+      } else if (statusKey == 'rejected') {
+        statusText = l10n.statusRejected;
+      } else if (statusKey == 'in_progress' || statusKey == 'processing') {
+        statusText = l10n.statusInProgress;
+      } else {
+        statusText = l10n.statusPending;
+      }
     }
 
     return Container(
@@ -141,7 +172,11 @@ class _OrderComplaintsListViewState extends State<OrderComplaintsListView> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.assignment_late_outlined, color: colors.primary, size: 20),
+                  Icon(
+                    Icons.assignment_late_outlined,
+                    color: colors.primary,
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     '${l10n.orderNo} #${complaint.orderId ?? "N/A"}',
@@ -154,7 +189,10 @@ class _OrderComplaintsListViewState extends State<OrderComplaintsListView> {
                 ],
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: statusColor.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
@@ -214,13 +252,23 @@ class _OrderComplaintsListViewState extends State<OrderComplaintsListView> {
                       ),
                     );
                   },
-                  icon: Icon(Icons.remove_red_eye_outlined, size: 16, color: colors.primary),
+                  icon: Icon(
+                    Icons.remove_red_eye_outlined,
+                    size: 16,
+                    color: colors.primary,
+                  ),
                   label: Text(
                     l10n.viewOrder,
-                    style: TextStyle(color: colors.primary, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: colors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     backgroundColor: colors.primary.withOpacity(0.1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),

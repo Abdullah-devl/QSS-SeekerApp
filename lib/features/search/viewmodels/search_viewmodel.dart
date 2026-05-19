@@ -26,13 +26,13 @@ class SearchViewModel extends ChangeNotifier {
   double? _maxPrice;
   bool _isVerifiedOnly = false; // ✅ فلتر الموثقين
   bool _isLocationFilterEnabled = false; // 📍 فلتر الموقع المفعّل
-  
+
   // الموقع الجغرافي
   Position? _currentPosition; // الموقع التلقائي (GPS)
-  double? _pickedLat;        // الموقع المختار يدوياً من الخريطة
+  double? _pickedLat; // الموقع المختار يدوياً من الخريطة
   double? _pickedLng;
   String? _pickedAddress;
-  
+
   bool _shouldOpenFilters = false; // 🚩 علم لفتح الفلاتر تلقائياً
 
   // Getters
@@ -84,7 +84,7 @@ class SearchViewModel extends ChangeNotifier {
     _maxPrice = max;
     notifyListeners();
   }
-  
+
   /// تحديث فلتر الموثقين
   void setVerifiedOnly(bool value) {
     _isVerifiedOnly = value;
@@ -151,7 +151,9 @@ class SearchViewModel extends ChangeNotifier {
 
       // تنظيف قيم السعر قبل الإرسال (إذا كانت تغطي النطاق الكامل لا نرسلها لتقليل القيود)
       double? finalMin = _minPrice == 0 ? null : _minPrice;
-      double? finalMax = (_maxPrice == null || _maxPrice == 100000) ? null : _maxPrice;
+      double? finalMax = (_maxPrice == null || _maxPrice == 100000)
+          ? null
+          : _maxPrice;
 
       _results = await _repository.searchServices(
         query: _query,
@@ -159,8 +161,12 @@ class SearchViewModel extends ChangeNotifier {
         minPrice: finalMin,
         maxPrice: finalMax,
         isVerified: _isVerifiedOnly,
-        lat: _isLocationFilterEnabled ? (_pickedLat ?? _currentPosition?.latitude) : null,
-        lng: _isLocationFilterEnabled ? (_pickedLng ?? _currentPosition?.longitude) : null,
+        lat: _isLocationFilterEnabled
+            ? (_pickedLat ?? _currentPosition?.latitude)
+            : null,
+        lng: _isLocationFilterEnabled
+            ? (_pickedLng ?? _currentPosition?.longitude)
+            : null,
       );
     } catch (e) {
       _errorMessage = ApiErrorHandler.handle(e).message;

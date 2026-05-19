@@ -13,7 +13,10 @@ class AdvertisementRepository {
   AdvertisementRepository(this._apiService);
 
   /// 🚀 جلب الإعلانات النشطة بناءً على نوع المستخدم أو القسم.
-  Future<List<AdvertisementModel>> fetchAdvertisements(String userType, {int? categoryId}) async {
+  Future<List<AdvertisementModel>> fetchAdvertisements(
+    String userType, {
+    int? categoryId,
+  }) async {
     try {
       final Map<String, dynamic> params = {'user_type': userType};
       if (categoryId != null) {
@@ -38,7 +41,12 @@ class AdvertisementRepository {
           list = data['data'];
         }
 
-        return list.map((json) => AdvertisementModel.fromJson(json as Map<String, dynamic>)).toList();
+        return list
+            .map(
+              (json) =>
+                  AdvertisementModel.fromJson(json as Map<String, dynamic>),
+            )
+            .toList();
       }
       return [];
     } catch (e) {

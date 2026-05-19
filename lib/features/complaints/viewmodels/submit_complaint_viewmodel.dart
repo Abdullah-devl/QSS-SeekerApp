@@ -45,7 +45,7 @@ class SubmitComplaintViewModel extends ChangeNotifier {
       );
 
       await _repository.submitOrderComplaint(complaint);
-      
+
       _isSuccess = true;
       _isLoading = false;
       notifyListeners();

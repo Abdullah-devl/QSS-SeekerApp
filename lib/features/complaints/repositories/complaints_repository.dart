@@ -11,18 +11,21 @@ class ComplaintsRepository {
 
   ComplaintsRepository(this._apiService);
 
-  Future<List<RequestComplaintModel>> getRequestComplaints({String? status}) async {
+  Future<List<RequestComplaintModel>> getRequestComplaints({
+    String? status,
+  }) async {
     try {
       final response = await _apiService.get(
         ApiEndpoints.requestComplaints,
         queryParameters: status != null ? {'status': status} : null,
       );
       ApiErrorHandler.handleResponse(response);
-      
+
       // 🧩 دعم هيكل الاستجابة المتنوع من الباك إند
-      final List data = response.data['RequestComplaints']?['data'] ?? 
-                       response.data['data'] ?? 
-                       [];
+      final List data =
+          response.data['RequestComplaints']?['data'] ??
+          response.data['data'] ??
+          [];
       return data.map((e) => RequestComplaintModel.fromJson(e)).toList();
     } catch (e) {
       throw ApiErrorHandler.handle(e);
@@ -42,7 +45,10 @@ class ComplaintsRepository {
     }
   }
 
-  Future<List<SystemComplaintModel>> getSystemComplaints({String? status, String appSource = "seeker"}) async {
+  Future<List<SystemComplaintModel>> getSystemComplaints({
+    String? status,
+    String appSource = "seeker",
+  }) async {
     try {
       final response = await _apiService.get(
         ApiEndpoints.systemComplaints,
@@ -52,10 +58,11 @@ class ComplaintsRepository {
         },
       );
       ApiErrorHandler.handleResponse(response);
-      
-      final List data = response.data['SystemComplaints']?['data'] ?? 
-                       response.data['data'] ?? 
-                       [];
+
+      final List data =
+          response.data['SystemComplaints']?['data'] ??
+          response.data['data'] ??
+          [];
       return data.map((e) => SystemComplaintModel.fromJson(e)).toList();
     } catch (e) {
       throw ApiErrorHandler.handle(e);

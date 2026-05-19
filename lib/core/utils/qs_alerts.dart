@@ -176,7 +176,7 @@ class QSAlerts {
                                   if (onCancel != null) onCancel();
                                 },
                                 child: Text(
-                                  tr.cancel_order,
+                                  tr.cancel,
                                   style: TextStyle(color: colors.textSub),
                                 ),
                               ),
@@ -231,7 +231,9 @@ class QSAlerts {
   static void showLoading(BuildContext context, {String? message}) {
     final colors = context.qsColors;
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
-    final defaultMessage = isAr ? 'جاري إرسال الطلب...' : 'Submitting request...';
+    final defaultMessage = isAr
+        ? 'جاري إرسال الطلب...'
+        : 'Submitting request...';
 
     showDialog(
       context: context,

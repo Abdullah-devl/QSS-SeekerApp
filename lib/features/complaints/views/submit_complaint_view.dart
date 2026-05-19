@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/theme/qs_color_extension.dart';
 import '../viewmodels/submit_complaint_viewmodel.dart';
 import 'package:seeker/l10n/app_localizations.dart';
+import 'package:seeker/core/utils/qs_alerts.dart';
 
 class SubmitComplaintView extends StatefulWidget {
   final String orderId;
@@ -26,6 +27,18 @@ class _SubmitComplaintViewState extends State<SubmitComplaintView> {
 
   void _showConfirmDialog() {
     final l10n = AppLocalizations.of(context)!;
+    final viewModel = context.read<SubmitComplaintViewModel>();
+
+    if (viewModel.selectedType == null ||
+        _subjectController.text.trim().isEmpty ||
+        _messageController.text.trim().isEmpty) {
+      QSAlerts.showWarning(
+        context,
+        l10n.pleaseFillFields,
+      );
+      return;
+    }
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -34,15 +47,20 @@ class _SubmitComplaintViewState extends State<SubmitComplaintView> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel_order), // reusable cancel string
+            child: Text(l10n.cancel), // reusable cancel string
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               _submit();
             },
-            style: ElevatedButton.styleFrom(backgroundColor: context.qsColors.primary),
-            child: Text(l10n.confirm, style: const TextStyle(color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.qsColors.primary,
+            ),
+            child: Text(
+              l10n.confirm,
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -213,10 +231,7 @@ class _SubmitComplaintViewState extends State<SubmitComplaintView> {
           items: types.entries.map((entry) {
             return DropdownMenuItem<String>(
               value: entry.key,
-              child: Text(
-                entry.value,
-                style: const TextStyle(fontSize: 14),
-              ),
+              child: Text(entry.value, style: const TextStyle(fontSize: 14)),
             );
           }).toList(),
           onChanged: (String? newValue) {
@@ -253,5 +268,3 @@ class _SubmitComplaintViewState extends State<SubmitComplaintView> {
     );
   }
 }
-
-

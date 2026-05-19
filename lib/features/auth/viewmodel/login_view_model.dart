@@ -57,7 +57,7 @@ class LoginViewModel extends ChangeNotifier {
 
           // ✅ الحساب مفعل -> التحقق من الموافقة على السياسة (سيرفر أو محلي)
           bool isAgreedLocally = await tokenStorage.isPolicyAgreed();
-          
+
           if (user.seekerPolicy || isAgreedLocally) {
             // تفريغ الستاك وجعل الرئيسية هي الجذر
             Navigator.pushNamedAndRemoveUntil(
@@ -84,7 +84,10 @@ class LoginViewModel extends ChangeNotifier {
     } catch (e) {
       // 5. في حال الفشل، عرض رسالة الخطأ للمستخدم
       if (context.mounted) {
-        QSAlerts.showError(context, context.tr(e.toString().replaceAll('Exception: ', '')));
+        QSAlerts.showError(
+          context,
+          context.tr(e.toString().replaceAll('Exception: ', '')),
+        );
       }
     } finally {
       // 6. إيقاف حالة التحميل في جميع الأحوال (نجاح أو فشل)
@@ -109,7 +112,7 @@ class LoginViewModel extends ChangeNotifier {
 
           // ✅ التحقق من السياسة
           bool isAgreedLocally = await tokenStorage.isPolicyAgreed();
-          
+
           if (user.seekerPolicy || isAgreedLocally) {
             Navigator.pushNamedAndRemoveUntil(
               context,
@@ -122,15 +125,24 @@ class LoginViewModel extends ChangeNotifier {
         } else {
           await QSAlerts.showWarning(context, l10n.pleaseActivateAccountFirst);
           if (context.mounted) {
-            Navigator.pushNamed(context, AppRoutes.verifyEmail, arguments: user.email);
+            Navigator.pushNamed(
+              context,
+              AppRoutes.verifyEmail,
+              arguments: user.email,
+            );
           }
         }
       }
     } catch (e) {
       if (context.mounted) {
         // إذا ألغى المستخدم الدخول فلا نعرض رسالة خطأ، عدا ذلك نعرضها
-        if (!e.toString().contains('إلغاء') && !e.toString().contains('canceled') && !e.toString().contains('cancel')) {
-          QSAlerts.showError(context, context.tr(e.toString().replaceAll('Exception: ', '')));
+        if (!e.toString().contains('إلغاء') &&
+            !e.toString().contains('canceled') &&
+            !e.toString().contains('cancel')) {
+          QSAlerts.showError(
+            context,
+            context.tr(e.toString().replaceAll('Exception: ', '')),
+          );
         }
       }
     } finally {
@@ -155,7 +167,10 @@ class LoginViewModel extends ChangeNotifier {
       }
     } catch (e) {
       if (context.mounted) {
-        QSAlerts.showError(context, context.tr(e.toString().replaceAll('Exception: ', '')));
+        QSAlerts.showError(
+          context,
+          context.tr(e.toString().replaceAll('Exception: ', '')),
+        );
       }
     } finally {
       _isLoading = false;

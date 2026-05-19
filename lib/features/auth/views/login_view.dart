@@ -47,10 +47,7 @@ class LoginView extends StatelessWidget {
                           height: 120,
                           fit: BoxFit.contain,
                           errorBuilder: (context, error, stackTrace) =>
-                              const Icon(
-                            Icons.construction,
-                            size: 40,
-                          ),
+                              const Icon(Icons.construction, size: 40),
                         ),
                         const SizedBox(height: 10),
 
@@ -350,10 +347,7 @@ class LoginView extends StatelessWidget {
             child: IconButton(
               icon: Directionality(
                 textDirection: TextDirection.ltr,
-                child: Icon(
-                  Icons.arrow_forward,
-                  color: colors.text,
-                ),
+                child: Icon(Icons.arrow_forward, color: colors.text),
               ),
               onPressed: () => Navigator.pop(context),
             ),

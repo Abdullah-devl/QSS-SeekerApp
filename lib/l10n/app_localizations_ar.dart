@@ -153,7 +153,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get book => 'حجز';
 
   @override
-  String get sar => 'ر.س';
+  String get sar => 'ر.ي';
 
   @override
   String get perHour => '/ ساعة';
@@ -445,7 +445,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get total_price_label => 'السعر الإجمالي';
 
   @override
-  String get currency_sar => 'ر.س';
+  String get currency_sar => 'ر.ي';
 
   @override
   String get details => 'التفاصيل';
@@ -455,6 +455,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get accepted_initial => 'مقبول مبدئياً';
+
+  @override
+  String get accepted_full_paid => 'قبول بدفع مكتمل';
+
+  @override
+  String get accepted_partial_paid => 'قبول بمبلغ جزئي';
 
   @override
   String get status_pending => 'قيد الانتظار';
@@ -543,7 +549,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String total_order_value_label(Object price) {
-    return 'إجمالي قيمة الطلب: $price ر.س';
+    return 'إجمالي قيمة الطلب: $priceر.ي';
   }
 
   @override
@@ -875,7 +881,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String share_service_message(Object price, Object provider, Object title) {
-    return 'مرحباً! اكتشف هذه الخدمة الرائعة: \"$title\" من $provider، بسعر $price ر.س فقط! \nحمل تطبيقنا للحجز الآن.';
+    return 'مرحباً! اكتشف هذه الخدمة الرائعة: \"$title\" من $provider، بسعر $price ر.ي فقط! \nحمل تطبيقنا للحجز الآن.';
   }
 
   @override
@@ -1630,4 +1636,35 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get verifiedOnlyDesc => 'عرض الخدمات التابعة لمزودين لديهم توثيق سارٍ';
+
+  @override
+  String get confirm_booking_title => 'تأكيد الحجز';
+
+  @override
+  String get confirm_booking_message =>
+      'هل أنت متأكد من رغبتك في تأكيد وحجز هذه الخدمة؟';
+
+  @override
+  String get bond_number_digits_only_error =>
+      'يجب أن يحتوي رقم السند على أرقام فقط';
+
+  @override
+  String get nameMatchIdHint =>
+      'يجب أن يكون الاسم مطابقاً لما هو مكتوب في الهوية الوطنية / جواز السفر';
+
+  @override
+  String get points => 'نقاط';
+
+  @override
+  String get points_to_pay => 'النقاط المراد سدادها';
+
+  @override
+  String get max_limit => 'الحد الأقصى';
+
+  @override
+  String get min_points_error => 'النقاط المدفوعة لا يمكن أن تقل عن 1';
+
+  @override
+  String get exceed_order_amount_error =>
+      'قيمة النقاط المدفوعة تتجاوز المبلغ المتبقي للطلب';
 }

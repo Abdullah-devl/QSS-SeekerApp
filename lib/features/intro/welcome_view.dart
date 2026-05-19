@@ -143,11 +143,7 @@ class WelcomeView extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
-                        Icons.login,
-                        color: Colors.white,
-                        size: 20,
-                      ),
+                      const Icon(Icons.login, color: Colors.white, size: 20),
                       const SizedBox(width: 8),
                       Text(
                         l10n.login,
@@ -206,7 +202,10 @@ class WelcomeView extends StatelessWidget {
                 Text(
                   l10n.termsAndConditions,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 12, color: context.qsColors.textSub),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: context.qsColors.textSub,
+                  ),
                 ),
 
                 const SizedBox(height: 24),

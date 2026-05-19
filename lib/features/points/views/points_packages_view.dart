@@ -49,15 +49,19 @@ class _PointsPackagesViewState extends State<PointsPackagesView> {
         child: vm.isLoading
             ? const Center(child: CircularProgressIndicator())
             : vm.errorMessage != null
-                ? _buildErrorWidget(context, vm.errorMessage!)
-                : vm.packages.isEmpty
-                    ? _buildEmptyWidget(context, colors)
-                    : _buildPackagesGrid(context, vm.packages, colors),
+            ? _buildErrorWidget(context, vm.errorMessage!)
+            : vm.packages.isEmpty
+            ? _buildEmptyWidget(context, colors)
+            : _buildPackagesGrid(context, vm.packages, colors),
       ),
     );
   }
 
-  Widget _buildPackagesGrid(BuildContext context, List<PointsPackageModel> packages, dynamic colors) {
+  Widget _buildPackagesGrid(
+    BuildContext context,
+    List<PointsPackageModel> packages,
+    dynamic colors,
+  ) {
     return GridView.builder(
       padding: const EdgeInsets.all(20),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -73,7 +77,11 @@ class _PointsPackagesViewState extends State<PointsPackagesView> {
     );
   }
 
-  Widget _buildPointCard(BuildContext context, PointsPackageModel package, dynamic colors) {
+  Widget _buildPointCard(
+    BuildContext context,
+    PointsPackageModel package,
+    dynamic colors,
+  ) {
     final bool hasBonus = package.bonusPoints > 0;
 
     return Stack(
@@ -103,17 +111,29 @@ class _PointsPackagesViewState extends State<PointsPackagesView> {
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontWeight: FontWeight.bold, color: colors.text, fontSize: 14),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: colors.text,
+                  fontSize: 14,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 '${package.points} ${context.tr('points')}',
-                style: TextStyle(fontSize: 13, color: colors.primary, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 13,
+                  color: colors.primary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 12),
               Text(
                 '${package.price.toInt()} ${context.tr('currency_sar')}',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: colors.text),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: colors.text,
+                ),
               ),
               const SizedBox(height: 12),
               SizedBox(
@@ -123,19 +143,26 @@ class _PointsPackagesViewState extends State<PointsPackagesView> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (ctx) => SubmitPointsPaymentView(package: package),
+                        builder: (ctx) =>
+                            SubmitPointsPaymentView(package: package),
                       ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: colors.primary,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     elevation: 0,
                     padding: const EdgeInsets.symmetric(vertical: 8),
                   ),
                   child: Text(
                     context.tr('buyNow'),
-                    style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -165,7 +192,11 @@ class _PointsPackagesViewState extends State<PointsPackagesView> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.card_giftcard, color: Colors.white, size: 12),
+                  const Icon(
+                    Icons.card_giftcard,
+                    color: Colors.white,
+                    size: 12,
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     '+${package.bonusPoints} ${context.tr('gift')}',
@@ -193,7 +224,8 @@ class _PointsPackagesViewState extends State<PointsPackagesView> {
           const SizedBox(height: 16),
           Text(context.tr('errorLoadingPackages')),
           TextButton(
-            onPressed: () => context.read<PointsViewModel>().fetchAvailablePackages(),
+            onPressed: () =>
+                context.read<PointsViewModel>().fetchAvailablePackages(),
             child: Text(context.tr('retry')),
           ),
         ],
@@ -202,8 +234,6 @@ class _PointsPackagesViewState extends State<PointsPackagesView> {
   }
 
   Widget _buildEmptyWidget(BuildContext context, dynamic colors) {
-    return Center(
-      child: Text(context.tr('noPackagesAvailable')),
-    );
+    return Center(child: Text(context.tr('noPackagesAvailable')));
   }
 }

@@ -9,7 +9,8 @@ class SystemComplaintsListView extends StatefulWidget {
   const SystemComplaintsListView({super.key});
 
   @override
-  State<SystemComplaintsListView> createState() => _SystemComplaintsListViewState();
+  State<SystemComplaintsListView> createState() =>
+      _SystemComplaintsListViewState();
 }
 
 class _SystemComplaintsListViewState extends State<SystemComplaintsListView> {
@@ -40,14 +41,19 @@ class _SystemComplaintsListViewState extends State<SystemComplaintsListView> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const SubmitSystemComplaintView()),
+            MaterialPageRoute(
+              builder: (_) => const SubmitSystemComplaintView(),
+            ),
           );
         },
         backgroundColor: colors.primary,
         icon: const Icon(Icons.add, color: Colors.white),
         label: Text(
           l10n.addNewReport,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: RefreshIndicator(
@@ -61,7 +67,9 @@ class _SystemComplaintsListViewState extends State<SystemComplaintsListView> {
   Widget _buildBody(BuildContext context, SystemComplaintsViewModel viewModel) {
     final l10n = AppLocalizations.of(context)!;
     if (viewModel.isLoading && viewModel.complaints.isEmpty) {
-      return Center(child: CircularProgressIndicator(color: context.qsColors.primary));
+      return Center(
+        child: CircularProgressIndicator(color: context.qsColors.primary),
+      );
     }
 
     if (viewModel.errorMessage != null) {
@@ -90,7 +98,11 @@ class _SystemComplaintsListViewState extends State<SystemComplaintsListView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.speaker_notes_off_outlined, size: 64, color: context.qsColors.textSub),
+                Icon(
+                  Icons.speaker_notes_off_outlined,
+                  size: 64,
+                  color: context.qsColors.textSub,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   l10n.noSystemReports,
@@ -145,7 +157,7 @@ class _SystemComplaintsListViewState extends State<SystemComplaintsListView> {
                   ),
                 ),
               ),
-              _buildStatusBadge(context, complaint.status),
+              _buildStatusBadge(context, complaint),
             ],
           ),
           const SizedBox(height: 8),
@@ -160,7 +172,11 @@ class _SystemComplaintsListViewState extends State<SystemComplaintsListView> {
               const SizedBox(width: 4),
               Text(
                 _getTypeLabel(context, complaint.type),
-                style: TextStyle(fontSize: 12, color: colors.primary, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: colors.primary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
@@ -172,42 +188,61 @@ class _SystemComplaintsListViewState extends State<SystemComplaintsListView> {
   String _getTypeLabel(BuildContext context, String type) {
     final l10n = AppLocalizations.of(context)!;
     switch (type) {
-      case 'type_technical': return l10n.typeTechnical;
-      case 'type_account': return l10n.typeAccount;
-      case 'type_financial_system': return l10n.typeFinancialSystem;
-      case 'type_suggestion': return l10n.typeSuggestion;
-      default: return l10n.typeOther;
+      case 'type_technical':
+        return l10n.typeTechnical;
+      case 'type_account':
+        return l10n.typeAccount;
+      case 'type_financial_system':
+        return l10n.typeFinancialSystem;
+      case 'type_suggestion':
+        return l10n.typeSuggestion;
+      default:
+        return l10n.typeOther;
     }
   }
 
-  Widget _buildStatusBadge(BuildContext context, String status) {
+  Widget _buildStatusBadge(BuildContext context, dynamic complaint) {
     Color color;
     String label;
     final colors = context.qsColors;
     final l10n = AppLocalizations.of(context)!;
+    final status = complaint.status ?? 'pending';
 
-    switch (status) {
-      case 'resolved':
-        color = colors.success;
-        label = l10n.statusResolved;
-        break;
-      case 'closed':
-        color = colors.textSub;
-        label = l10n.statusClosed;
-        break;
-      case 'in_progress':
-      case 'processing':
-        color = colors.primary;
-        label = l10n.statusInProgress;
-        break;
-      case 'rejected':
-        color = colors.error;
-        label = l10n.statusRejected;
-        break;
-      case 'pending':
-      default:
-        color = colors.warning;
-        label = l10n.statusPending;
+    final String statusKey = status.toLowerCase();
+    if (statusKey == 'resolved' || statusKey == 'solved') {
+      color = colors.success;
+    } else if (statusKey == 'closed') {
+      color = colors.textSub;
+    } else if (statusKey == 'rejected' || statusKey == 'cancelled' || statusKey == 'canceled') {
+      color = colors.error;
+    } else if (statusKey == 'in_progress' || statusKey == 'processing') {
+      color = colors.primary;
+    } else {
+      color = colors.warning;
+    }
+
+    if (complaint.statusLabel != null && complaint.statusLabel.isNotEmpty) {
+      label = complaint.statusLabel;
+    } else {
+      switch (statusKey) {
+        case 'resolved':
+        case 'solved':
+          label = l10n.statusResolved;
+          break;
+        case 'closed':
+          label = l10n.statusClosed;
+          break;
+        case 'in_progress':
+        case 'processing':
+          label = l10n.statusInProgress;
+          break;
+        case 'rejected':
+          label = l10n.statusRejected;
+          break;
+        case 'pending':
+        default:
+          label = l10n.statusPending;
+      }
     }
 
     return Container(
@@ -227,5 +262,3 @@ class _SystemComplaintsListViewState extends State<SystemComplaintsListView> {
     );
   }
 }
-
-

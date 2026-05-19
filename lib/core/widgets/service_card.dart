@@ -71,7 +71,11 @@ class ServiceCard extends StatelessWidget {
                             width: 100,
                             height: 100,
                             color: colors.primary.withValues(alpha: 0.05),
-                            child: Icon(Icons.broken_image_outlined, color: colors.textSub.withValues(alpha: 0.5), size: 30),
+                            child: Icon(
+                              Icons.broken_image_outlined,
+                              color: colors.textSub.withValues(alpha: 0.5),
+                              size: 30,
+                            ),
                           ),
                         ),
                       ),
@@ -91,12 +95,14 @@ class ServiceCard extends StatelessWidget {
                               BoxShadow(
                                 color: Colors.black.withValues(alpha: 0.1),
                                 blurRadius: 4,
-                              )
+                              ),
                             ],
                           ),
                           child: Icon(
                             isFavorite ? Icons.favorite : Icons.favorite_border,
-                            color: isFavorite ? colors.error : colors.textSub.withValues(alpha: 0.4),
+                            color: isFavorite
+                                ? colors.error
+                                : colors.textSub.withValues(alpha: 0.4),
                             size: 18,
                           ),
                         ),
@@ -122,7 +128,10 @@ class ServiceCard extends StatelessWidget {
                               const SizedBox(width: 4),
                               Text(
                                 service.rating.toStringAsFixed(1),
-                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
@@ -143,26 +152,33 @@ class ServiceCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      
+
                       // اسم المزود
                       Row(
                         children: [
-                          Icon(Icons.person_outline, size: 12, color: colors.textSub),
+                          Icon(
+                            Icons.person_outline,
+                            size: 12,
+                            color: colors.textSub,
+                          ),
                           const SizedBox(width: 4),
                           Flexible(
                             child: Text(
                               service.providerName,
-                              style: TextStyle(color: colors.textSub, fontSize: 11),
+                              style: TextStyle(
+                                color: colors.textSub,
+                                fontSize: 11,
+                              ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           if (service.isProviderVerified) ...[
                             const SizedBox(width: 4),
-                            Icon(
+                            const Icon(
                               Icons.verified,
                               size: 14,
-                              color: colors.primary, // أو استخدم لون التوثيق الخاص بك
+                              color: Colors.blue,
                             ),
                           ],
                         ],
@@ -176,11 +192,17 @@ class ServiceCard extends StatelessWidget {
                           // السعر
                           RichText(
                             text: TextSpan(
-                              style: TextStyle(color: colors.primary, fontFamily: 'Cairo'),
+                              style: TextStyle(
+                                color: colors.primary,
+                                fontFamily: 'Cairo',
+                              ),
                               children: [
                                 TextSpan(
                                   text: '${service.price.toInt()} ',
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
                                 ),
                                 TextSpan(
                                   text: AppLocalizations.of(context)!.sar,
@@ -191,14 +213,21 @@ class ServiceCard extends StatelessWidget {
                           ),
                           // زر الحجز
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
                               color: colors.primary,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
-                               AppLocalizations.of(context)!.book,
-                              style: TextStyle(color: colors.background, fontSize: 11, fontWeight: FontWeight.bold),
+                              AppLocalizations.of(context)!.book,
+                              style: TextStyle(
+                                color: colors.background,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ],

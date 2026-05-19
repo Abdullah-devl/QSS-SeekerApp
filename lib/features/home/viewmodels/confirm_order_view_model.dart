@@ -256,6 +256,7 @@ class ConfirmOrderViewModel extends ChangeNotifier {
   // ---------------------------------------------------------------------------
   bool _isLoading = false;
   String? _errorMessage;
+  String? _successMessage;
   List<SubServiceItem> _subServices = [];
   final TextEditingController notesController = TextEditingController();
   final TextEditingController userNameController = TextEditingController();
@@ -269,6 +270,7 @@ class ConfirmOrderViewModel extends ChangeNotifier {
   // Getters
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+  String? get successMessage => _successMessage;
   List<SubServiceItem> get subServices => _subServices;
   double? get selectedLatitude => _selectedLatitude;
   double? get selectedLongitude => _selectedLongitude;
@@ -340,7 +342,7 @@ class ConfirmOrderViewModel extends ChangeNotifier {
       // تمرير الملاحظات الإضافية فقط في الرسالة للباكيند
       final combinedMessage = notesController.text;
 
-      final success = await _repository.createServiceRequest(
+      _successMessage = await _repository.createServiceRequest(
         serviceId: mainService.id,
         message: combinedMessage,
         supServices: supServices,
@@ -348,7 +350,7 @@ class ConfirmOrderViewModel extends ChangeNotifier {
         longitude: _selectedLongitude,
       );
 
-      return success;
+      return true;
     } catch (e) {
       _errorMessage = e.toString().replaceAll('Exception: ', '');
       return false;

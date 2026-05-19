@@ -92,7 +92,9 @@ class EditProfileView extends StatelessWidget {
           if (vm.isLoading)
             Container(
               color: colors.text.withValues(alpha: 0.3),
-              child: Center(child: CircularProgressIndicator(color: colors.primary)),
+              child: Center(
+                child: CircularProgressIndicator(color: colors.primary),
+              ),
             ),
         ],
       ),
@@ -111,13 +113,23 @@ class EditProfileView extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: colors.primary, width: 3),
               image: vm.selectedImage != null
-                  ? DecorationImage(image: FileImage(vm.selectedImage!), fit: BoxFit.cover)
+                  ? DecorationImage(
+                      image: FileImage(vm.selectedImage!),
+                      fit: BoxFit.cover,
+                    )
                   : (vm.profile.avatarUrl.isNotEmpty
-                      ? DecorationImage(image: NetworkImage(vm.profile.avatarUrl), fit: BoxFit.cover)
-                      : null),
+                        ? DecorationImage(
+                            image: NetworkImage(vm.profile.avatarUrl),
+                            fit: BoxFit.cover,
+                          )
+                        : null),
             ),
             child: vm.selectedImage == null && vm.profile.avatarUrl.isEmpty
-                ? Icon(Icons.camera_alt_outlined, size: 40, color: colors.primary)
+                ? Icon(
+                    Icons.camera_alt_outlined,
+                    size: 40,
+                    color: colors.primary,
+                  )
                 : null,
           ),
           Positioned(
@@ -125,7 +137,10 @@ class EditProfileView extends StatelessWidget {
             right: 0,
             child: Container(
               padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: colors.primary, shape: BoxShape.circle),
+              decoration: BoxDecoration(
+                color: colors.primary,
+                shape: BoxShape.circle,
+              ),
               child: const Icon(Icons.edit, color: Colors.white, size: 16),
             ),
           ),
@@ -158,14 +173,21 @@ class EditProfileView extends StatelessWidget {
     );
   }
 
-  Widget _buildLocationSection(BuildContext context, EditProfileViewModel vm, dynamic colors) {
+  Widget _buildLocationSection(
+    BuildContext context,
+    EditProfileViewModel vm,
+    dynamic colors,
+  ) {
     return Column(
       children: [
         Row(
           children: [
             Icon(Icons.map_outlined, color: colors.primary),
             const SizedBox(width: 8),
-            Text(context.tr('geo_location'), style: TextStyle(fontWeight: FontWeight.bold, color: colors.text)),
+            Text(
+              context.tr('geo_location'),
+              style: TextStyle(fontWeight: FontWeight.bold, color: colors.text),
+            ),
           ],
         ),
         const SizedBox(height: 12),
@@ -201,7 +223,11 @@ class EditProfileView extends StatelessWidget {
   }
 
   Widget _buildPhonesSection(
-      BuildContext context, EditProfileViewModel vm, dynamic colors, dynamic l10n) {
+    BuildContext context,
+    EditProfileViewModel vm,
+    dynamic colors,
+    dynamic l10n,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -212,8 +238,13 @@ class EditProfileView extends StatelessWidget {
               children: [
                 Icon(Icons.phone_android_outlined, color: colors.primary),
                 const SizedBox(width: 8),
-                Text(l10n.phoneNumber,
-                    style: TextStyle(fontWeight: FontWeight.bold, color: colors.text)),
+                Text(
+                  l10n.phoneNumber,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: colors.text,
+                  ),
+                ),
               ],
             ),
             IconButton(
@@ -240,7 +271,9 @@ class EditProfileView extends StatelessWidget {
                     decoration: InputDecoration(
                       hintText: '+967',
                       contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     style: const TextStyle(fontSize: 14),
                   ),
@@ -253,15 +286,23 @@ class EditProfileView extends StatelessWidget {
                     keyboardType: TextInputType.phone,
                     decoration: InputDecoration(
                       hintText: context.tr('enter_phone_number'),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 16,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                   ),
                 ),
                 if (vm.phoneEntries.length > 1)
                   IconButton(
                     onPressed: () => vm.removePhoneField(index),
-                    icon: Icon(Icons.remove_circle_outline, color: colors.error),
+                    icon: Icon(
+                      Icons.remove_circle_outline,
+                      color: colors.error,
+                    ),
                   ),
               ],
             ),
@@ -271,15 +312,22 @@ class EditProfileView extends StatelessWidget {
     );
   }
 
-  Widget _buildSaveButton(BuildContext context, EditProfileViewModel vm, dynamic colors) {
+  Widget _buildSaveButton(
+    BuildContext context,
+    EditProfileViewModel vm,
+    dynamic colors,
+  ) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         onPressed: () async {
           final success = await vm.saveChanges();
           if (success && context.mounted) {
-            await QSAlerts.showSuccess(context, context.tr('profile_updated_success'));
-            if (context.mounted) Navigator.pop(context, true); 
+            await QSAlerts.showSuccess(
+              context,
+              vm.successMessage ?? context.tr('profile_updated_success'),
+            );
+            if (context.mounted) Navigator.pop(context, true);
           } else if (vm.errorMessage != null && context.mounted) {
             await QSAlerts.showError(
               context,
@@ -292,11 +340,18 @@ class EditProfileView extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: colors.primary,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
-        child: Text(context.tr('save_changes'),
-            style: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+        child: Text(
+          context.tr('save_changes'),
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
       ),
     );
   }

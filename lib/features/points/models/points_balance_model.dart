@@ -14,11 +14,24 @@ class PointsBalanceModel {
   factory PointsBalanceModel.fromJson(Map<String, dynamic> json) {
     // 🚀 قراءة البيانات سواء كانت مباشرة أو داخل summary
     final summary = json['summary'] ?? {};
-    
+
     return PointsBalanceModel(
-      bonusPoints: double.tryParse((json['bonus_points'] ?? summary['bonus_points'] ?? '0').toString()) ?? 0.0,
-      paidPoints: double.tryParse((json['paid_points'] ?? summary['paid_points'] ?? '0').toString()) ?? 0.0,
-      remainingBalance: double.tryParse((json['remaining_balance'] ?? summary['remaining_balance'] ?? '0').toString()) ?? 0.0,
+      bonusPoints:
+          double.tryParse(
+            (json['bonus_points'] ?? summary['bonus_points'] ?? '0').toString(),
+          ) ??
+          0.0,
+      paidPoints:
+          double.tryParse(
+            (json['paid_points'] ?? summary['paid_points'] ?? '0').toString(),
+          ) ??
+          0.0,
+      remainingBalance:
+          double.tryParse(
+            (json['remaining_balance'] ?? summary['remaining_balance'] ?? '0')
+                .toString(),
+          ) ??
+          0.0,
     );
   }
 }

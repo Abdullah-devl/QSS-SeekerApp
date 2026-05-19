@@ -22,7 +22,11 @@ class ServicesView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.miscellaneous_services_rounded, size: 60, color: colors.textSub.withValues(alpha: 0.2)),
+            Icon(
+              Icons.miscellaneous_services_rounded,
+              size: 60,
+              color: colors.textSub.withValues(alpha: 0.2),
+            ),
             const SizedBox(height: 16),
             Text(
               context.tr('noServicesAvailable'),
@@ -46,7 +50,8 @@ class ServicesView extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (context) => ChangeNotifierProvider(
-                  create: (context) => ServiceDetailsViewModel(context.read<HomeRepository>()),
+                  create: (context) =>
+                      ServiceDetailsViewModel(context.read<HomeRepository>()),
                   child: ServiceDetailsView(initialService: service),
                 ),
               ),

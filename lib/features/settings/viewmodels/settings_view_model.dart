@@ -73,11 +73,8 @@ class SettingsViewModel extends ChangeNotifier {
     try {
       if (value) {
         // 🚀 طلب صلاحيات الإشعارات وتحديث توكن FCM بالسيرفر
-        final NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
+        final NotificationSettings settings = await FirebaseMessaging.instance
+            .requestPermission(alert: true, badge: true, sound: true);
         if (settings.authorizationStatus == AuthorizationStatus.authorized) {
           await NotificationService().updateTokenToServer();
         }

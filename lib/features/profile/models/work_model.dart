@@ -7,7 +7,12 @@ class WorkModel {
   final String description;
   final String imageUrl;
 
-  WorkModel({required this.id, required this.title, required this.description, required this.imageUrl});
+  WorkModel({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.imageUrl,
+  });
 
   factory WorkModel.fromJson(Map<dynamic, dynamic> parsedJson) {
     final Map<String, dynamic> json = Map<String, dynamic>.from(parsedJson);
@@ -19,7 +24,9 @@ class WorkModel {
     }
 
     return WorkModel(
-      id: json['id'] is int ? json['id'] : int.tryParse(json['id']?.toString() ?? '') ?? 0,
+      id: json['id'] is int
+          ? json['id']
+          : int.tryParse(json['id']?.toString() ?? '') ?? 0,
       title: json['title']?.toString() ?? '',
       description: json['description']?.toString() ?? '',
       // إضافة رابط السيرفر

@@ -460,6 +460,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accepted_initial => 'Accepted (Initial)';
 
   @override
+  String get accepted_full_paid => 'Accepted (Fully Paid)';
+
+  @override
+  String get accepted_partial_paid => 'Accepted (Partially Paid)';
+
+  @override
   String get status_pending => 'Pending';
 
   @override
@@ -1648,4 +1654,35 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get verifiedOnlyDesc =>
       'Show services of providers with active verification';
+
+  @override
+  String get confirm_booking_title => 'Confirm Booking';
+
+  @override
+  String get confirm_booking_message =>
+      'Are you sure you want to confirm and book this service?';
+
+  @override
+  String get bond_number_digits_only_error =>
+      'Bond number must contain only digits';
+
+  @override
+  String get nameMatchIdHint =>
+      'The name must match the one written on your national ID / passport';
+
+  @override
+  String get points => 'Points';
+
+  @override
+  String get points_to_pay => 'Points to Pay';
+
+  @override
+  String get max_limit => 'Max Limit';
+
+  @override
+  String get min_points_error => 'Paid points cannot be less than 1';
+
+  @override
+  String get exceed_order_amount_error =>
+      'Paid points value exceeds the remaining order amount';
 }

@@ -33,7 +33,6 @@ import 'package:seeker/features/orders/Views/orders_view.dart';
 import 'package:seeker/features/profile/viewmodels/profile_view_model.dart';
 import 'package:seeker/features/home/widgets/advertisement_carousel.dart'; // ✅ تمت الإضافة
 
-
 class HomeView extends StatefulWidget {
   final String title;
   const HomeView({super.key, required this.title});
@@ -106,55 +105,67 @@ class _HomeViewState extends State<HomeView> {
 
   /// 🚀 منطق التوجيه للإعلان
   void _handleAdNavigation(AdvertisementModel ad) {
-    debugPrint('📢 [Popup Ad Tap]: ID=${ad.id}, Type=${ad.targetType}, TargetId=${ad.targetId}');
+    debugPrint(
+      '📢 [Popup Ad Tap]: ID=${ad.id}, Type=${ad.targetType}, TargetId=${ad.targetId}',
+    );
     context.read<HomeViewModel>().trackAdClick(ad.id);
     final homeRepo = context.read<HomeRepository>();
     final String target = ad.targetType.toLowerCase().trim();
 
     if (target == 'service' && ad.targetId != null) {
       debugPrint('🚀 Fetching Service for Navigation: ${ad.targetId}');
-      homeRepo.fetchServiceById(ad.targetId!).then((service) {
-        if (mounted) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChangeNotifierProvider(
-                create: (context) => ServiceDetailsViewModel(homeRepo),
-                child: ServiceDetailsView(initialService: service),
-              ),
-            ),
-          );
-        }
-      }).catchError((e) => debugPrint('❌ Error fetching service: $e'));
+      homeRepo
+          .fetchServiceById(ad.targetId!)
+          .then((service) {
+            if (mounted) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChangeNotifierProvider(
+                    create: (context) => ServiceDetailsViewModel(homeRepo),
+                    child: ServiceDetailsView(initialService: service),
+                  ),
+                ),
+              );
+            }
+          })
+          .catchError((e) => debugPrint('❌ Error fetching service: $e'));
     } else if (target == 'category' && ad.targetId != null) {
       debugPrint('🚀 Fetching Categories for Navigation: ${ad.targetId}');
-      homeRepo.fetchCategories().then((categories) {
-        final category = categories.firstWhere((c) => c.id == ad.targetId);
-        if (mounted) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChangeNotifierProvider(
-                create: (context) => CategoryDetailsViewModel(
-                  homeRepo,
-                  context.read<AdvertisementRepository>(),
+      homeRepo
+          .fetchCategories()
+          .then((categories) {
+            final category = categories.firstWhere((c) => c.id == ad.targetId);
+            if (mounted) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChangeNotifierProvider(
+                    create: (context) => CategoryDetailsViewModel(
+                      homeRepo,
+                      context.read<AdvertisementRepository>(),
+                    ),
+                    child: CategoryDetailsView(category: category),
+                  ),
                 ),
-                child: CategoryDetailsView(category: category),
-              ),
-            ),
-          );
-        }
-      }).catchError((e) => debugPrint('❌ Error fetching categories: $e'));
-    } else if (target == 'external' && ad.externalLink != null && ad.externalLink!.isNotEmpty) {
+              );
+            }
+          })
+          .catchError((e) => debugPrint('❌ Error fetching categories: $e'));
+    } else if (target == 'external' &&
+        ad.externalLink != null &&
+        ad.externalLink!.isNotEmpty) {
       debugPrint('🚀 Opening External Link: ${ad.externalLink}');
       final url = Uri.parse(ad.externalLink!.trim());
-      canLaunchUrl(url).then((can) {
-        if (can) {
-          launchUrl(url, mode: LaunchMode.externalApplication);
-        } else {
-          debugPrint('❌ Cannot launch URL: ${ad.externalLink}');
-        }
-      }).catchError((e) => debugPrint('❌ URL Launch Error: $e'));
+      canLaunchUrl(url)
+          .then((can) {
+            if (can) {
+              launchUrl(url, mode: LaunchMode.externalApplication);
+            } else {
+              debugPrint('❌ Cannot launch URL: ${ad.externalLink}');
+            }
+          })
+          .catchError((e) => debugPrint('❌ URL Launch Error: $e'));
     } else {
       debugPrint('ℹ️ No navigation action for target: $target');
     }
@@ -228,12 +239,12 @@ class _HomeViewState extends State<HomeView> {
   // ---------------------------------------------------------------------------
   Widget _buildHomeContent(QSColors colors) {
     return RefreshIndicator(
-      onRefresh: () async { 
+      onRefresh: () async {
         // 🔄 تحديث جميع البيانات عند السحب باستخدام الموديلات مباشرة لتجنب تحذيرات Context
         final homeVM = context.read<HomeViewModel>();
         final ordersVM = context.read<OrdersViewModel>();
         final profileVM = context.read<ProfileViewModel>();
-        
+
         await Future.wait([
           homeVM.loadHomeData(),
           ordersVM.fetchOrders(),
@@ -242,7 +253,8 @@ class _HomeViewState extends State<HomeView> {
       },
       color: colors.primary,
       child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(), // لضمان عمل السحب حتى لو كان المحتوى قصيراً
+        physics:
+            const AlwaysScrollableScrollPhysics(), // لضمان عمل السحب حتى لو كان المحتوى قصيراً
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Consumer<HomeViewModel>(
           builder: (context, viewModel, child) {
@@ -267,51 +279,54 @@ class _HomeViewState extends State<HomeView> {
                 // 2️⃣ شريط البحث
                 // ===========================================
                 _buildSearchBar(context),
-              const SizedBox(height: 24),
-
-              // ===========================================
-              // 3️⃣ البانر (إعلانات ديناميكية)
-              // ===========================================
-              if (viewModel.carouselAds.isNotEmpty) ...[
-                AdvertisementCarousel(advertisements: viewModel.carouselAds),
                 const SizedBox(height: 24),
+
+                // ===========================================
+                // 3️⃣ البانر (إعلانات ديناميكية)
+                // ===========================================
+                if (viewModel.carouselAds.isNotEmpty) ...[
+                  AdvertisementCarousel(advertisements: viewModel.carouselAds),
+                  const SizedBox(height: 24),
+                ],
+
+                // ===========================================
+                // 4️⃣ قسم التصنيفات (Categories)
+                // ===========================================
+                _buildSectionTitle(AppLocalizations.of(context)!.categories),
+                const SizedBox(height: 16),
+                _buildCategoriesList(viewModel.categories),
+                const SizedBox(height: 24),
+
+                // ===========================================
+                // 5️⃣ قسم الموصى بها (Recommended Services)
+                // ===========================================
+                _buildSectionTitle(
+                  AppLocalizations.of(context)!.recommendedServices,
+                ),
+                const SizedBox(height: 16),
+                _buildRecommendedServicesList(viewModel.recommendedServices),
+
+                // مساحة إضافية في الأسفل لتجنب تغطية المحتوى بالـ NavBar
+                const SizedBox(height: 100),
               ],
-
-              // ===========================================
-              // 4️⃣ قسم التصنيفات (Categories)
-              // ===========================================
-              _buildSectionTitle(
-                AppLocalizations.of(context)!.categories,
-              ),
-              const SizedBox(height: 16),
-              _buildCategoriesList(viewModel.categories),
-              const SizedBox(height: 24),
-
-              // ===========================================
-              // 5️⃣ قسم الموصى بها (Recommended Services)
-              // ===========================================
-              _buildSectionTitle(AppLocalizations.of(context)!.recommendedServices),
-              const SizedBox(height: 16),
-              _buildRecommendedServicesList(viewModel.recommendedServices),
-
-              // مساحة إضافية في الأسفل لتجنب تغطية المحتوى بالـ NavBar
-              const SizedBox(height: 100),
-            ],
-          );
-        },
+            );
+          },
+        ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   // ---------------------------------------------------------------------------
   // 1️⃣ الهيدر (Header Component)
   // ---------------------------------------------------------------------------
   Widget _buildHeader(BuildContext context) {
     // نستخدم select للاستماع فقط للتغييرات في الاسم والموقع لتقليل إعادة البناء غير الضرورية
-    final profileName = context.select<ProfileViewModel, String>((vm) => vm.profile?.name ?? '');
-    final cachedName = context.select<HomeViewModel, String>((vm) => vm.userName);
+    final profileName = context.select<ProfileViewModel, String>(
+      (vm) => vm.profile?.name ?? '',
+    );
+    final cachedName = context.select<HomeViewModel, String>(
+      (vm) => vm.userName,
+    );
     // ✅ عرض الاسم الأول فقط لتجنب الاسم الطويل في الـ AppBar
     String _extractFirstName(String fullName) {
       if (fullName.isEmpty) return fullName;
@@ -399,7 +414,10 @@ class _HomeViewState extends State<HomeView> {
                       color: context.qsColors.card,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.notifications_none_rounded, color: context.qsColors.text),
+                    child: Icon(
+                      Icons.notifications_none_rounded,
+                      color: context.qsColors.text,
+                    ),
                   ),
                   if (notificationVm.unreadCount > 0)
                     Positioned(

@@ -29,7 +29,8 @@ class _AdvertisementCarouselState extends State<AdvertisementCarousel> {
   late PageController _pageController;
   int _currentPage = 0;
   Timer? _timer;
-  final Set<int> _viewedAds = {}; // لتجنب تكرار تتبع المشاهدة لنفس الإعلان في نفس الجلسة
+  final Set<int> _viewedAds =
+      {}; // لتجنب تكرار تتبع المشاهدة لنفس الإعلان في نفس الجلسة
 
   @override
   void initState() {
@@ -77,8 +78,10 @@ class _AdvertisementCarouselState extends State<AdvertisementCarousel> {
 
   /// 🖱️ منطق التفاعل (Click & Navigation)
   Future<void> _handleAdTap(AdvertisementModel ad) async {
-    debugPrint('📢 [Ad Tap]: ID=${ad.id}, Type=${ad.targetType}, TargetId=${ad.targetId}');
-    
+    debugPrint(
+      '📢 [Ad Tap]: ID=${ad.id}, Type=${ad.targetType}, TargetId=${ad.targetId}',
+    );
+
     // 1. تتبع النقرة
     try {
       context.read<HomeViewModel>().trackAdClick(ad.id);
@@ -225,10 +228,7 @@ class _AdvertisementCarouselState extends State<AdvertisementCarousel> {
             borderRadius: BorderRadius.circular(20),
             gradient: LinearGradient(
               begin: Alignment.bottomRight,
-              colors: [
-                Colors.black.withValues(alpha: 0.6),
-                Colors.transparent,
-              ],
+              colors: [Colors.black.withValues(alpha: 0.6), Colors.transparent],
             ),
           ),
           padding: const EdgeInsets.all(20),
@@ -249,10 +249,7 @@ class _AdvertisementCarouselState extends State<AdvertisementCarousel> {
                   padding: const EdgeInsets.only(top: 4.0),
                   child: Text(
                     ad.description!,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 12,
-                    ),
+                    style: const TextStyle(color: Colors.white70, fontSize: 12),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -260,7 +257,10 @@ class _AdvertisementCarouselState extends State<AdvertisementCarousel> {
               if (ad.targetType != 'none')
                 Container(
                   margin: const EdgeInsets.only(top: 8),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: context.qsColors.primary,
                     borderRadius: BorderRadius.circular(8),

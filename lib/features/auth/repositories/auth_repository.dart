@@ -22,7 +22,7 @@ class AuthRepository {
   // ===========================================================================
 
   /// يقوم بإرسال كود التفعيل (OTP) والبريد الإلكتروني للسيرفر.
-  Future<void> verifyEmail(String email, String otp) async {
+  Future<String> verifyEmail(String email, String otp) async {
     try {
       final response = await _apiService.post(
         ApiEndpoints.verifyEmail,
@@ -30,11 +30,10 @@ class AuthRepository {
       );
 
       if (response.statusCode != 200 && response.statusCode != 201) {
-        throw Exception(
-          'emailVerificationFailed',
-        );
+        throw Exception('emailVerificationFailed');
       }
-      
+
+      return response.data['message'] ?? 'تم تفعيل الحساب بنجاح';
     } catch (e) {
       if (e is DioException) {
         if (e.response?.statusCode == 422) {
@@ -63,7 +62,7 @@ class AuthRepository {
   }
 
   /// 🔄 إعادة إرسال كود التفعيل (Resend Verification Code)
-  Future<void> resendVerificationCode(String email) async {
+  Future<String> resendVerificationCode(String email) async {
     try {
       final response = await _apiService.post(
         ApiEndpoints.resendVerificationCode,
@@ -73,6 +72,7 @@ class AuthRepository {
       if (response.statusCode != 200 && response.statusCode != 201) {
         throw Exception('codeResendFailed');
       }
+      return response.data['message'] ?? 'تم إعادة إرسال الكود بنجاح';
     } catch (e) {
       if (e is DioException) {
         if (e.response?.statusCode == 422) {
@@ -182,7 +182,8 @@ class AuthRepository {
       final GoogleSignIn googleSignIn = GoogleSignIn(
         scopes: ['email', 'profile'],
         // serverClientId: Web Client ID لتوليد id_token يمكن التحقق منه في السيرفر
-        serverClientId: '507923305565-e3s7epoas985u037hbfb9kv4eefrhr9n.apps.googleusercontent.com',
+        serverClientId:
+            '507923305565-e3s7epoas985u037hbfb9kv4eefrhr9n.apps.googleusercontent.com',
       );
 
       // 2. فتح واجهة اختيار حساب جوجل
@@ -193,7 +194,8 @@ class AuthRepository {
       }
 
       // 3. الحصول على التوكنات
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       final idToken = googleAuth.idToken;
       final accessToken = googleAuth.accessToken;
@@ -224,7 +226,7 @@ class AuthRepository {
           );
           debugPrint('✅ Google Login: Data stored successfully.');
         }
-        
+
         return user;
       } else {
         throw Exception('googleLoginFailed');
@@ -299,7 +301,7 @@ class AuthRepository {
   //     rethrow;
   //   }
   // }
-  Future<void> register({
+  Future<String> register({
     required String name,
     required String email,
     required String password,
@@ -318,7 +320,7 @@ class AuthRepository {
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return;
+      return response.data['message'] ?? 'تم إنشاء الحساب بنجاح';
     }
 
     throw Exception('accountCreationFailed');
@@ -353,7 +355,7 @@ class AuthRepository {
   // ===========================================================================
 
   /// يتيح للمستخدم المسجل دخولهم حالياً استبدال كلمة المرور القديمة بأخرى جديدة.
-  Future<void> changePassword({
+  Future<String> changePassword({
     required String oldPassword,
     required String password,
     required String passwordConfirmation,
@@ -371,6 +373,7 @@ class AuthRepository {
       if (response.statusCode != 200 && response.statusCode != 201) {
         throw Exception('changePasswordFailed');
       }
+      return response.data['message'] ?? 'تم تغيير كلمة المرور بنجاح';
     } catch (e) {
       if (e is DioException) {
         if (e.response?.statusCode == 422 || e.response?.statusCode == 400) {
@@ -403,7 +406,7 @@ class AuthRepository {
   // ===========================================================================
 
   /// 📌 1. طلب إرسال رمز التحقق
-  Future<void> forgotPassword(String email) async {
+  Future<String> forgotPassword(String email) async {
     try {
       final response = await _apiService.post(
         ApiEndpoints.forgotPassword,
@@ -413,6 +416,7 @@ class AuthRepository {
       if (response.statusCode != 200 && response.statusCode != 201) {
         throw Exception('forgotPasswordFailed');
       }
+      return response.data['message'] ?? 'تم إرسال الكود بنجاح';
     } catch (e) {
       if (e is DioException) {
         if (e.response?.statusCode == 422 || e.response?.statusCode == 400) {
@@ -440,7 +444,7 @@ class AuthRepository {
   }
 
   /// 📌 2. التحقق من كود الـ OTP
-  Future<void> verifyResetCode(String email, String code) async {
+  Future<String> verifyResetCode(String email, String code) async {
     try {
       final response = await _apiService.post(
         ApiEndpoints.verifyResetCode,
@@ -450,6 +454,7 @@ class AuthRepository {
       if (response.statusCode != 200 && response.statusCode != 201) {
         throw Exception('verifyResetCodeFailed');
       }
+      return response.data['message'] ?? 'تم التحقق من الكود بنجاح';
     } catch (e) {
       if (e is DioException) {
         if (e.response?.statusCode == 422 || e.response?.statusCode == 400) {
@@ -477,7 +482,7 @@ class AuthRepository {
   }
 
   /// 📌 3. تعيين كلمة المرور الجديدة
-  Future<void> resetPassword({
+  Future<String> resetPassword({
     required String email,
     required String code,
     required String password,
@@ -497,6 +502,7 @@ class AuthRepository {
       if (response.statusCode != 200 && response.statusCode != 201) {
         throw Exception('resetPasswordFailed');
       }
+      return response.data['message'] ?? 'تم استعادة كلمة المرور بنجاح';
     } catch (e) {
       if (e is DioException) {
         if (e.response?.statusCode == 422 || e.response?.statusCode == 400) {

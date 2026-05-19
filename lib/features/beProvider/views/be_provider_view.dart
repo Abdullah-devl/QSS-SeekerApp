@@ -48,25 +48,51 @@ class BeProviderView extends StatelessWidget {
             _buildCard(
               context,
               title: AppLocalizations.of(context)!.fullName,
-              child: TextField(
-                controller: viewModel.nameController,
-                decoration: InputDecoration(
-                  hintText: AppLocalizations.of(context)!.enterFullName,
-                  hintStyle: TextStyle(color: colors.textSub),
-                  prefixIcon: Icon(Icons.person, color: colors.textSub),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: colors.textSub.withOpacity(0.2),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: viewModel.nameController,
+                    decoration: InputDecoration(
+                      hintText: AppLocalizations.of(context)!.enterFullName,
+                      hintStyle: TextStyle(color: colors.textSub),
+                      prefixIcon: Icon(Icons.person, color: colors.textSub),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: colors.textSub.withOpacity(0.2),
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(
+                          color: colors.textSub.withOpacity(0.2),
+                        ),
+                      ),
                     ),
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: colors.textSub.withOpacity(0.2),
-                    ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.info_outline_rounded,
+                        size: 16,
+                        color: colors.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          AppLocalizations.of(context)!.nameMatchIdHint,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: colors.textSub,
+                            height: 1.3,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
+                ],
               ),
             ),
             const SizedBox(height: 20),
@@ -315,7 +341,9 @@ class BeProviderView extends StatelessWidget {
                   }
 
                   // 2️⃣ إظهار تنبيه تأكيد إرسال الطلب
-                  final confirmed = await QSAlerts.showConfirmJoinProvider(context);
+                  final confirmed = await QSAlerts.showConfirmJoinProvider(
+                    context,
+                  );
                   if (!confirmed) return;
 
                   // 3️⃣ إظهار ديالوج التحميل الزجاجي الفاخر
@@ -333,8 +361,11 @@ class BeProviderView extends StatelessWidget {
 
                   if (success && context.mounted) {
                     // 6️⃣ إظهار أليارت النجاح الفخم والانتظار حتى يضغط المستخدم حسناً
-                    await QSAlerts.showSuccess(context, l10n.beProviderSubmitSuccess);
-                    
+                    await QSAlerts.showSuccess(
+                      context,
+                      viewModel.successMessage ?? l10n.beProviderSubmitSuccess,
+                    );
+
                     // 7️⃣ التوجيه إلى الصفحة الرئيسية وتصفير الملاحة
                     if (context.mounted) {
                       Navigator.pushNamedAndRemoveUntil(
@@ -345,7 +376,8 @@ class BeProviderView extends StatelessWidget {
                     }
                   } else if (context.mounted) {
                     // 8️⃣ إظهار أليارت الفشل بناءً على الرسالة الراجعة من الباك اند
-                    final errorMsg = viewModel.errorMessage ?? l10n.beProviderSubmitFailed;
+                    final errorMsg =
+                        viewModel.errorMessage ?? l10n.beProviderSubmitFailed;
                     await QSAlerts.showError(context, errorMsg);
                   }
                 },

@@ -112,9 +112,7 @@ class _SettingsViewState extends State<SettingsView> {
                     final isLoading = profileVM.isLoading;
 
                     if (isLoading && profile == null) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
+                      return const Center(child: CircularProgressIndicator());
                     }
 
                     return Row(
@@ -142,15 +140,22 @@ class _SettingsViewState extends State<SettingsView> {
                               const SizedBox(height: 4),
                               // 🏷️ وصف الدور (طالب خدمة / مزود خدمة)
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
                                 decoration: BoxDecoration(
                                   color: colors.primary.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
                                   userRole == 'provider'
-                                      ? AppLocalizations.of(context)!.provider_role
-                                      : AppLocalizations.of(context)!.seeker_role,
+                                      ? AppLocalizations.of(
+                                          context,
+                                        )!.provider_role
+                                      : AppLocalizations.of(
+                                          context,
+                                        )!.seeker_role,
                                   style: TextStyle(
                                     fontSize: 11,
                                     color: colors.primary,
@@ -162,7 +167,11 @@ class _SettingsViewState extends State<SettingsView> {
                               // 💰 عرض رصيد النقاط في الإعدادات
                               Row(
                                 children: [
-                                  Icon(Icons.stars_rounded, size: 14, color: colors.warning),
+                                  Icon(
+                                    Icons.stars_rounded,
+                                    size: 14,
+                                    color: colors.warning,
+                                  ),
                                   const SizedBox(width: 4),
                                   Text(
                                     '${AppLocalizations.of(context)!.available_points}: ${(profile?.bonusPoints ?? 0).toStringAsFixed(0)}',
@@ -186,11 +195,13 @@ class _SettingsViewState extends State<SettingsView> {
                               backgroundColor: colors.primary.withValues(
                                 alpha: 0.1,
                               ),
-                              backgroundImage: (profile?.avatarUrl != null &&
+                              backgroundImage:
+                                  (profile?.avatarUrl != null &&
                                       profile!.avatarUrl.isNotEmpty)
                                   ? NetworkImage(profile.avatarUrl)
                                   : null,
-                              child: (profile?.avatarUrl == null ||
+                              child:
+                                  (profile?.avatarUrl == null ||
                                       profile!.avatarUrl.isEmpty)
                                   ? Icon(
                                       Icons.person,
@@ -334,7 +345,7 @@ class _SettingsViewState extends State<SettingsView> {
                                 Navigator.pop(context);
                               },
                             ),
-                                _buildDivider(colors.textSub),
+                            _buildDivider(colors.textSub),
                             ListTile(
                               leading: const Text(
                                 '🇺🇸',
@@ -415,8 +426,9 @@ class _SettingsViewState extends State<SettingsView> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                     side: BorderSide(
-                      color: (userRole == 'guest' ? colors.primary : colors.error)
-                          .withValues(alpha: 0.1),
+                      color:
+                          (userRole == 'guest' ? colors.primary : colors.error)
+                              .withValues(alpha: 0.1),
                     ),
                   ),
                 ),
@@ -439,7 +451,7 @@ class _SettingsViewState extends State<SettingsView> {
               ),
             ),
             // مساحة إضافية في الأسفل لتجنب تغطية المحتوى بالـ NavBar
-              const SizedBox(height: 100),
+            const SizedBox(height: 100),
           ],
         ),
       ),

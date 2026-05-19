@@ -57,7 +57,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
       final apiService = context.read<ApiService>();
       final repo = ProfileRepository(apiService);
       final profile = await repo.fetchUserProfile(providerId);
-      
+
       _providerProfilesCache[providerId] = profile;
     } catch (e) {
       debugPrint('❌ Error loading provider detail profile: $e');
@@ -96,108 +96,105 @@ class _OrderDetailViewState extends State<OrderDetailView> {
       '🔍 [VIEW] Displaying OrderDetailView for ID: ${currentOrder.id}',
     );
     return Scaffold(
-        backgroundColor: context.qsColors.background,
-        appBar: AppBar(
-          backgroundColor:
-              Theme.of(context).appBarTheme.backgroundColor ??
-              context.qsColors.background,
-          elevation: 0,
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(
-              Directionality.of(context) == TextDirection.rtl
-                  ? Icons.arrow_forward
-                  : Icons.arrow_back,
-              color: context.qsColors.text,
-              textDirection: TextDirection.ltr,
-            ),
-            onPressed: () => Navigator.of(context).pop(),
+      backgroundColor: context.qsColors.background,
+      appBar: AppBar(
+        backgroundColor:
+            Theme.of(context).appBarTheme.backgroundColor ??
+            context.qsColors.background,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(
+            Directionality.of(context) == TextDirection.rtl
+                ? Icons.arrow_forward
+                : Icons.arrow_back,
+            color: context.qsColors.text,
+            textDirection: TextDirection.ltr,
           ),
-          title: Text(
-            context.tr('details'),
-            style: TextStyle(
-              color: context.qsColors.text,
-              fontWeight: FontWeight.w800,
-              fontSize: 20,
-            ),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(
+          context.tr('details'),
+          style: TextStyle(
+            color: context.qsColors.text,
+            fontWeight: FontWeight.w800,
+            fontSize: 20,
           ),
         ),
-        body: RefreshIndicator(
-          onRefresh: () => viewModel.refreshOrderDetail(currentOrder.id),
-          child: Stack(
-            children: [
-              SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 24,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildUnifiedRequestCard(context, currentOrder),
-                    const SizedBox(height: 32),
+      ),
+      body: RefreshIndicator(
+        onRefresh: () => viewModel.refreshOrderDetail(currentOrder.id),
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildUnifiedRequestCard(context, currentOrder),
+                  const SizedBox(height: 32),
 
-                    // 📂 قسم السندات (Receipts)
-                    if (currentOrder.bonds.isNotEmpty) ...[
-                      _buildSectionHeader(context, 'order_bonds'),
-                      const SizedBox(height: 12),
-                      _buildReceiptsList(currentOrder),
+                  // 📂 قسم السندات (Receipts)
+                  if (currentOrder.bonds.isNotEmpty) ...[
+                    _buildSectionHeader(context, 'order_bonds'),
+                    const SizedBox(height: 12),
+                    _buildReceiptsList(currentOrder),
+                    const SizedBox(height: 32),
+                  ],
+
+                  // 💰 قسم إدارة الدفع والحالة (تتبع الحالة والمبالغ)
+                  Column(
+                    key: ValueKey('payment_section_${currentOrder.status}'),
+                    children: [
+                      _buildPaymentManagerSection(
+                        context,
+                        viewModel,
+                        currentOrder,
+                      ),
                       const SizedBox(height: 32),
                     ],
+                  ),
 
-                    // 💰 قسم إدارة الدفع والحالة (تتبع الحالة والمبالغ)
-                    Column(
-                      key: ValueKey('payment_section_${currentOrder.status}'),
-                      children: [
-                        _buildPaymentManagerSection(
-                          context,
-                          viewModel,
-                          currentOrder,
-                        ),
-                        const SizedBox(height: 32),
-                      ],
-                    ),
+                  _buildComplaintButton(context, viewModel, currentOrder),
+                  const SizedBox(height: 32),
 
-                    _buildComplaintButton(context, viewModel, currentOrder),
-                    const SizedBox(height: 32),
+                  _buildLocationSectionHeader(context, currentOrder),
+                  const SizedBox(height: 12),
+                  _buildLocationMapCard(
+                    context,
+                    lat,
+                    lng,
+                    hasCoordinates,
+                    currentOrder,
+                  ),
+                  const SizedBox(height: 24),
+                  _buildInlineCompleteOrderButton(
+                    context,
+                    viewModel,
+                    currentOrder,
+                  ),
+                  const SizedBox(height: 48),
 
-                    _buildLocationSectionHeader(context, currentOrder),
-                    const SizedBox(height: 12),
-                    _buildLocationMapCard(
-                      context,
-                      lat,
-                      lng,
-                      hasCoordinates,
-                      currentOrder,
-                    ),
-                    const SizedBox(height: 24),
-                    _buildInlineCompleteOrderButton(
-                      context,
-                      viewModel,
-                      currentOrder,
-                    ),
-                    const SizedBox(height: 48),
-
-                    _buildTotalPriceSection(context, currentOrder),
-                    const SizedBox(height: 140),
-                  ],
-                ),
+                  _buildTotalPriceSection(context, currentOrder),
+                  const SizedBox(height: 140),
+                ],
               ),
-              if (viewModel.isLoading)
-                Container(
-                  color: Colors.black26.withOpacity(0.1),
-                  child: const Center(child: CircularProgressIndicator()),
-                ),
-            ],
-          ),
+            ),
+            if (viewModel.isLoading)
+              Container(
+                color: Colors.black26.withOpacity(0.1),
+                child: const Center(child: CircularProgressIndicator()),
+              ),
+          ],
         ),
-        bottomNavigationBar: _buildBottomActions(
-          context,
-          viewModel,
-          currentOrder,
-        ),
-      );
+      ),
+      bottomNavigationBar: _buildBottomActions(
+        context,
+        viewModel,
+        currentOrder,
+      ),
+    );
   }
 
   // --- المكونات الفرعية (Sub-widgets) ---
@@ -410,7 +407,11 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                 ),
                 _buildStatusChip(
                   'accepted_partial_paid',
-                  context.tr('in_progress'),
+                  order.status == 'accepted_full_paid'
+                      ? context.tr('accepted_full_paid')
+                      : (order.status == 'accepted_partial_paid'
+                          ? context.tr('accepted_partial_paid')
+                          : context.tr('in_progress')),
                   order.status,
                   colors.secondary,
                   colors.secondary.withOpacity(0.1),
@@ -569,6 +570,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
         return 1;
       case 'in_progress':
       case 'accepted_partial_paid':
+      case 'accepted_full_paid':
         return 2;
       case 'completed':
       case 'finished':
@@ -644,7 +646,6 @@ class _OrderDetailViewState extends State<OrderDetailView> {
     );
   }
 
-
   void _showProviderDetailsDialog(
     BuildContext context,
     String providerName,
@@ -660,7 +661,10 @@ class _OrderDetailViewState extends State<OrderDetailView> {
       builder: (context) {
         return Dialog(
           backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 24,
+          ),
           child: Container(
             constraints: const BoxConstraints(maxWidth: 400),
             decoration: BoxDecoration(
@@ -690,7 +694,9 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                       ),
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(32),
+                      ),
                     ),
                     child: Stack(
                       clipBehavior: Clip.none,
@@ -707,7 +713,11 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                                 color: colors.background,
                                 shape: BoxShape.circle,
                               ),
-                              child: Icon(Icons.close, size: 18, color: colors.textSub),
+                              child: Icon(
+                                Icons.close,
+                                size: 18,
+                                color: colors.textSub,
+                              ),
                             ),
                           ),
                         ),
@@ -741,11 +751,12 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                                           ? Image.network(
                                               providerImage,
                                               fit: BoxFit.cover,
-                                              errorBuilder: (_, __, ___) => Icon(
-                                                Icons.person,
-                                                size: 45,
-                                                color: colors.textSub,
-                                              ),
+                                              errorBuilder: (_, __, ___) =>
+                                                  Icon(
+                                                    Icons.person,
+                                                    size: 45,
+                                                    color: colors.textSub,
+                                                  ),
                                             )
                                           : Icon(
                                               Icons.person,
@@ -761,7 +772,10 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                                   decoration: BoxDecoration(
                                     color: colors.success,
                                     shape: BoxShape.circle,
-                                    border: Border.all(color: Colors.white, width: 3),
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 3,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -786,7 +800,10 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                   ),
                   const SizedBox(height: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: colors.primary.withOpacity(0.08),
                       borderRadius: BorderRadius.circular(20),
@@ -826,11 +843,19 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                           context: context,
                           icon: Icons.phone_android,
                           title: context.l10n.phoneNumber,
-                          value: providerPhone.isNotEmpty ? providerPhone : '---',
-                          onCopy: providerPhone.isNotEmpty && providerPhone != '---'
+                          value: providerPhone.isNotEmpty
+                              ? providerPhone
+                              : '---',
+                          onCopy:
+                              providerPhone.isNotEmpty && providerPhone != '---'
                               ? () {
-                                  Clipboard.setData(ClipboardData(text: providerPhone));
-                                  QSAlerts.showSuccess(context, context.tr('copySuccess'));
+                                  Clipboard.setData(
+                                    ClipboardData(text: providerPhone),
+                                  );
+                                  QSAlerts.showSuccess(
+                                    context,
+                                    context.tr('copySuccess'),
+                                  );
                                 }
                               : null,
                         ),
@@ -841,11 +866,19 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                           context: context,
                           icon: Icons.email_outlined,
                           title: context.l10n.email,
-                          value: providerEmail.isNotEmpty ? providerEmail : '---',
-                          onCopy: providerEmail.isNotEmpty && providerEmail != '---'
+                          value: providerEmail.isNotEmpty
+                              ? providerEmail
+                              : '---',
+                          onCopy:
+                              providerEmail.isNotEmpty && providerEmail != '---'
                               ? () {
-                                  Clipboard.setData(ClipboardData(text: providerEmail));
-                                  QSAlerts.showSuccess(context, context.tr('copySuccess'));
+                                  Clipboard.setData(
+                                    ClipboardData(text: providerEmail),
+                                  );
+                                  QSAlerts.showSuccess(
+                                    context,
+                                    context.tr('copySuccess'),
+                                  );
                                 }
                               : null,
                         ),
@@ -927,7 +960,10 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                                   ],
                                   const SizedBox(height: 8),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 8,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: colors.card,
                                       borderRadius: BorderRadius.circular(12),
@@ -954,8 +990,13 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                                             color: colors.primary,
                                           ),
                                           onPressed: () {
-                                            Clipboard.setData(ClipboardData(text: bank.iban));
-                                            QSAlerts.showSuccess(context, context.tr('copySuccess'));
+                                            Clipboard.setData(
+                                              ClipboardData(text: bank.iban),
+                                            );
+                                            QSAlerts.showSuccess(
+                                              context,
+                                              context.tr('copySuccess'),
+                                            );
                                           },
                                         ),
                                       ],
@@ -982,7 +1023,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
 
   void _showBondDetailsDialog(BuildContext context, OrderBond bond) {
     final colors = context.qsColors;
-    
+
     // تحديد الألوان والنصوص بناءً على حالة السند
     Color statusColor;
     Color statusBgColor;
@@ -1028,7 +1069,10 @@ class _OrderDetailViewState extends State<OrderDetailView> {
       builder: (context) {
         return Dialog(
           backgroundColor: Colors.transparent,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 24,
+          ),
           child: Container(
             constraints: const BoxConstraints(maxWidth: 400),
             decoration: BoxDecoration(
@@ -1049,10 +1093,15 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                 children: [
                   // 1️⃣ رأس النافذة المنبثقة: حالة السند الملونة
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
                     decoration: BoxDecoration(
                       color: statusBgColor,
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(32),
+                      ),
                     ),
                     child: Row(
                       children: [
@@ -1077,7 +1126,11 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                               color: Colors.black.withOpacity(0.05),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(Icons.close, size: 18, color: statusColor),
+                            child: Icon(
+                              Icons.close,
+                              size: 18,
+                              color: statusColor,
+                            ),
                           ),
                         ),
                       ],
@@ -1128,21 +1181,25 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                                         ? Image.network(
                                             bond.imagePath,
                                             fit: BoxFit.cover,
-                                            errorBuilder: (context, error, stackTrace) {
-                                              return Center(
-                                                child: Icon(
-                                                  Icons.broken_image,
-                                                  size: 48,
-                                                  color: colors.textSub.withOpacity(0.4),
-                                                ),
-                                              );
-                                            },
+                                            errorBuilder:
+                                                (context, error, stackTrace) {
+                                                  return Center(
+                                                    child: Icon(
+                                                      Icons.broken_image,
+                                                      size: 48,
+                                                      color: colors.textSub
+                                                          .withOpacity(0.4),
+                                                    ),
+                                                  );
+                                                },
                                           )
                                         : Center(
                                             child: Icon(
                                               Icons.receipt_long,
                                               size: 48,
-                                              color: colors.textSub.withOpacity(0.4),
+                                              color: colors.textSub.withOpacity(
+                                                0.4,
+                                              ),
                                             ),
                                           ),
                                   ),
@@ -1152,12 +1209,19 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                                     left: 0,
                                     right: 0,
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(vertical: 8),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 8,
+                                      ),
                                       color: Colors.black.withOpacity(0.55),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
-                                          const Icon(Icons.zoom_in, color: Colors.white, size: 16),
+                                          const Icon(
+                                            Icons.zoom_in,
+                                            color: Colors.white,
+                                            size: 16,
+                                          ),
                                           const SizedBox(width: 6),
                                           Text(
                                             context.l10n.clickToZoom,
@@ -1197,13 +1261,22 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                           context: context,
                           icon: Icons.confirmation_number_outlined,
                           title: context.l10n.bondNumberLabel,
-                          value: (bond.bondNumber != null && bond.bondNumber!.isNotEmpty)
+                          value:
+                              (bond.bondNumber != null &&
+                                  bond.bondNumber!.isNotEmpty)
                               ? bond.bondNumber!
                               : context.l10n.notAvailableNow,
-                          onCopy: (bond.bondNumber != null && bond.bondNumber!.isNotEmpty)
+                          onCopy:
+                              (bond.bondNumber != null &&
+                                  bond.bondNumber!.isNotEmpty)
                               ? () {
-                                  Clipboard.setData(ClipboardData(text: bond.bondNumber!));
-                                  QSAlerts.showSuccess(context, context.tr('copySuccess'));
+                                  Clipboard.setData(
+                                    ClipboardData(text: bond.bondNumber!),
+                                  );
+                                  QSAlerts.showSuccess(
+                                    context,
+                                    context.tr('copySuccess'),
+                                  );
                                 }
                               : null,
                         ),
@@ -1214,16 +1287,24 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                           context: context,
                           icon: Icons.payments_outlined,
                           title: context.l10n.paid_amount,
-                          value: "${bond.amount.toInt()} ${context.tr('currency_sar')}",
+                          value:
+                              "${bond.amount.toInt()} ${context.tr('currency_sar')}",
                           onCopy: () {
-                            Clipboard.setData(ClipboardData(text: bond.amount.toInt().toString()));
-                            QSAlerts.showSuccess(context, context.tr('copySuccess'));
+                            Clipboard.setData(
+                              ClipboardData(
+                                text: bond.amount.toInt().toString(),
+                              ),
+                            );
+                            QSAlerts.showSuccess(
+                              context,
+                              context.tr('copySuccess'),
+                            );
                           },
                         ),
 
-
                         // بطاقة الوصف (إذا كان موجوداً)
-                        if (bond.description != null && bond.description!.trim().isNotEmpty) ...[
+                        if (bond.description != null &&
+                            bond.description!.trim().isNotEmpty) ...[
                           const SizedBox(height: 12),
                           _buildDialogContactCard(
                             context: context,
@@ -1283,9 +1364,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
       decoration: BoxDecoration(
         color: colors.background,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: colors.textSub.withOpacity(0.08),
-        ),
+        border: Border.all(color: colors.textSub.withOpacity(0.08)),
       ),
       child: Row(
         children: [
@@ -1317,7 +1396,9 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                     fontSize: 13,
                     color: colors.text,
                     fontWeight: FontWeight.w900,
-                    fontFamily: icon == Icons.email_outlined ? 'Roboto' : 'Cairo',
+                    fontFamily: icon == Icons.email_outlined
+                        ? 'Roboto'
+                        : 'Cairo',
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -1329,11 +1410,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
             IconButton(
               constraints: const BoxConstraints(),
               padding: const EdgeInsets.all(8),
-              icon: Icon(
-                Icons.copy,
-                size: 16,
-                color: colors.primary,
-              ),
+              icon: Icon(Icons.copy, size: 16, color: colors.primary),
               onPressed: onCopy,
             ),
         ],
@@ -1341,12 +1418,13 @@ class _OrderDetailViewState extends State<OrderDetailView> {
     );
   }
 
-
   Widget _buildUnifiedRequestCard(BuildContext context, OrderModel order) {
     final colors = context.qsColors;
-    
+
     // جلب بيانات الملف الشخصي المحملة ديناميكياً
-    final profile = order.providerId != null ? _providerProfilesCache[order.providerId] : null;
+    final profile = order.providerId != null
+        ? _providerProfilesCache[order.providerId]
+        : null;
     final String providerName = profile?.name ?? order.providerName;
     final String providerImage = profile?.avatarUrl ?? order.providerImage;
 
@@ -1422,10 +1500,18 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                                   height: 80,
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) {
-                                    return Icon(Icons.person, size: 40, color: colors.textSub);
+                                    return Icon(
+                                      Icons.person,
+                                      size: 40,
+                                      color: colors.textSub,
+                                    );
                                   },
                                 )
-                              : Icon(Icons.person, size: 40, color: colors.textSub),
+                              : Icon(
+                                  Icons.person,
+                                  size: 40,
+                                  color: colors.textSub,
+                                ),
                         ),
                       ),
                       Container(
@@ -1456,52 +1542,51 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                                 ),
                               ),
                             ),
-                            if (order.providerId != null && _isProviderLoading) ...[
+                            if (order.providerId != null &&
+                                _isProviderLoading) ...[
                               const SizedBox(
                                 width: 12,
                                 height: 12,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
                                 ),
-                              )
+                              ),
                             ],
                           ],
                         ),
-                      if (providerEmail.isNotEmpty && providerEmail != '---') ...[
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.email_outlined,
-                              size: 14,
-                              color: colors.textSub.withOpacity(0.5),
-                            ),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                providerEmail,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: colors.textSub,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                        if (providerEmail.isNotEmpty &&
+                            providerEmail != '---') ...[
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.email_outlined,
+                                size: 14,
+                                color: colors.textSub.withOpacity(0.5),
                               ),
-                            ),
-                          ],
-                        ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  providerEmail,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: colors.textSub,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ),
-
-              ],
+                ],
+              ),
             ),
           ),
-          ),
-
-
 
           const Divider(height: 1),
 
@@ -1552,7 +1637,8 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
-                        child: (order.mainServiceImage != null &&
+                        child:
+                            (order.mainServiceImage != null &&
                                 order.mainServiceImage!.isNotEmpty)
                             ? Image.network(
                                 order.mainServiceImage!,
@@ -1777,9 +1863,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
         decoration: BoxDecoration(
           color: colors.background,
           borderRadius: BorderRadius.circular(32),
-          border: Border.all(
-            color: colors.textSub.withOpacity(0.08),
-          ),
+          border: Border.all(color: colors.textSub.withOpacity(0.08)),
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(32),
@@ -1817,11 +1901,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                     color: colors.error.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
-                    Icons.location_on,
-                    color: colors.error,
-                    size: 36,
-                  ),
+                  child: Icon(Icons.location_on, color: colors.error, size: 36),
                 ),
               ),
             ],
@@ -1933,17 +2013,19 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                     // 3️⃣ الانتظار حتى يرى المستخدم رسالة النجاح ويضغط موافق
                     await QSAlerts.showSuccess(
                       context,
-                      context.tr('order_cancelled_success'),
+                      viewModel.successMessage ??
+                          context.tr('order_cancelled_success'),
                     );
-                    
+
                     if (context.mounted) {
                       Navigator.of(context).pop();
                     }
                   } else {
                     // إظهار رسالة الخطأ والانتظار
                     await QSAlerts.showError(
-                      context, 
-                      viewModel.errorMessage ?? context.tr('order_cancelled_error'),
+                      context,
+                      viewModel.errorMessage ??
+                          context.tr('order_cancelled_error'),
                     );
                   }
                 },
@@ -2086,12 +2168,14 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(5, (index) {
                       return IconButton(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        constraints: const BoxConstraints(),
                         icon: Icon(
                           index < selectedRating
                               ? Icons.star_rounded
                               : Icons.star_outline_rounded,
                           color: context.qsColors.warning,
-                          size: 36,
+                          size: 28,
                         ),
                         onPressed: () {
                           setDialogState(() {
@@ -2146,7 +2230,8 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                           Navigator.pop(dialogCtx); // إغلاق النافذة
                           QSAlerts.showSuccess(
                             context,
-                            context.tr('order_completed_success'),
+                            viewModel.successMessage ??
+                                context.tr('order_completed_success'),
                           );
                         } else {
                           // يبقى داخل الأليرت ويعرض الخطأ إذا وجد
@@ -2224,19 +2309,19 @@ class _OrderDetailViewState extends State<OrderDetailView> {
     String? selectedType;
 
     final List<Map<String, String>> complaintTypes = [
-      {'key': 'delay', 'label': context.tr('type_delay')},
-      {'key': 'quality', 'label': context.tr('type_quality')},
-      {'key': 'behavior', 'label': context.tr('type_behavior')},
-      {'key': 'price', 'label': context.tr('type_price')},
-      {'key': 'other', 'label': context.tr('type_other')},
+      {'key': 'delay', 'label': context.l10n.type_delay},
+      {'key': 'quality', 'label': context.l10n.type_quality},
+      {'key': 'behavior', 'label': context.l10n.type_behavior},
+      {'key': 'price', 'label': context.l10n.type_price},
+      {'key': 'other', 'label': context.l10n.type_other},
     ];
 
     final colors = context.qsColors;
     showDialog(
       context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
+      builder: (dialogContext) {
+        return Consumer<OrdersViewModel>(
+          builder: (context, viewModel, child) {
             return AlertDialog(
               backgroundColor: colors.background,
               shape: RoundedRectangleBorder(
@@ -2247,7 +2332,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                   Icon(Icons.report, color: colors.error),
                   const SizedBox(width: 8),
                   Text(
-                    context.tr('send_complaint'),
+                    context.l10n.send_complaint,
                     style: TextStyle(
                       fontFamily: 'Cairo',
                       fontWeight: FontWeight.w900,
@@ -2257,56 +2342,70 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                 ],
               ),
               content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // نوع الشكوى (Dropdown)
-                    DropdownButtonFormField<String>(
-                      decoration: InputDecoration(
-                        labelText: context.tr('complaint_type'),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                child: StatefulBuilder(
+                  builder: (context, setDialogState) {
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // نوع الشكوى (Dropdown)
+                        DropdownButtonFormField<String>(
+                          isExpanded: true,
+                          decoration: InputDecoration(
+                            labelText: context.l10n.complaint_type,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          items: complaintTypes.map((type) {
+                            return DropdownMenuItem(
+                              value: type['key'],
+                              child: Text(
+                                type['label']!,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: viewModel.isLoading
+                              ? null
+                              : (value) =>
+                                  setDialogState(() => selectedType = value),
                         ),
-                      ),
-                      items: complaintTypes.map((type) {
-                        return DropdownMenuItem(
-                          value: type['key'],
-                          child: Text(type['label']!),
-                        );
-                      }).toList(),
-                      onChanged: (value) =>
-                          setDialogState(() => selectedType = value),
-                    ),
-                    const SizedBox(height: 16),
-                    // عنوان الشكوى
-                    TextField(
-                      controller: titleController,
-                      decoration: InputDecoration(
-                        labelText: context.tr('complaint_title'),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                        const SizedBox(height: 16),
+                        // عنوان الشكوى
+                        TextField(
+                          controller: titleController,
+                          enabled: !viewModel.isLoading,
+                          decoration: InputDecoration(
+                            labelText: context.l10n.complaint_title,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    // محتوى الشكوى
-                    TextField(
-                      controller: contentController,
-                      maxLines: 4,
-                      decoration: InputDecoration(
-                        labelText: context.tr('complaint_content'),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                        const SizedBox(height: 16),
+                        // محتوى الشكوى
+                        TextField(
+                          controller: contentController,
+                          maxLines: 4,
+                          enabled: !viewModel.isLoading,
+                          decoration: InputDecoration(
+                            labelText: context.l10n.complaint_content,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
+                      ],
+                    );
+                  },
                 ),
               ),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(context.tr('cancel')),
+                  onPressed: viewModel.isLoading
+                      ? null
+                      : () => Navigator.pop(context),
+                  child: Text(context.l10n.cancel),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -2320,12 +2419,12 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                       ? null
                       : () async {
                           if (selectedType == null ||
-                              titleController.text.isEmpty ||
-                              contentController.text.isEmpty) {
-                             QSAlerts.showWarning(
-                               context,
-                               context.l10n.pleaseFillFields,
-                             );
+                              titleController.text.trim().isEmpty ||
+                              contentController.text.trim().isEmpty) {
+                            QSAlerts.showWarning(
+                              context,
+                              context.l10n.pleaseFillFields,
+                            );
                             return;
                           }
 
@@ -2340,13 +2439,14 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                             Navigator.pop(context);
                             QSAlerts.showSuccess(
                               context,
-                              context.tr('complaint_success'),
+                              viewModel.successMessage ??
+                                  context.l10n.complaint_success,
                             );
                           } else {
                             QSAlerts.showError(
                               context,
                               viewModel.errorMessage ??
-                                  context.tr('complaint_error'),
+                                  context.l10n.complaint_error,
                             );
                           }
                         },
@@ -2359,7 +2459,7 @@ class _OrderDetailViewState extends State<OrderDetailView> {
                             strokeWidth: 2,
                           ),
                         )
-                      : Text(context.tr('complaint_submit')),
+                      : Text(context.l10n.complaint_submit),
                 ),
               ],
             );

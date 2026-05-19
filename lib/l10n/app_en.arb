@@ -146,6 +146,8 @@
   "details": "Details",
   "cancel_order": "Cancel Order",
   "accepted_initial": "Accepted (Initial)",
+  "accepted_full_paid": "Accepted (Fully Paid)",
+  "accepted_partial_paid": "Accepted (Partially Paid)",
   "status_pending": "Pending",
   "order_bonds": "Order Bonds",
   "paid_amount": "Paid Amount",
@@ -589,5 +591,14 @@
   "ibanCopiedSuccess": "IBAN copied successfully",
   "accountOwnerNotRegistered": "Account owner not registered",
   "verifiedOnly": "Show Verified Only",
-  "verifiedOnlyDesc": "Show services of providers with active verification"
+  "verifiedOnlyDesc": "Show services of providers with active verification",
+  "confirm_booking_title": "Confirm Booking",
+  "confirm_booking_message": "Are you sure you want to confirm and book this service?",
+  "bond_number_digits_only_error": "Bond number must contain only digits",
+  "nameMatchIdHint": "The name must match the one written on your national ID / passport",
+  "points": "Points",
+  "points_to_pay": "Points to Pay",
+  "max_limit": "Max Limit",
+  "min_points_error": "Paid points cannot be less than 1",
+  "exceed_order_amount_error": "Paid points value exceeds the remaining order amount"
 }

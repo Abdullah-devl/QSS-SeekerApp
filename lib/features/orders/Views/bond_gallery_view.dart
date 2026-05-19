@@ -9,11 +9,7 @@ class BondGalleryView extends StatefulWidget {
   final List<OrderBond> bonds;
   final int initialPage;
 
-  const BondGalleryView({
-    super.key,
-    required this.bonds,
-    this.initialPage = 0,
-  });
+  const BondGalleryView({super.key, required this.bonds, this.initialPage = 0});
 
   @override
   State<BondGalleryView> createState() => _BondGalleryViewState();
@@ -69,7 +65,7 @@ class _BondGalleryViewState extends State<BondGalleryView> {
                             color: colors.primary,
                             value: loadingProgress.expectedTotalBytes != null
                                 ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes!
+                                      loadingProgress.expectedTotalBytes!
                                 : null,
                           ),
                         );
@@ -78,9 +74,16 @@ class _BondGalleryViewState extends State<BondGalleryView> {
                         return Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.broken_image, color: Colors.white54, size: 60),
+                            const Icon(
+                              Icons.broken_image,
+                              color: Colors.white54,
+                              size: 60,
+                            ),
                             const SizedBox(height: 16),
-                            Text(context.tr('image_load_error'), style: const TextStyle(color: Colors.white70)),
+                            Text(
+                              context.tr('image_load_error'),
+                              style: const TextStyle(color: Colors.white70),
+                            ),
                           ],
                         );
                       },
@@ -115,10 +118,7 @@ class _BondGalleryViewState extends State<BondGalleryView> {
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.9),
-                    Colors.transparent,
-                  ],
+                  colors: [Colors.black.withOpacity(0.9), Colors.transparent],
                 ),
               ),
               child: Column(
@@ -145,7 +145,7 @@ class _BondGalleryViewState extends State<BondGalleryView> {
                         }),
                       ),
                     ),
-                  
+
                   // معلومات السند
                   Container(
                     padding: const EdgeInsets.all(20),
@@ -162,11 +162,18 @@ class _BondGalleryViewState extends State<BondGalleryView> {
                           children: [
                             Text(
                               context.tr('bond_number'),
-                              style: const TextStyle(color: Colors.white70, fontSize: 12),
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
                             ),
                             Text(
                               widget.bonds[_currentPage].bondNumber,
-                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
                             ),
                           ],
                         ),
@@ -175,11 +182,18 @@ class _BondGalleryViewState extends State<BondGalleryView> {
                           children: [
                             Text(
                               context.tr('amount_paid'),
-                              style: const TextStyle(color: Colors.white70, fontSize: 12),
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
                             ),
                             Text(
                               '${widget.bonds[_currentPage].amount.toInt()} ${context.tr('currency_sar')}',
-                              style: TextStyle(color: colors.primary, fontWeight: FontWeight.w900, fontSize: 20),
+                              style: TextStyle(
+                                color: colors.primary,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 20,
+                              ),
                             ),
                           ],
                         ),

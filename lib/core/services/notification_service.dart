@@ -16,17 +16,25 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   developer.log("Handling a background message: ${message.messageId}");
   developer.log("Background message data: ${message.data}");
-  developer.log("Background message notification: ${message.notification?.title}");
+  developer.log(
+    "Background message notification: ${message.notification?.title}",
+  );
 
   try {
     if (message.notification == null) {
-      final FlutterLocalNotificationsPlugin localNotifications = FlutterLocalNotificationsPlugin();
-      const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
-      const InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+      final FlutterLocalNotificationsPlugin localNotifications =
+          FlutterLocalNotificationsPlugin();
+      const AndroidInitializationSettings initializationSettingsAndroid =
+          AndroidInitializationSettings('@mipmap/ic_launcher');
+      const InitializationSettings initializationSettings =
+          InitializationSettings(android: initializationSettingsAndroid);
       await localNotifications.initialize(initializationSettings);
 
       String title = message.data['title']?.toString() ?? 'إشعار جديد 🔔';
-      String body = message.data['body']?.toString() ?? message.data['message']?.toString() ?? 'لديك بيانات جديدة في الخلفية';
+      String body =
+          message.data['body']?.toString() ??
+          message.data['message']?.toString() ??
+          'لديك بيانات جديدة في الخلفية';
 
       await localNotifications.show(
         message.hashCode,
@@ -48,20 +56,22 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 }
 
-
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
   NotificationService._internal();
 
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
-  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _localNotifications =
+      FlutterLocalNotificationsPlugin();
   NotificationRepository? _repository;
   int _retryCount = 0; // عداد لمنع التكرار اللانهائي
-  
+
   // تيار (Stream) للتحكم في التنقل عند الضغط على الإشعار
-  final StreamController<Map<String, dynamic>> _notificationStreamController = StreamController<Map<String, dynamic>>.broadcast();
-  Stream<Map<String, dynamic>> get notificationStream => _notificationStreamController.stream;
+  final StreamController<Map<String, dynamic>> _notificationStreamController =
+      StreamController<Map<String, dynamic>>.broadcast();
+  Stream<Map<String, dynamic>> get notificationStream =>
+      _notificationStreamController.stream;
 
   Future<void> initialize(NotificationRepository repository) async {
     _repository = repository;
@@ -69,7 +79,9 @@ class NotificationService {
     // 1. طلب الصلاحيات
     if (Platform.isAndroid) {
       await _localNotifications
-          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.requestNotificationsPermission();
     }
 
@@ -97,7 +109,8 @@ class NotificationService {
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'high_importance_channel_v2', // id
       'High Importance Notifications', // title
-      description: 'This channel is used for important notifications.', // description
+      description:
+          'This channel is used for important notifications.', // description
       importance: Importance.max,
       playSound: true,
       enableVibration: true,
@@ -105,16 +118,21 @@ class NotificationService {
     );
 
     await _localNotifications
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.createNotificationChannel(channel);
 
     // 3. إعداد الإشعارات المحلية
-    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const DarwinInitializationSettings initializationSettingsIOS = DarwinInitializationSettings();
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    const DarwinInitializationSettings initializationSettingsIOS =
+        DarwinInitializationSettings();
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsIOS,
+        );
 
     await _localNotifications.initialize(
       initializationSettings,
@@ -131,7 +149,9 @@ class NotificationService {
 
     // 4. الاستماع للإشعارات والتطبيق مفتوح (Foreground)
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      developer.log('📩 NotificationService: Message received in foreground: ${message.notification?.title}');
+      developer.log(
+        '📩 NotificationService: Message received in foreground: ${message.notification?.title}',
+      );
       _showLocalNotification(message);
     });
 
@@ -159,7 +179,7 @@ class NotificationService {
   /// 🔑 جلب التوكن الحالي وإرساله للسيرفر (يُستدعى عند الدخول)
   Future<void> updateTokenToServer() async {
     print('🧐 [NOTIFICATION SERVICE]: Starting updateTokenToServer...');
-    
+
     // تشخيص: التأكد من أن Firebase يقرأ الإعدادات الصحيحة
     try {
       final options = Firebase.app().options;
@@ -171,24 +191,32 @@ class NotificationService {
     }
 
     if (_repository == null) {
-      print('⚠️ [NOTIFICATION SERVICE]: Repository is NULL! Waiting 2 seconds...');
+      print(
+        '⚠️ [NOTIFICATION SERVICE]: Repository is NULL! Waiting 2 seconds...',
+      );
       await Future.delayed(const Duration(seconds: 2));
       if (_repository == null) {
-        print('❌ [NOTIFICATION SERVICE]: Repository still NULL. Cannot send token.');
+        print(
+          '❌ [NOTIFICATION SERVICE]: Repository still NULL. Cannot send token.',
+        );
         return;
       }
     }
 
     try {
       // ⏳ انتظار أطول قليلاً لضمان استقرار خدمات فيربييس على الجهاز
-      print('⏳ [NOTIFICATION SERVICE]: Waiting for Firebase to stabilize (5s)...');
+      print(
+        '⏳ [NOTIFICATION SERVICE]: Waiting for Firebase to stabilize (5s)...',
+      );
       await Future.delayed(const Duration(seconds: 5));
 
       // محاولة الحصول على التوكن
       String? token = await _fcm.getToken();
-      
+
       if (token != null) {
-        print('✅ [NOTIFICATION SERVICE]: FCM Token Found: ${token.substring(0, 10)}...');
+        print(
+          '✅ [NOTIFICATION SERVICE]: FCM Token Found: ${token.substring(0, 10)}...',
+        );
         _retryCount = 0; // نجاح! تصفير العداد
         await _repository?.storeToken(token);
       } else {
@@ -196,17 +224,23 @@ class NotificationService {
       }
     } catch (e) {
       print('❌ [NOTIFICATION SERVICE]: Exception during token fetch: $e');
-      
+
       if (e.toString().contains('FIS_AUTH_ERROR')) {
         _retryCount++;
         if (_retryCount > 3) {
-          print('🚫 [NOTIFICATION SERVICE]: Max retries reached (3). Stopping fix attempts.');
-          print('💡 [ACTION REQUIRED]: Please check Google Cloud Console -> API Restrictions.');
-          _retryCount = 0; 
+          print(
+            '🚫 [NOTIFICATION SERVICE]: Max retries reached (3). Stopping fix attempts.',
+          );
+          print(
+            '💡 [ACTION REQUIRED]: Please check Google Cloud Console -> API Restrictions.',
+          );
+          _retryCount = 0;
           return;
         }
 
-        print('🔧 [FIX ATTEMPT #$_retryCount]: FIS_AUTH_ERROR detected. Trying a deep reset...');
+        print(
+          '🔧 [FIX ATTEMPT #$_retryCount]: FIS_AUTH_ERROR detected. Trying a deep reset...',
+        );
         try {
           await FirebaseInstallations.instance.delete();
           print('✅ [FIX]: Firebase Installation deleted. Retrying in 5s...');
@@ -236,16 +270,19 @@ class NotificationService {
   Future<void> _showLocalNotification(RemoteMessage message) async {
     RemoteNotification? notification = message.notification;
     AndroidNotification? android = message.notification?.android;
-    
+
     // التحقق مما إذا كان هناك عنوان أو نص في الإشعار أو في البيانات (Data Payload)
     String? title = notification?.title ?? message.data['title'];
-    String? body = notification?.body ?? message.data['body'] ?? message.data['message'];
+    String? body =
+        notification?.body ?? message.data['body'] ?? message.data['message'];
 
     // إذا كان كلاهما null، ربما نستخدم بيانات احتياطية لضمان ظهور الإشعار للتجربة
     if (title == null && body == null) {
-      developer.log('⚠️ [NOTIFICATION SERVICE]: No title or body found in payload!');
+      developer.log(
+        '⚠️ [NOTIFICATION SERVICE]: No title or body found in payload!',
+      );
       // يمكنك إزالة هذا السطر إذا كنت لا تريد ظهور إشعارات فارغة
-      // title = 'إشعار جديد'; 
+      // title = 'إشعار جديد';
       // body = 'تم استلام بيانات جديدة';
     }
 
@@ -261,7 +298,8 @@ class NotificationService {
               'High Importance Notifications',
               importance: Importance.max,
               priority: Priority.high,
-              icon: '@mipmap/ic_launcher', // الاعتماد على الأيقونة الافتراضية دائماً لتجنب مشاكل الأيقونات المفقودة
+              icon:
+                  '@mipmap/ic_launcher', // الاعتماد على الأيقونة الافتراضية دائماً لتجنب مشاكل الأيقونات المفقودة
               channelShowBadge: true,
             ),
             iOS: DarwinNotificationDetails(
@@ -273,7 +311,9 @@ class NotificationService {
           payload: jsonEncode(message.data),
         );
       } catch (e) {
-        developer.log('❌ [NOTIFICATION SERVICE]: Error showing local notification: $e');
+        developer.log(
+          '❌ [NOTIFICATION SERVICE]: Error showing local notification: $e',
+        );
       }
     }
   }

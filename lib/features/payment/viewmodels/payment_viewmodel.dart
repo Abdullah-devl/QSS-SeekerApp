@@ -21,6 +21,9 @@ class PaymentViewModel extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  String? _successMessage;
+  String? get successMessage => _successMessage;
+
   PointsBalanceModel _balance = PointsBalanceModel.empty();
   PointsBalanceModel get balance => _balance;
 
@@ -62,10 +65,14 @@ class PaymentViewModel extends ChangeNotifier {
   Future<bool> payByPoints(String requestId, double points) async {
     _isLoading = true;
     _errorMessage = null;
+    _successMessage = null;
     notifyListeners();
 
     try {
-      await _repository.payByPoints(requestId: requestId, transferredPoints: points);
+      _successMessage = await _repository.payByPoints(
+        requestId: requestId,
+        transferredPoints: points,
+      );
       _isLoading = false;
       notifyListeners();
       return true;
@@ -78,7 +85,11 @@ class PaymentViewModel extends ChangeNotifier {
   }
 
   /// 📄 السداد بالسند
-  Future<bool> payByBond(String requestId, double amount, String bondNumber) async {
+  Future<bool> payByBond(
+    String requestId,
+    double amount,
+    String bondNumber,
+  ) async {
     if (bondNumber.trim().isEmpty) {
       _errorMessage = "enterBondNumberError";
       notifyListeners();
@@ -92,10 +103,11 @@ class PaymentViewModel extends ChangeNotifier {
 
     _isLoading = true;
     _errorMessage = null;
+    _successMessage = null;
     notifyListeners();
 
     try {
-      await _repository.submitBond(
+      _successMessage = await _repository.submitBond(
         requestId: requestId,
         amount: amount,
         image: _selectedImage!,

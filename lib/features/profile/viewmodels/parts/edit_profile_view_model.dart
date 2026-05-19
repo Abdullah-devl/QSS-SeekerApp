@@ -33,18 +33,22 @@ class EditProfileViewModel extends ChangeNotifier {
   EditProfileViewModel(this._repository, this.profile) {
     nameController.text = profile.name;
     bioController.text = profile.bio;
-    
+
     // تهيئة هواتف المستخدم مع حفظ الـ IDs
     for (var phone in profile.phones) {
-      _phoneEntries.add(PhoneEntry(
-        id: phone.id,
-        controller: TextEditingController(text: phone.phone),
-        countryCodeController: TextEditingController(text: phone.countryCode ?? '+967'),
-        originalValue: phone.phone,
-        originalCountryCode: phone.countryCode ?? '+967',
-      ));
+      _phoneEntries.add(
+        PhoneEntry(
+          id: phone.id,
+          controller: TextEditingController(text: phone.phone),
+          countryCodeController: TextEditingController(
+            text: phone.countryCode ?? '+967',
+          ),
+          originalValue: phone.phone,
+          originalCountryCode: phone.countryCode ?? '+967',
+        ),
+      );
     }
-    
+
     if (_phoneEntries.isEmpty) {
       addPhoneField();
     }
@@ -57,10 +61,10 @@ class EditProfileViewModel extends ChangeNotifier {
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController bioController = TextEditingController();
-  
+
   final List<PhoneEntry> _phoneEntries = [];
   List<PhoneEntry> get phoneEntries => _phoneEntries;
-  
+
   final List<int> _deletedPhoneIds = [];
 
   File? _selectedImage;
@@ -80,6 +84,9 @@ class EditProfileViewModel extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  String? _successMessage;
+  String? get successMessage => _successMessage;
+
   Future<void> pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -90,10 +97,12 @@ class EditProfileViewModel extends ChangeNotifier {
   }
 
   void addPhoneField() {
-    _phoneEntries.add(PhoneEntry(
-      controller: TextEditingController(),
-      countryCodeController: TextEditingController(text: '+967'),
-    ));
+    _phoneEntries.add(
+      PhoneEntry(
+        controller: TextEditingController(),
+        countryCodeController: TextEditingController(text: '+967'),
+      ),
+    );
     notifyListeners();
   }
 
@@ -122,11 +131,13 @@ class EditProfileViewModel extends ChangeNotifier {
       Position position = await Geolocator.getCurrentPosition();
       _latitude = position.latitude;
       _longitude = position.longitude;
-      
+
       // جلب العنوان النصي
       await _getAddressFromCoords(_latitude!, _longitude!);
-      
-      developer.log('📍 New Location & Address: $_latitude, $_longitude, $_address');
+
+      developer.log(
+        '📍 New Location & Address: $_latitude, $_longitude, $_address',
+      );
     } catch (e) {
       _errorMessage = ApiErrorHandler.handle(e).message;
     } finally {
@@ -140,7 +151,8 @@ class EditProfileViewModel extends ChangeNotifier {
       List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks[0];
-        _address = "${place.street != null && place.street!.isNotEmpty ? place.street : ''} ${place.locality}, ${place.country}";
+        _address =
+            "${place.street != null && place.street!.isNotEmpty ? place.street : ''} ${place.locality}, ${place.country}";
         _address = _address!.trim();
       }
     } catch (e) {
@@ -156,7 +168,7 @@ class EditProfileViewModel extends ChangeNotifier {
 
     try {
       // 1. تحديث الملف الشخصي الأساسي
-      await _repository.updateProfile(
+      _successMessage = await _repository.updateProfile(
         profileId: profile.id,
         name: profile.role == 'provider' ? null : nameController.text.trim(),
         bio: bioController.text.trim(),
@@ -166,7 +178,7 @@ class EditProfileViewModel extends ChangeNotifier {
       );
 
       // 2. معالجة هواتف الجوال (إضافة، تحديث، حذف)
-      
+
       // أ) حذف الأرقام المحذوفة
       for (var id in _deletedPhoneIds) {
         await _repository.deletePhone(id);
@@ -185,7 +197,8 @@ class EditProfileViewModel extends ChangeNotifier {
             countryCode: countryCode,
             type: 'mobile', // نستخدم mobile بدل phone لتفادي رفض السيرفر
           );
-        } else if (phoneText != entry.originalValue || countryCode != entry.originalCountryCode) {
+        } else if (phoneText != entry.originalValue ||
+            countryCode != entry.originalCountryCode) {
           // رقم تم تعديله
           await _repository.updatePhone(
             phoneId: entry.id!,

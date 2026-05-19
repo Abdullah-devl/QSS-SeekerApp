@@ -17,10 +17,15 @@ import '../../../core/errors/api_error_handler.dart';
 
 class HomeViewModel extends ChangeNotifier {
   final HomeRepository _homeRepository;
-  final AdvertisementRepository _advertisementRepository; // المستودع الخاص بالإعلانات
+  final AdvertisementRepository
+  _advertisementRepository; // المستودع الخاص بالإعلانات
   final TokenStorage _tokenStorage; // للوصول لبيانات المستخدم المخزنة محلياً
 
-  HomeViewModel(this._homeRepository, this._advertisementRepository, this._tokenStorage);
+  HomeViewModel(
+    this._homeRepository,
+    this._advertisementRepository,
+    this._tokenStorage,
+  );
 
   // ---------------------------------------------------------------------------
   // 📊 المتغيرات (State)
@@ -92,8 +97,10 @@ class HomeViewModel extends ChangeNotifier {
       }
 
       // 2. جلب التصنيفات والخدمات والإعلانات من السيرفر بالتوازي
-      String userType = _role == 'guest' ? 'all' : (_role == 'provider' ? 'provider' : 'client');
-      
+      String userType = _role == 'guest'
+          ? 'all'
+          : (_role == 'provider' ? 'provider' : 'client');
+
       final results = await Future.wait([
         _homeRepository.fetchCategories(),
         _homeRepository.fetchRecommendedServices(),
@@ -103,9 +110,11 @@ class HomeViewModel extends ChangeNotifier {
       // 3. تحديث القوائم بالبيانات القادمة وتصنيف الإعلانات
       _categories = results[0] as List<CategoryModel>;
       _recommendedServices = results[1] as List<ServiceModel>;
-      
+
       final allAds = results[2] as List<AdvertisementModel>;
-      _carouselAds = allAds.where((ad) => ad.type == 'carousel' || ad.type == 'banner').toList();
+      _carouselAds = allAds
+          .where((ad) => ad.type == 'carousel' || ad.type == 'banner')
+          .toList();
       _popupAds = allAds.where((ad) => ad.type == 'popup').toList();
 
       // 🔔 إرسال توكن الإشعارات للسيرفر لضمان المزامنة

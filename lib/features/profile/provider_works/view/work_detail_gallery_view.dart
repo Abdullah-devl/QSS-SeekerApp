@@ -41,7 +41,8 @@ class _WorkDetailGalleryViewState extends State<WorkDetailGalleryView> {
     final colors = context.qsColors;
 
     return Scaffold(
-      backgroundColor: Colors.black, // خلفية سوداء للمعرض لتركيز الانتباه على الصور
+      backgroundColor:
+          Colors.black, // خلفية سوداء للمعرض لتركيز الانتباه على الصور
       appBar: AppBar(
         backgroundColor: Colors.black.withOpacity(0.5),
         elevation: 0,
@@ -97,7 +98,8 @@ class _WorkDetailGalleryViewState extends State<WorkDetailGalleryView> {
                     return Center(
                       child: CircularProgressIndicator(
                         value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
                             : null,
                         color: Colors.white24,
                       ),
@@ -107,7 +109,7 @@ class _WorkDetailGalleryViewState extends State<WorkDetailGalleryView> {
               ),
             ),
           ),
-          
+
           // 📝 تفاصيل العمل (العنوان والوصف)
           Container(
             width: double.infinity,

@@ -974,6 +974,18 @@ abstract class AppLocalizations {
   /// **'Accepted (Initial)'**
   String get accepted_initial;
 
+  /// No description provided for @accepted_full_paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted (Fully Paid)'**
+  String get accepted_full_paid;
+
+  /// No description provided for @accepted_partial_paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted (Partially Paid)'**
+  String get accepted_partial_paid;
+
   /// No description provided for @status_pending.
   ///
   /// In en, this message translates to:
@@ -3199,6 +3211,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Show services of providers with active verification'**
   String get verifiedOnlyDesc;
+
+  /// No description provided for @confirm_booking_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Booking'**
+  String get confirm_booking_title;
+
+  /// No description provided for @confirm_booking_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to confirm and book this service?'**
+  String get confirm_booking_message;
+
+  /// No description provided for @bond_number_digits_only_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Bond number must contain only digits'**
+  String get bond_number_digits_only_error;
+
+  /// No description provided for @nameMatchIdHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The name must match the one written on your national ID / passport'**
+  String get nameMatchIdHint;
+
+  /// No description provided for @points.
+  ///
+  /// In en, this message translates to:
+  /// **'Points'**
+  String get points;
+
+  /// No description provided for @points_to_pay.
+  ///
+  /// In en, this message translates to:
+  /// **'Points to Pay'**
+  String get points_to_pay;
+
+  /// No description provided for @max_limit.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Limit'**
+  String get max_limit;
+
+  /// No description provided for @min_points_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid points cannot be less than 1'**
+  String get min_points_error;
+
+  /// No description provided for @exceed_order_amount_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid points value exceeds the remaining order amount'**
+  String get exceed_order_amount_error;
 }
 
 class _AppLocalizationsDelegate

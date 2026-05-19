@@ -9,11 +9,7 @@ class ProfileServiceCard extends StatelessWidget {
   final ServiceModel service;
   final VoidCallback? onTap;
 
-  const ProfileServiceCard({
-    super.key,
-    required this.service,
-    this.onTap,
-  });
+  const ProfileServiceCard({super.key, required this.service, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +58,11 @@ class ProfileServiceCard extends StatelessWidget {
                     width: 100,
                     height: 100,
                     color: colors.primary.withValues(alpha: 0.05),
-                    child: Icon(Icons.broken_image_outlined, color: colors.textSub.withValues(alpha: 0.5), size: 30),
+                    child: Icon(
+                      Icons.broken_image_outlined,
+                      color: colors.textSub.withValues(alpha: 0.5),
+                      size: 30,
+                    ),
                   ),
                 ),
               ),
@@ -97,18 +97,25 @@ class ProfileServiceCard extends StatelessWidget {
                           const SizedBox(width: 4),
                           Text(
                             service.rating.toString(),
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ],
                       ),
                     ],
                   ),
                   const SizedBox(height: 4),
-                  
+
                   // اسم المزود
                   Row(
                     children: [
-                      Icon(Icons.person_outline, size: 12, color: colors.textSub),
+                      Icon(
+                        Icons.person_outline,
+                        size: 12,
+                        color: colors.textSub,
+                      ),
                       const SizedBox(width: 4),
                       Flexible(
                         child: Text(
@@ -120,11 +127,7 @@ class ProfileServiceCard extends StatelessWidget {
                       ),
                       if (service.isProviderVerified) ...[
                         const SizedBox(width: 4),
-                        Icon(
-                          Icons.verified,
-                          size: 14,
-                          color: colors.primary,
-                        ),
+                        const Icon(Icons.verified, size: 14, color: Colors.blue),
                       ],
                     ],
                   ),
@@ -133,11 +136,17 @@ class ProfileServiceCard extends StatelessWidget {
                   // السعر
                   RichText(
                     text: TextSpan(
-                      style: TextStyle(color: colors.primary, fontFamily: 'Cairo'),
+                      style: TextStyle(
+                        color: colors.primary,
+                        fontFamily: 'Cairo',
+                      ),
                       children: [
                         TextSpan(
                           text: '${service.price.toInt()} ',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
                         ),
                         TextSpan(
                           text: AppLocalizations.of(context)!.sar,

@@ -49,14 +49,14 @@ class MeetingRequestViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final success = await _repository.sendMeetingRequest(
+      final successMsg = await _repository.sendMeetingRequest(
         providerId: providerId,
         latitude: lat,
         longitude: long,
       );
 
-      if (success) {
-        _successMessage = 'تم إرسال طلب الحضور بنجاح!';
+      if (successMsg != null) {
+        _successMessage = successMsg;
         latController.clear();
         longController.clear();
       } else {

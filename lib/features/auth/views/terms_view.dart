@@ -102,7 +102,7 @@ class _TermsViewState extends State<TermsView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // نصوص الشروط والأحكام
-                       _buildSectionTitle(context.tr('terms_intro_title')),
+                      _buildSectionTitle(context.tr('terms_intro_title')),
                       _buildSectionText(
                         context.tr('terms_intro_text'),
                         colors.textSub,
@@ -120,7 +120,9 @@ class _TermsViewState extends State<TermsView> {
                         colors.textSub,
                       ),
                       const SizedBox(height: 16),
-                      _buildSectionTitle(context.tr('terms_cancellation_title')),
+                      _buildSectionTitle(
+                        context.tr('terms_cancellation_title'),
+                      ),
                       _buildSectionText(
                         context.tr('terms_cancellation_text'),
                         colors.textSub,
@@ -143,43 +145,45 @@ class _TermsViewState extends State<TermsView> {
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: isDark ? colors.card : colors.primary.withValues(alpha: 0.05),
+                  color: isDark
+                      ? colors.card
+                      : colors.primary.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: RichText(
-                          textAlign: TextAlign.start,
-                          text: TextSpan(
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontFamily: 'Cairo', // النص العربي
-                              color: colors.text,
-                            ),
-                            children: [
-                              TextSpan(text: context.tr('agree_to_terms_prefix')),
-                              TextSpan(
-                                text: context.tr('terms_of_service'),
-                                style: TextStyle(
-                                  color: colors.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              TextSpan(text: context.tr('and_label')),
-                              TextSpan(
-                                text: context.tr('privacy_policy'),
-                                style: TextStyle(
-                                  color: colors.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const TextSpan(text: '.'),
-                            ],
+                  children: [
+                    Expanded(
+                      child: RichText(
+                        textAlign: TextAlign.start,
+                        text: TextSpan(
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: 'Cairo', // النص العربي
+                            color: colors.text,
                           ),
+                          children: [
+                            TextSpan(text: context.tr('agree_to_terms_prefix')),
+                            TextSpan(
+                              text: context.tr('terms_of_service'),
+                              style: TextStyle(
+                                color: colors.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(text: context.tr('and_label')),
+                            TextSpan(
+                              text: context.tr('privacy_policy'),
+                              style: TextStyle(
+                                color: colors.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const TextSpan(text: '.'),
+                          ],
                         ),
                       ),
+                    ),
                     const SizedBox(width: 10),
                     // Checkbox دائري مخصص
                     Transform.scale(
@@ -226,7 +230,9 @@ class _TermsViewState extends State<TermsView> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
-                      disabledBackgroundColor: colors.primary.withValues(alpha: 0.5),
+                      disabledBackgroundColor: colors.primary.withValues(
+                        alpha: 0.5,
+                      ),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -287,7 +293,11 @@ class _TermsViewState extends State<TermsView> {
     return Text(
       title,
       textAlign: TextAlign.start,
-      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: context.qsColors.text),
+      style: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: context.qsColors.text,
+      ),
     );
   }
 

@@ -10,7 +10,7 @@ class QsImageViewer extends StatelessWidget {
   /// 🚀 فتح عارض الصور بلمسة واحدة
   static void show(BuildContext context, String imageUrl) {
     if (imageUrl.isEmpty) return;
-    
+
     showDialog(
       context: context,
       barrierColor: Colors.black.withOpacity(0.9),
@@ -35,7 +35,7 @@ class QsImageViewer extends StatelessWidget {
               height: double.infinity,
             ),
           ),
-          
+
           // 🔍 الصورة التفاعلية القابلة للتكبير والتحريك (Pinch & Pan)
           Center(
             child: InteractiveViewer(
@@ -59,7 +59,7 @@ class QsImageViewer extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // ❌ زر الإغلاق الأنيق في الأعلى
           Positioned(
             top: MediaQuery.of(context).padding.top + 16,
@@ -72,7 +72,11 @@ class QsImageViewer extends StatelessWidget {
                     color: Colors.black.withOpacity(0.4),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.close_rounded, color: Colors.white, size: 24),
+                  child: const Icon(
+                    Icons.close_rounded,
+                    color: Colors.white,
+                    size: 24,
+                  ),
                 ),
                 onPressed: () => Navigator.pop(context),
               ),

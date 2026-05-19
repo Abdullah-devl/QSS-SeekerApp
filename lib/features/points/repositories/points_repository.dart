@@ -15,19 +15,32 @@ class PointsRepository {
   // 📥 جلب باقات النقاط المتاحة
   Future<List<PointsPackageModel>> getAvailablePackages() async {
     try {
-      final response = await _apiService.get(ApiEndpoints.availablePointsPackages);
-      developer.log('📡 [PointsRepo] getAvailablePackages Response: ${response.data}');
-      
+      final response = await _apiService.get(
+        ApiEndpoints.availablePointsPackages,
+      );
+      developer.log(
+        '📡 [PointsRepo] getAvailablePackages Response: ${response.data}',
+      );
+
       final rawData = response.data;
       List data = [];
-      
+
       if (rawData is List) {
         data = rawData;
       } else if (rawData is Map) {
-        data = rawData['packages'] ?? rawData['data'] ?? rawData['available_packages'] ?? [];
+        data =
+            rawData['packages'] ??
+            rawData['data'] ??
+            rawData['available_packages'] ??
+            [];
       }
-      
-      return data.map((json) => PointsPackageModel.fromJson(Map<String, dynamic>.from(json))).toList();
+
+      return data
+          .map(
+            (json) =>
+                PointsPackageModel.fromJson(Map<String, dynamic>.from(json)),
+          )
+          .toList();
     } catch (e) {
       developer.log('❌ [PointsRepo] getAvailablePackages Error: $e');
       rethrow;
@@ -38,17 +51,23 @@ class PointsRepository {
   Future<List<Map<String, dynamic>>> getMyPointsPackages() async {
     try {
       final response = await _apiService.get(ApiEndpoints.myPointsPackages);
-      developer.log('📡 [PointsRepo] getMyPointsPackages Response: ${response.data}');
+      developer.log(
+        '📡 [PointsRepo] getMyPointsPackages Response: ${response.data}',
+      );
 
       final rawData = response.data;
       List data = [];
-      
+
       if (rawData is List) {
         data = rawData;
       } else if (rawData is Map) {
-        data = rawData['packages'] ?? rawData['data'] ?? rawData['my_packages'] ?? [];
+        data =
+            rawData['packages'] ??
+            rawData['data'] ??
+            rawData['my_packages'] ??
+            [];
       }
-      
+
       return data.map((json) => Map<String, dynamic>.from(json)).toList();
     } catch (e) {
       developer.log('❌ [PointsRepo] getMyPointsPackages Error: $e');
@@ -57,7 +76,7 @@ class PointsRepository {
   }
 
   // 📦 إرسال طلب اشتراك في باقة (شحن نقاط)
-  Future<void> subscribeToPackage({
+  Future<String> subscribeToPackage({
     required int packageId,
     required String bondNumber,
     required String bankName,
@@ -78,7 +97,10 @@ class PointsRepository {
         ApiEndpoints.subscribePointsPackage,
         data: formData,
       );
-      developer.log('📡 [PointsRepo] subscribeToPackage Response: ${response.data}');
+      developer.log(
+        '📡 [PointsRepo] subscribeToPackage Response: ${response.data}',
+      );
+      return response.data['message'] ?? 'تم إرسال طلب الشحن بنجاح';
     } catch (e) {
       developer.log('❌ [PointsRepo] subscribeToPackage Error: $e');
       rethrow;
@@ -89,7 +111,9 @@ class PointsRepository {
   Future<PointsBalanceModel> getPointsBalance() async {
     try {
       final response = await _apiService.get(ApiEndpoints.pointsBalance);
-      developer.log('📡 [PointsRepo] getPointsBalance Response: ${response.data}');
+      developer.log(
+        '📡 [PointsRepo] getPointsBalance Response: ${response.data}',
+      );
 
       final data = response.data['data'] ?? response.data;
       return PointsBalanceModel.fromJson(data);

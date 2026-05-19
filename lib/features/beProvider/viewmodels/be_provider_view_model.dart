@@ -92,7 +92,6 @@
 //   }
 // }
 
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -113,9 +112,10 @@ class BeProviderViewModel extends ChangeNotifier {
   // ---------------------------------------------------------------------------
   bool _isLoading = false;
   String? _errorMessage;
+  String? _successMessage;
   File? _selectedImage;
   String _location = '';
-  
+
   // 🚀 أضفنا متغيرات الإحداثيات الحقيقية
   double _latitude = 0.0;
   double _longitude = 0.0;
@@ -127,9 +127,10 @@ class BeProviderViewModel extends ChangeNotifier {
   // Getters
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+  String? get successMessage => _successMessage;
   File? get selectedImage => _selectedImage;
   String get location => _location;
-  
+
   // 🚀 إرجاع القيم الحقيقية بدلاً من null
   double get latitude => _latitude;
   double get longitude => _longitude;
@@ -152,8 +153,8 @@ class BeProviderViewModel extends ChangeNotifier {
   /// 📍 تعيين الموقع المختار والإحداثيات
   void setLocation(double lat, double lng, String address) {
     _location = address;
-    _latitude = lat;     // ✅ تفعيل حفظ خط العرض
-    _longitude = lng;    // ✅ تفعيل حفظ خط الطول
+    _latitude = lat; // ✅ تفعيل حفظ خط العرض
+    _longitude = lng; // ✅ تفعيل حفظ خط الطول
     notifyListeners();
   }
 
@@ -178,12 +179,12 @@ class BeProviderViewModel extends ChangeNotifier {
         name: nameController.text,
         requestContent: descController.text,
         location: _location,
-        latitude: _latitude,   // 🚀 إرسال خط العرض
+        latitude: _latitude, // 🚀 إرسال خط العرض
         longitude: _longitude, // 🚀 إرسال خط الطول
         idCardImage: _selectedImage!,
       );
 
-      await _repository.submitRequest(request);
+      _successMessage = await _repository.submitRequest(request);
       return true; // نجاح
     } catch (e) {
       _errorMessage = ApiErrorHandler.handle(e).message;

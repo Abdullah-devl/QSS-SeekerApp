@@ -31,13 +31,49 @@ class ServiceScheduleModel {
 
   static List<ServiceScheduleModel> getMockSchedules() {
     return [
-      ServiceScheduleModel(id: 1, day: 'الأحد', fromTime: '08:00 ص', toTime: '10:00 م'),
-      ServiceScheduleModel(id: 2, day: 'الإثنين', fromTime: '08:00 ص', toTime: '10:00 م'),
-      ServiceScheduleModel(id: 3, day: 'الثلاثاء', fromTime: '08:00 ص', toTime: '10:00 م'),
-      ServiceScheduleModel(id: 4, day: 'الأربعاء', fromTime: '08:00 ص', toTime: '10:00 م'),
-      ServiceScheduleModel(id: 5, day: 'الخميس', fromTime: '08:00 ص', toTime: '10:00 م'),
-      ServiceScheduleModel(id: 6, day: 'الجمعة', fromTime: '02:00 م', toTime: '11:00 م', isActive: false),
-      ServiceScheduleModel(id: 7, day: 'السبت', fromTime: '02:00 م', toTime: '11:00 م'),
+      ServiceScheduleModel(
+        id: 1,
+        day: 'الأحد',
+        fromTime: '08:00 ص',
+        toTime: '10:00 م',
+      ),
+      ServiceScheduleModel(
+        id: 2,
+        day: 'الإثنين',
+        fromTime: '08:00 ص',
+        toTime: '10:00 م',
+      ),
+      ServiceScheduleModel(
+        id: 3,
+        day: 'الثلاثاء',
+        fromTime: '08:00 ص',
+        toTime: '10:00 م',
+      ),
+      ServiceScheduleModel(
+        id: 4,
+        day: 'الأربعاء',
+        fromTime: '08:00 ص',
+        toTime: '10:00 م',
+      ),
+      ServiceScheduleModel(
+        id: 5,
+        day: 'الخميس',
+        fromTime: '08:00 ص',
+        toTime: '10:00 م',
+      ),
+      ServiceScheduleModel(
+        id: 6,
+        day: 'الجمعة',
+        fromTime: '02:00 م',
+        toTime: '11:00 م',
+        isActive: false,
+      ),
+      ServiceScheduleModel(
+        id: 7,
+        day: 'السبت',
+        fromTime: '02:00 م',
+        toTime: '11:00 م',
+      ),
     ];
   }
 }

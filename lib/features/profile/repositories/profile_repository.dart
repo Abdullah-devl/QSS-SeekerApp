@@ -17,8 +17,12 @@ class ProfileRepository {
   /// 👤 جلب بيانات الملف الشخصي (النبذة، معرض الأعمال) لمستخدم معين.
   Future<ProfileModel> fetchUserProfile(int userId) async {
     try {
-      final Response response = await _apiService.get(ApiEndpoints.userProfile(userId));
-      developer.log('📡 [ProfileRepo] fetchUserProfile Response: ${response.data}');
+      final Response response = await _apiService.get(
+        ApiEndpoints.userProfile(userId),
+      );
+      developer.log(
+        '📡 [ProfileRepo] fetchUserProfile Response: ${response.data}',
+      );
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -42,7 +46,9 @@ class ProfileRepository {
   Future<ProfileModel> fetchMyProfile() async {
     try {
       final Response response = await _apiService.get(ApiEndpoints.myProfile);
-      developer.log('📡 [ProfileRepo] fetchMyProfile Response: ${response.data}');
+      developer.log(
+        '📡 [ProfileRepo] fetchMyProfile Response: ${response.data}',
+      );
 
       if (response.statusCode == 200) {
         final data = response.data;
@@ -65,17 +71,21 @@ class ProfileRepository {
   /// 📸 جلب معرض الأعمال السابقة لمزود معين بناءً على معرفه.
   Future<List<WorkModel>> fetchProviderWorks(int userId) async {
     try {
-      final Response response = await _apiService.get(ApiEndpoints.previousWorks(userId));
-      
+      final Response response = await _apiService.get(
+        ApiEndpoints.previousWorks(userId),
+      );
+
       // 🚀 طباعة الرد القادم من أجل التشخيص
-      developer.log('📸 [ProfileRepository] Raw Previous Works Data: ${response.data}');
+      developer.log(
+        '📸 [ProfileRepository] Raw Previous Works Data: ${response.data}',
+      );
 
       if (response.statusCode == 200) {
         final dynamic responseData = response.data;
-        
+
         // 🚀 معالجة ذكية لشكل الرد القادم من السيرفر
         List<dynamic> list = [];
-        
+
         if (responseData is List) {
           list = responseData;
         } else if (responseData is Map) {
@@ -83,19 +93,26 @@ class ProfileRepository {
           final dynamic dataField = responseData['data'];
           if (dataField is List) {
             list = dataField;
-          } else if (dataField is Map && dataField.containsKey('data') && dataField['data'] is List) {
+          } else if (dataField is Map &&
+              dataField.containsKey('data') &&
+              dataField['data'] is List) {
             // حالة الـ Pagination (بيانات داخل بيانات)
             list = dataField['data'];
-          } else if (responseData.containsKey('works') && responseData['works'] is List) {
-             list = responseData['works'];
-          } else if (responseData.containsKey('previousWorks') && responseData['previousWorks'] is List) {
-             list = responseData['previousWorks'];
-          } else if (responseData.containsKey('previous_works') && responseData['previous_works'] is List) {
-             list = responseData['previous_works'];
+          } else if (responseData.containsKey('works') &&
+              responseData['works'] is List) {
+            list = responseData['works'];
+          } else if (responseData.containsKey('previousWorks') &&
+              responseData['previousWorks'] is List) {
+            list = responseData['previousWorks'];
+          } else if (responseData.containsKey('previous_works') &&
+              responseData['previous_works'] is List) {
+            list = responseData['previous_works'];
           }
         }
 
-        return list.map((json) => WorkModel.fromJson(Map<String, dynamic>.from(json))).toList();
+        return list
+            .map((json) => WorkModel.fromJson(Map<String, dynamic>.from(json)))
+            .toList();
       } else {
         throw Exception('فشل في تحميل الأعمال السابقة لمقدم الخدمة');
       }
@@ -111,11 +128,14 @@ class ProfileRepository {
       // 💡 يتم استخدام endpoint معرض الأعمال المناسب (أو نفس الـ profile إذا كانت الأعمال داخله)
       // لكن بناءً على طلب المستخدم، سنفترض وجود نقطة نهاية خاصة للمعرض أو نأخذها من الـ Profile
       // هنا سنستخدم تجريبياً endpoint افتراضي أو نعدل حسب الحاجة
-      final Response response = await _apiService.get('${ApiEndpoints.baseUrl}/user-works');
+      final Response response = await _apiService.get(
+        '${ApiEndpoints.baseUrl}/user-works',
+      );
 
       if (response.statusCode == 200) {
-        final List data = (response.data is Map && response.data.containsKey('data')) 
-            ? response.data['data'] 
+        final List data =
+            (response.data is Map && response.data.containsKey('data'))
+            ? response.data['data']
             : response.data;
         return data.map((json) => WorkModel.fromJson(json)).toList();
       } else {
@@ -130,7 +150,9 @@ class ProfileRepository {
   /// 🗑️ حذف عمل سابق من معرض الأعمال.
   Future<void> deleteWork(int workId) async {
     try {
-      final Response response = await _apiService.delete('/user-profile/works/$workId');
+      final Response response = await _apiService.delete(
+        '/user-profile/works/$workId',
+      );
 
       if (response.statusCode != 200 && response.statusCode != 204) {
         throw Exception('فشل في حذف العمل');
@@ -142,7 +164,7 @@ class ProfileRepository {
   }
 
   /// 👤 تحديث بيانات الملف الشخصي.
-  Future<void> updateProfile({
+  Future<String> updateProfile({
     required int profileId,
     String? name,
     required String bio,
@@ -153,10 +175,7 @@ class ProfileRepository {
     try {
       // 📝 استخدام FormData لدعم رفع الصور وتمرير البيانات المعقدة
       // ملاحظة: نستخدم POST مع _method=PUT لأن PHP لا يستقبل FormData في طلب PUT الحقيقي
-      final Map<String, dynamic> data = {
-        '_method': 'PUT',
-        'bio': bio,
-      };
+      final Map<String, dynamic> data = {'_method': 'PUT', 'bio': bio};
 
       if (name != null) {
         data['name'] = name;
@@ -182,6 +201,7 @@ class ProfileRepository {
       if (response.statusCode != 200 && response.statusCode != 204) {
         throw Exception('فشل في تحديث الملف الشخصي');
       }
+      return response.data['message'] ?? 'تم تحديث الملف الشخصي بنجاح';
     } catch (e) {
       developer.log('❌ ProfileRepository: updateProfile Error: $e');
       throw e;
@@ -195,11 +215,14 @@ class ProfileRepository {
     String countryCode = '',
   }) async {
     try {
-      final response = await _apiService.post(ApiEndpoints.profilePhones, data: {
-        'phone': phone,
-        'country_code': countryCode,
-        'type': type ?? 'mobile', // تم التعديل من phone إلى mobile
-      });
+      final response = await _apiService.post(
+        ApiEndpoints.profilePhones,
+        data: {
+          'phone': phone,
+          'country_code': countryCode,
+          'type': type ?? 'mobile', // تم التعديل من phone إلى mobile
+        },
+      );
 
       if (response.statusCode != 200 && response.statusCode != 201) {
         throw Exception('فشل في إضافة الرقم');
@@ -218,11 +241,14 @@ class ProfileRepository {
     String countryCode = '',
   }) async {
     try {
-      final response = await _apiService.put(ApiEndpoints.profilePhone(phoneId), data: {
-        'phone': phone,
-        'country_code': countryCode,
-        'type': type ?? 'mobile', // تم التعديل من phone إلى mobile
-      });
+      final response = await _apiService.put(
+        ApiEndpoints.profilePhone(phoneId),
+        data: {
+          'phone': phone,
+          'country_code': countryCode,
+          'type': type ?? 'mobile', // تم التعديل من phone إلى mobile
+        },
+      );
 
       if (response.statusCode != 200) {
         throw Exception('فشل في تحديث الرقم');
@@ -236,7 +262,9 @@ class ProfileRepository {
   /// 📞 حذف رقم هاتف.
   Future<void> deletePhone(int phoneId) async {
     try {
-      final response = await _apiService.delete(ApiEndpoints.profilePhone(phoneId));
+      final response = await _apiService.delete(
+        ApiEndpoints.profilePhone(phoneId),
+      );
 
       if (response.statusCode != 200 && response.statusCode != 204) {
         throw Exception('فشل في حذف الرقم');
@@ -251,7 +279,9 @@ class ProfileRepository {
   Future<List<ProfileReviewModel>> fetchMyReviews() async {
     try {
       final Response response = await _apiService.get('/reviews');
-      developer.log('📡 [ProfileRepo] fetchMyReviews Response: ${response.data}');
+      developer.log(
+        '📡 [ProfileRepo] fetchMyReviews Response: ${response.data}',
+      );
 
       if (response.statusCode == 200) {
         final dynamic responseData = response.data;
@@ -259,26 +289,41 @@ class ProfileRepository {
         if (responseData is List) {
           list = responseData;
         } else if (responseData is Map) {
-          final dataField = responseData['data'] ?? responseData['reviews'] ?? responseData['feedback'];
+          final dataField =
+              responseData['data'] ??
+              responseData['reviews'] ??
+              responseData['feedback'];
           if (dataField is List) {
             list = dataField;
           }
         }
-        return list.map((json) => ProfileReviewModel.fromJson(Map<String, dynamic>.from(json))).toList();
+        return list
+            .map(
+              (json) =>
+                  ProfileReviewModel.fromJson(Map<String, dynamic>.from(json)),
+            )
+            .toList();
       } else {
         throw Exception('فشل في تحميل التقييمات الشخصية');
       }
     } on DioException catch (e) {
       final is403 = e.response?.statusCode == 403;
       final serverMsg = e.response?.data?['message']?.toString() ?? '';
-      
+
       // 🛡️ معالجة ذاتية ذكية (Self-Healing Retry):
-      if (is403 && (serverMsg.contains('سياسة') || serverMsg.contains('policy') || serverMsg.contains('الموافقة'))) {
-        developer.log('🔄 [ProfileRepo] Auto-agreeing to provider policy on behalf of the user for reviews...');
+      if (is403 &&
+          (serverMsg.contains('سياسة') ||
+              serverMsg.contains('policy') ||
+              serverMsg.contains('الموافقة'))) {
+        developer.log(
+          '🔄 [ProfileRepo] Auto-agreeing to provider policy on behalf of the user for reviews...',
+        );
         try {
           await _apiService.patch('/policies/provider');
-          developer.log('✅ [ProfileRepo] Silent agreement successful. Retrying reviews fetch...');
-          
+          developer.log(
+            '✅ [ProfileRepo] Silent agreement successful. Retrying reviews fetch...',
+          );
+
           final Response retryResponse = await _apiService.get('/reviews');
           if (retryResponse.statusCode == 200) {
             final dynamic responseData = retryResponse.data;
@@ -286,18 +331,29 @@ class ProfileRepository {
             if (responseData is List) {
               list = responseData;
             } else if (responseData is Map) {
-              final dataField = responseData['data'] ?? responseData['reviews'] ?? responseData['feedback'];
+              final dataField =
+                  responseData['data'] ??
+                  responseData['reviews'] ??
+                  responseData['feedback'];
               if (dataField is List) {
                 list = dataField;
               }
             }
-            return list.map((json) => ProfileReviewModel.fromJson(Map<String, dynamic>.from(json))).toList();
+            return list
+                .map(
+                  (json) => ProfileReviewModel.fromJson(
+                    Map<String, dynamic>.from(json),
+                  ),
+                )
+                .toList();
           }
         } catch (retryError) {
-          developer.log('❌ [ProfileRepo] Auto-agree retry failed for reviews: $retryError');
+          developer.log(
+            '❌ [ProfileRepo] Auto-agree retry failed for reviews: $retryError',
+          );
         }
       }
-      
+
       developer.log('❌ ProfileRepository: fetchMyReviews Error: $e');
       throw Exception('خطأ في جلب تقييماتك الشخصية: $e');
     } catch (e) {
@@ -309,8 +365,12 @@ class ProfileRepository {
   /// ⭐️ مراجعات مزود الخدمة (التغذية الراجعة لمزود معين)
   Future<List<ProfileReviewModel>> fetchProviderFeedback(int providerId) async {
     try {
-      final Response response = await _apiService.get('/providers/$providerId/feedback');
-      developer.log('📡 [ProfileRepo] fetchProviderFeedback Response: ${response.data}');
+      final Response response = await _apiService.get(
+        '/providers/$providerId/feedback',
+      );
+      developer.log(
+        '📡 [ProfileRepo] fetchProviderFeedback Response: ${response.data}',
+      );
 
       if (response.statusCode == 200) {
         final dynamic responseData = response.data;
@@ -318,45 +378,71 @@ class ProfileRepository {
         if (responseData is List) {
           list = responseData;
         } else if (responseData is Map) {
-          final dataField = responseData['data'] ?? responseData['feedback'] ?? responseData['reviews'];
+          final dataField =
+              responseData['data'] ??
+              responseData['feedback'] ??
+              responseData['reviews'];
           if (dataField is List) {
             list = dataField;
           }
         }
-        return list.map((json) => ProfileReviewModel.fromJson(Map<String, dynamic>.from(json))).toList();
+        return list
+            .map(
+              (json) =>
+                  ProfileReviewModel.fromJson(Map<String, dynamic>.from(json)),
+            )
+            .toList();
       } else {
         throw Exception('فشل في تحميل تقييمات مزود الخدمة');
       }
     } on DioException catch (e) {
       final is403 = e.response?.statusCode == 403;
       final serverMsg = e.response?.data?['message']?.toString() ?? '';
-      
+
       // 🛡️ معالجة ذاتية ذكية (Self-Healing Retry):
-      if (is403 && (serverMsg.contains('سياسة') || serverMsg.contains('policy') || serverMsg.contains('الموافقة'))) {
-        developer.log('🔄 [ProfileRepo] Auto-agreeing to provider policy on behalf of the user...');
+      if (is403 &&
+          (serverMsg.contains('سياسة') ||
+              serverMsg.contains('policy') ||
+              serverMsg.contains('الموافقة'))) {
+        developer.log(
+          '🔄 [ProfileRepo] Auto-agreeing to provider policy on behalf of the user...',
+        );
         try {
           await _apiService.patch('/policies/provider');
-          developer.log('✅ [ProfileRepo] Silent agreement successful. Retrying feedback fetch...');
-          
-          final Response retryResponse = await _apiService.get('/providers/$providerId/feedback');
+          developer.log(
+            '✅ [ProfileRepo] Silent agreement successful. Retrying feedback fetch...',
+          );
+
+          final Response retryResponse = await _apiService.get(
+            '/providers/$providerId/feedback',
+          );
           if (retryResponse.statusCode == 200) {
             final dynamic responseData = retryResponse.data;
             List<dynamic> list = [];
             if (responseData is List) {
               list = responseData;
             } else if (responseData is Map) {
-              final dataField = retryResponse.data['data'] ?? retryResponse.data['feedback'] ?? retryResponse.data['reviews'];
+              final dataField =
+                  retryResponse.data['data'] ??
+                  retryResponse.data['feedback'] ??
+                  retryResponse.data['reviews'];
               if (dataField is List) {
                 list = dataField;
               }
             }
-            return list.map((json) => ProfileReviewModel.fromJson(Map<String, dynamic>.from(json))).toList();
+            return list
+                .map(
+                  (json) => ProfileReviewModel.fromJson(
+                    Map<String, dynamic>.from(json),
+                  ),
+                )
+                .toList();
           }
         } catch (retryError) {
           developer.log('❌ [ProfileRepo] Auto-agree retry failed: $retryError');
         }
       }
-      
+
       developer.log('❌ ProfileRepository: fetchProviderFeedback Error: $e');
       throw Exception('خطأ في جلب تقييمات مزود الخدمة: $e');
     } catch (e) {

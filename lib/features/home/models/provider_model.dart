@@ -37,6 +37,7 @@ class ProviderModel {
   final String imageUrl;
   final double rating;
   final String specialty;
+  final bool isVerified;
 
   ProviderModel({
     required this.id,
@@ -44,11 +45,13 @@ class ProviderModel {
     required this.imageUrl,
     required this.rating,
     required this.specialty,
+    this.isVerified = false,
   });
 
   factory ProviderModel.fromJson(Map<String, dynamic> json) {
     // 1. استخراج مسار الصورة
-    String rawImagePath = json['image_path'] ?? json['image_url'] ?? json['avatar'] ?? '';
+    String rawImagePath =
+        json['image_path'] ?? json['image_url'] ?? json['avatar'] ?? '';
     String finalImage = '';
 
     // 2. 🚀 حارس البوابة (الشرط الذكي)
@@ -60,6 +63,10 @@ class ProviderModel {
       imageUrl: finalImage, // الرابط الآمن
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       specialty: json['specialty'] ?? '',
+      isVerified: json['is_verified'] == true ||
+          json['is_verified'] == 1 ||
+          json['verification_provider'] == 1 ||
+          json['verification_provider'] == true,
     );
   }
 }

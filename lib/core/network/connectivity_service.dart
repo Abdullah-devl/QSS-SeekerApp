@@ -3,7 +3,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 /// 📂 ConnectivityService
 /// 📝 مسؤول فقط عن معرفة هل يوجد إنترنت أم لا
 
-/// 
+///
 /// فقط يرجع true أو false
 
 class ConnectivityService {

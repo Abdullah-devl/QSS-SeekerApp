@@ -12,7 +12,6 @@ import 'package:seeker/features/auth/repositories/auth_repository.dart';
 // import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:seeker/l10n/app_localizations.dart';
 
-
 /// 📂 اسم الملف: home_drawer.dart
 /// 📝 الوصف: القائمة الجانبية (Drawer).
 /// تحتوي على معلومات المستخدم، روابط التنقل السريع، وزر تسجيل الخروج.
@@ -77,7 +76,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
           final String userName = userData.name == 'Guest'
               ? AppLocalizations.of(context)!.guest
               : userData.name;
-          final String userRole = (userData.role == 'guest' || userData.role == 'زائر')
+          final String userRole =
+              (userData.role == 'guest' || userData.role == 'زائر')
               ? AppLocalizations.of(context)!.guest
               : userData.role;
 
@@ -118,7 +118,10 @@ class _HomeDrawerState extends State<HomeDrawer> {
                             decoration: BoxDecoration(
                               color: colors.success,
                               shape: BoxShape.circle,
-                              border: Border.all(color: colors.background, width: 2),
+                              border: Border.all(
+                                color: colors.background,
+                                width: 2,
+                              ),
                             ),
                           ),
                         ],
@@ -137,11 +140,16 @@ class _HomeDrawerState extends State<HomeDrawer> {
                             ),
                             const SizedBox(height: 4),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: colors.primary.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: colors.primary.withValues(alpha: 0.2)),
+                                border: Border.all(
+                                  color: colors.primary.withValues(alpha: 0.2),
+                                ),
                               ),
                               child: Text(
                                 userRole,
@@ -163,7 +171,10 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   ),
                 ),
 
-                Divider(color: colors.textSub.withValues(alpha: 0.1), thickness: 1),
+                Divider(
+                  color: colors.textSub.withValues(alpha: 0.1),
+                  thickness: 1,
+                ),
 
                 // =================================================================
                 // 2. روابط التنقل (Navigation Items)
@@ -194,7 +205,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
                             Navigator.pop(context);
                             widget.onLinkTap?.call(1);
                           },
-                          badgeCount: context.watch<OrdersViewModel>().newOrdersCount,
+                          badgeCount: context
+                              .watch<OrdersViewModel>()
+                              .newOrdersCount,
                         ),
 
                         _buildNavItem(
@@ -232,7 +245,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       // 🛡️ شرط الصلاحيات: كارد الترويج يظهر فقط للأعضاء المسجلين
                       // if (userRole == 'seeker')
                       //   _buildPromoCard(context, colors),
-                      if (userRole != 'provider' && (userRole == 'seeker' || userRole == 'client'))
+                      if (userRole != 'provider' &&
+                          (userRole == 'seeker' || userRole == 'client'))
                         _buildPromoCard(context, colors),
                     ],
                   ),
@@ -244,7 +258,10 @@ class _HomeDrawerState extends State<HomeDrawer> {
                 // 3. منطقة أزرار الدخول / الخروج
                 // =================================================================
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                    vertical: 10.0,
+                  ),
                   child: userRole == AppLocalizations.of(context)!.guest
                       ? //  إذا كان المستخدم زائراً، نعرض زر تسجيل الدخول
                         SizedBox(
@@ -252,10 +269,16 @@ class _HomeDrawerState extends State<HomeDrawer> {
                           height: 50,
                           child: ElevatedButton.icon(
                             onPressed: () {
-                              Navigator.pop(context); // إغلاق القائمة الجانبية لتسهيل الانتقال
+                              Navigator.pop(
+                                context,
+                              ); // إغلاق القائمة الجانبية لتسهيل الانتقال
                               Navigator.pushNamed(context, AppRoutes.login);
                             },
-                            icon: const Icon(Icons.login, color: Colors.white, size: 20),
+                            icon: const Icon(
+                              Icons.login,
+                              color: Colors.white,
+                              size: 20,
+                            ),
                             label: Text(
                               AppLocalizations.of(context)!.login,
                               style: const TextStyle(
@@ -279,7 +302,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
                           height: 50,
                           child: OutlinedButton.icon(
                             onPressed: _logout,
-                            icon: Icon(Icons.logout, color: colors.error, size: 20),
+                            icon: Icon(
+                              Icons.logout,
+                              color: colors.error,
+                              size: 20,
+                            ),
                             label: Text(
                               AppLocalizations.of(context)!.logout,
                               style: TextStyle(
@@ -289,8 +316,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
                               ),
                             ),
                             style: OutlinedButton.styleFrom(
-                              side: BorderSide(color: colors.error.withValues(alpha: 0.2)),
-                              backgroundColor: colors.error.withValues(alpha: 0.05),
+                              side: BorderSide(
+                                color: colors.error.withValues(alpha: 0.2),
+                              ),
+                              backgroundColor: colors.error.withValues(
+                                alpha: 0.05,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(14),
                               ),
@@ -304,7 +335,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   child: Image.asset(
                     'assets/images/logo.png',
                     height: 40,
-                    errorBuilder: (context, error, stackTrace) => const SizedBox(),
+                    errorBuilder: (context, error, stackTrace) =>
+                        const SizedBox(),
                   ),
                 ),
                 // رقم الإصدار
@@ -427,11 +459,16 @@ class _HomeDrawerState extends State<HomeDrawer> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: isSelected ? colors.primary.withValues(alpha: 0.1) : Colors.transparent,
+        color: isSelected
+            ? colors.primary.withValues(alpha: 0.1)
+            : Colors.transparent,
         borderRadius: BorderRadius.circular(10),
       ),
       child: ListTile(
-        leading: Icon(icon, color: isSelected ? colors.primary : colors.textSub),
+        leading: Icon(
+          icon,
+          color: isSelected ? colors.primary : colors.textSub,
+        ),
         title: Text(
           title,
           style: TextStyle(

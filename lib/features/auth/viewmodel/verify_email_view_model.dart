@@ -51,11 +51,11 @@ class VerifyEmailViewModel extends ChangeNotifier {
 
     try {
       // 3. استدعاء الدالة من الـ Repository
-      await authRepository.verifyEmail(email, otp);
+      final successMsg = await authRepository.verifyEmail(email, otp);
 
       // 4. في حال النجاح، التوجيه للصفحة التالية (الرئيسية أو تسجيل الدخول)
       if (context.mounted) {
-        QSAlerts.showSuccess(context, l10n.accountActivatedSuccess);
+        QSAlerts.showSuccess(context, successMsg);
         // التوجيه لصفحة تسجيل الدخول بعد التفعيل
         Navigator.pushNamedAndRemoveUntil(
           context,
@@ -66,7 +66,10 @@ class VerifyEmailViewModel extends ChangeNotifier {
     } catch (e) {
       // 5. معالجة الأخطاء
       if (context.mounted) {
-        QSAlerts.showError(context, context.tr(e.toString().replaceAll('Exception: ', '')));
+        QSAlerts.showError(
+          context,
+          context.tr(e.toString().replaceAll('Exception: ', '')),
+        );
       }
     } finally {
       _isLoading = false;
@@ -118,16 +121,19 @@ class VerifyEmailViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await authRepository.resendVerificationCode(email);
+      final successMsg = await authRepository.resendVerificationCode(email);
 
       if (context.mounted) {
-        QSAlerts.showSuccess(context, l10n.resendCodeSuccess);
+        QSAlerts.showSuccess(context, successMsg);
       }
       // بدء المؤقت عند النجاح
       startTimer();
     } catch (e) {
       if (context.mounted) {
-        QSAlerts.showError(context, context.tr(e.toString().replaceAll('Exception: ', '')));
+        QSAlerts.showError(
+          context,
+          context.tr(e.toString().replaceAll('Exception: ', '')),
+        );
       }
     } finally {
       _isLoading = false;

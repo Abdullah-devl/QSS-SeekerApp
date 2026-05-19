@@ -17,11 +17,15 @@ class OrdersViewModel extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  String? _successMessage;
+  String? get successMessage => _successMessage;
+
   List<OrderModel> _allOrders = [];
   List<OrderModel> get allOrders => _allOrders;
 
   /// 📊 عدد الطلبات الجديدة (Pending) لغرض العداد في القائمة الجانبية
-  int get newOrdersCount => _allOrders.where((o) => o.status == 'pending').length;
+  int get newOrdersCount =>
+      _allOrders.where((o) => o.status == 'pending').length;
 
   // 🚀 تعريف التبويبات (أضفنا المرفوض والملغي)
   final List<String> tabs = [
@@ -106,18 +110,18 @@ class OrdersViewModel extends ChangeNotifier {
         _allOrders[index] = updatedOrder;
         notifyListeners();
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   // 🚀 تحديث حالة الطلب
   Future<bool> updateStatus(String id, String newStatus) async {
     _isLoading = true;
     _errorMessage = null;
+    _successMessage = null;
     notifyListeners();
 
     try {
-      await _repository.updateOrderStatus(id, newStatus);
+      _successMessage = await _repository.updateOrderStatus(id, newStatus);
       await refreshOrderDetail(id); // تحديث بيانات هذا الطلب تحديداً
       return true;
     } catch (e) {
@@ -134,14 +138,14 @@ class OrdersViewModel extends ChangeNotifier {
   Future<bool> addPaidAmount(String id, double amount) async {
     _isLoading = true;
     _errorMessage = null;
+    _successMessage = null;
     notifyListeners();
 
     try {
       // 1. إضافة المبلغ المدفوع
-      await _repository.addPaidAmount(id, amount);
+      _successMessage = await _repository.addPaidAmount(id, amount);
 
       // تم إزالة الترقية التلقائية للحالة بناءً على طلب المستخدم لأن الباك إند يقوم بذلك تلقائياً
-
 
       // 3. تحديث البيانات النهائية من السيرفر
       await refreshOrderDetail(id);
@@ -164,18 +168,21 @@ class OrdersViewModel extends ChangeNotifier {
   }) async {
     _isLoading = true;
     _errorMessage = null;
+    _successMessage = null;
     notifyListeners();
 
     try {
       // 1. تحديث الحالة إلى مكتمل
-      await _repository.updateOrderStatus(id, 'completed');
+      final statusMsg = await _repository.updateOrderStatus(id, 'completed');
 
       // 2. إرسال التقييم
-      await _repository.submitReview(
+      final reviewMsg = await _repository.submitReview(
         requestId: id,
         rating: rating,
         comment: comment,
       );
+
+      _successMessage = reviewMsg; // prioritizing review success message
 
       // 3. تحديث البيانات النهائية
       await refreshOrderDetail(id);
@@ -199,10 +206,11 @@ class OrdersViewModel extends ChangeNotifier {
   }) async {
     _isLoading = true;
     _errorMessage = null;
+    _successMessage = null;
     notifyListeners();
 
     try {
-      await _repository.submitComplaint(
+      _successMessage = await _repository.submitComplaint(
         requestId: requestId,
         title: title,
         type: type,

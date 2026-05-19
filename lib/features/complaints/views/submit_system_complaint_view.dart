@@ -8,7 +8,8 @@ class SubmitSystemComplaintView extends StatefulWidget {
   const SubmitSystemComplaintView({super.key});
 
   @override
-  State<SubmitSystemComplaintView> createState() => _SubmitSystemComplaintViewState();
+  State<SubmitSystemComplaintView> createState() =>
+      _SubmitSystemComplaintViewState();
 }
 
 class _SubmitSystemComplaintViewState extends State<SubmitSystemComplaintView> {
@@ -32,15 +33,20 @@ class _SubmitSystemComplaintViewState extends State<SubmitSystemComplaintView> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel_order), // reusable cancel string
+            child: Text(l10n.cancel), // reusable cancel string
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               _submit();
             },
-            style: ElevatedButton.styleFrom(backgroundColor: context.qsColors.primary),
-            child: Text(l10n.confirmSend, style: const TextStyle(color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.qsColors.primary,
+            ),
+            child: Text(
+              l10n.confirmSend,
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -106,6 +112,7 @@ class _SubmitSystemComplaintViewState extends State<SubmitSystemComplaintView> {
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     final viewModel = context.watch<SystemComplaintsViewModel>();
@@ -224,10 +231,7 @@ class _SubmitSystemComplaintViewState extends State<SubmitSystemComplaintView> {
           items: typeLabels.entries.map((entry) {
             return DropdownMenuItem<String>(
               value: entry.key,
-              child: Text(
-                entry.value,
-                style: const TextStyle(fontSize: 14),
-              ),
+              child: Text(entry.value, style: const TextStyle(fontSize: 14)),
             );
           }).toList(),
           onChanged: (String? newValue) {
@@ -264,5 +268,3 @@ class _SubmitSystemComplaintViewState extends State<SubmitSystemComplaintView> {
     );
   }
 }
-
-

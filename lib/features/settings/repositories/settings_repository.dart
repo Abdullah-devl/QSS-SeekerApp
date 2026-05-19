@@ -35,7 +35,9 @@ class SettingsRepository {
   Future<void> agreeToPolicy(String role) async {
     try {
       final response = await _apiService.patch(ApiEndpoints.policy(role));
-      developer.log('📡 [SettingsRepo] agreeToPolicy Response: ${response.data}');
+      developer.log(
+        '📡 [SettingsRepo] agreeToPolicy Response: ${response.data}',
+      );
 
       if (response.statusCode != 200 && response.statusCode != 204) {
         throw Exception('فشل في إرسال الموافقة');

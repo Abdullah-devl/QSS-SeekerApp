@@ -12,7 +12,8 @@ class FavoriteRemoteDataSource {
     final response = await _apiService.get(ApiEndpoints.favorites);
     if (response.statusCode == 200) {
       // السيرفر يرجع البيانات في حقل 'favorites' بناءً على الكونسول
-      final List data = response.data['favorites'] ?? response.data['data'] ?? [];
+      final List data =
+          response.data['favorites'] ?? response.data['data'] ?? [];
       return data.map((json) => ServiceModel.fromJson(json)).toList();
     }
     throw Exception('Failed to load favorites');

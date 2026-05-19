@@ -31,8 +31,8 @@ class _PaymentViewState extends State<PaymentView> {
     super.initState();
     // جلب الرصيد عند فتح الصفحة
     Future.microtask(() => context.read<PaymentViewModel>().fetchBalance());
-    // تعيين المبلغ الافتراضي للسند هو سعر الخدمة
-    _amountController.text = widget.order.remainingAmount.toString();
+    // لا نقوم بتعيين المبلغ الافتراضي تلقائياً لتسهيل كتابته يدوياً من الصفر
+    // _amountController.text = widget.order.remainingAmount.toString();
   }
 
   @override
@@ -53,60 +53,62 @@ class _PaymentViewState extends State<PaymentView> {
   Widget build(BuildContext context) {
     final colors = context.qsColors;
     return Scaffold(
+      backgroundColor: colors.background,
+      appBar: AppBar(
+        title: Text(context.tr('payment_page_title')),
+        centerTitle: true,
         backgroundColor: colors.background,
-        appBar: AppBar(
-          title: Text(context.tr('payment_page_title')),
-          centerTitle: true,
-          backgroundColor: colors.background,
-          foregroundColor: colors.text,
-          elevation: 0,
-        ),
-        body: Consumer<PaymentViewModel>(
-          builder: (context, viewModel, child) {
-            return Stack(
-              children: [
-                SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // 💳 بطاقة سعر الخدمة
-                      _buildPriceCard(context),
-                      const SizedBox(height: 24),
+        foregroundColor: colors.text,
+        elevation: 0,
+      ),
+      body: Consumer<PaymentViewModel>(
+        builder: (context, viewModel, child) {
+          return Stack(
+            children: [
+              SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // 💳 بطاقة سعر الخدمة
+                    _buildPriceCard(context),
+                    const SizedBox(height: 24),
 
-                      // 🌟 بطاقة رصيد النقاط
-                      _buildPointsBalanceCard(context, viewModel),
-                      const SizedBox(height: 24),
+                    // 🌟 بطاقة رصيد النقاط
+                    _buildPointsBalanceCard(context, viewModel),
+                    const SizedBox(height: 24),
 
-                      // 🔘 خيارات الدفع
-                      _buildPaymentMethodSelector(context, viewModel),
-                      const SizedBox(height: 24),
+                    // 🔘 خيارات الدفع
+                    _buildPaymentMethodSelector(context, viewModel),
+                    const SizedBox(height: 24),
 
-                      // 🏗️ واجهة الخيار المحدد
-                      if (viewModel.selectedMethod == PaymentMethod.points)
-                        _buildPointsPaymentForm(context, viewModel)
-                      else
-                        _buildBondPaymentForm(context, viewModel),
+                    // 🏗️ واجهة الخيار المحدد
+                    if (viewModel.selectedMethod == PaymentMethod.points)
+                      _buildPointsPaymentForm(context, viewModel)
+                    else
+                      _buildBondPaymentForm(context, viewModel),
 
-                      const SizedBox(height: 40),
+                    const SizedBox(height: 40),
 
-                      // 🚀 زر التأكيد النهائي
-                      _buildSubmitButton(context, viewModel),
-                    ],
+                    // 🚀 زر التأكيد النهائي
+                    _buildSubmitButton(context, viewModel),
+                  ],
+                ),
+              ),
+
+              // مؤشر التحميل
+              if (viewModel.isLoading)
+                Container(
+                  color: colors.text.withValues(alpha: 0.3),
+                  child: Center(
+                    child: CircularProgressIndicator(color: colors.primary),
                   ),
                 ),
-
-                // مؤشر التحميل
-                if (viewModel.isLoading)
-                  Container(
-                    color: colors.text.withValues(alpha: 0.3),
-                    child: Center(child: CircularProgressIndicator(color: colors.primary)),
-                  ),
-              ],
-            );
-          },
-        ),
-      );
+            ],
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildPriceCard(BuildContext context) {
@@ -121,7 +123,10 @@ class _PaymentViewState extends State<PaymentView> {
         children: [
           Text(
             context.tr('service_price'),
-            style: TextStyle(color: colors.background.withValues(alpha: 0.7), fontSize: 14),
+            style: TextStyle(
+              color: colors.background.withValues(alpha: 0.7),
+              fontSize: 14,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -137,7 +142,10 @@ class _PaymentViewState extends State<PaymentView> {
     );
   }
 
-  Widget _buildPointsBalanceCard(BuildContext context, PaymentViewModel viewModel) {
+  Widget _buildPointsBalanceCard(
+    BuildContext context,
+    PaymentViewModel viewModel,
+  ) {
     final colors = context.qsColors;
     return Container(
       padding: const EdgeInsets.all(20),
@@ -178,13 +186,20 @@ class _PaymentViewState extends State<PaymentView> {
     );
   }
 
-  Widget _buildPaymentMethodSelector(BuildContext context, PaymentViewModel viewModel) {
+  Widget _buildPaymentMethodSelector(
+    BuildContext context,
+    PaymentViewModel viewModel,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           context.tr('payment_confirm'),
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: context.qsColors.text),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: context.qsColors.text,
+          ),
         ),
         const SizedBox(height: 12),
         _buildMethodTile(
@@ -220,10 +235,14 @@ class _PaymentViewState extends State<PaymentView> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? colors.primary.withValues(alpha: 0.1) : colors.card,
+          color: isSelected
+              ? colors.primary.withValues(alpha: 0.1)
+              : colors.card,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? colors.primary : colors.textSub.withValues(alpha: 0.1),
+            color: isSelected
+                ? colors.primary
+                : colors.textSub.withValues(alpha: 0.1),
             width: 2,
           ),
         ),
@@ -251,7 +270,10 @@ class _PaymentViewState extends State<PaymentView> {
     );
   }
 
-  Widget _buildPointsPaymentForm(BuildContext context, PaymentViewModel viewModel) {
+  Widget _buildPointsPaymentForm(
+    BuildContext context,
+    PaymentViewModel viewModel,
+  ) {
     final colors = context.qsColors;
     return Column(
       children: [
@@ -260,7 +282,7 @@ class _PaymentViewState extends State<PaymentView> {
           decoration: BoxDecoration(
             color: colors.primary.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(16),
-          ),    
+          ),
           child: Row(
             children: [
               Icon(Icons.info_outline, color: colors.primary, size: 20),
@@ -281,7 +303,8 @@ class _PaymentViewState extends State<PaymentView> {
           style: TextStyle(color: colors.text, fontWeight: FontWeight.bold),
           decoration: InputDecoration(
             labelText: context.tr('points_to_pay'),
-            hintText: '${context.tr('max_limit')}: ${widget.order.remainingAmount.toInt()}',
+            hintText:
+                '${context.tr('max_limit')}: ${widget.order.remainingAmount.toInt()}',
             labelStyle: TextStyle(color: colors.textSub),
             filled: true,
             fillColor: colors.card,
@@ -289,7 +312,9 @@ class _PaymentViewState extends State<PaymentView> {
             suffixText: context.tr('points'),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: colors.textSub.withValues(alpha: 0.2)),
+              borderSide: BorderSide(
+                color: colors.textSub.withValues(alpha: 0.2),
+              ),
             ),
           ),
         ),
@@ -297,14 +322,17 @@ class _PaymentViewState extends State<PaymentView> {
     );
   }
 
-  Widget _buildBondPaymentForm(BuildContext context, PaymentViewModel viewModel) {
+  Widget _buildBondPaymentForm(
+    BuildContext context,
+    PaymentViewModel viewModel,
+  ) {
     final colors = context.qsColors;
     return Column(
       children: [
         // حقل رقم السند
         TextField(
           controller: _bondNumberController,
-          keyboardType: TextInputType.text,
+          keyboardType: TextInputType.number,
           style: TextStyle(color: colors.text),
           decoration: InputDecoration(
             labelText: context.tr('bondOrTransferNumber'),
@@ -315,7 +343,9 @@ class _PaymentViewState extends State<PaymentView> {
             prefixIcon: Icon(Icons.numbers, color: colors.primary),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: colors.textSub.withValues(alpha: 0.2)),
+              borderSide: BorderSide(
+                color: colors.textSub.withValues(alpha: 0.2),
+              ),
             ),
           ),
         ),
@@ -333,7 +363,9 @@ class _PaymentViewState extends State<PaymentView> {
             prefixIcon: Icon(Icons.attach_money, color: colors.primary),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: colors.textSub.withValues(alpha: 0.2)),
+              borderSide: BorderSide(
+                color: colors.textSub.withValues(alpha: 0.2),
+              ),
             ),
           ),
         ),
@@ -352,14 +384,24 @@ class _PaymentViewState extends State<PaymentView> {
             child: viewModel.selectedImage != null
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(16),
-                    child: Image.file(viewModel.selectedImage!, fit: BoxFit.cover),
+                    child: Image.file(
+                      viewModel.selectedImage!,
+                      fit: BoxFit.cover,
+                    ),
                   )
                 : Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.add_a_photo_outlined, size: 40, color: colors.textSub.withValues(alpha: 0.5)),
+                      Icon(
+                        Icons.add_a_photo_outlined,
+                        size: 40,
+                        color: colors.textSub.withValues(alpha: 0.5),
+                      ),
                       const SizedBox(height: 8),
-                      Text(context.tr('upload_receipt'), style: TextStyle(color: colors.textSub)),
+                      Text(
+                        context.tr('upload_receipt'),
+                        style: TextStyle(color: colors.textSub),
+                      ),
                     ],
                   ),
           ),
@@ -378,7 +420,9 @@ class _PaymentViewState extends State<PaymentView> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         elevation: 0,
       ),
-      onPressed: viewModel.isLoading ? null : () => _handlePayment(context, viewModel),
+      onPressed: viewModel.isLoading
+          ? null
+          : () => _handlePayment(context, viewModel),
       child: Text(
         context.tr('payment_confirm'),
         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900),
@@ -388,7 +432,7 @@ class _PaymentViewState extends State<PaymentView> {
 
   void _handlePayment(BuildContext context, PaymentViewModel viewModel) async {
     // final colors = context.qsColors;
-    
+
     // 1. استخراج المبلغ المدفوع (سواء نقاط أو سند)
     final amount = double.tryParse(_amountController.text);
     if (amount == null || amount <= 0) {
@@ -398,7 +442,7 @@ class _PaymentViewState extends State<PaymentView> {
 
     if (viewModel.selectedMethod == PaymentMethod.points) {
       // --- التحقق من النقاط ---
-      
+
       // لا يقل عن 1
       if (amount < 1) {
         QSAlerts.showWarning(context, context.tr('min_points_error'));
@@ -421,43 +465,60 @@ class _PaymentViewState extends State<PaymentView> {
       final bool confirm = await QSAlerts.showConfirm(
         context,
         title: context.tr('confirm_points_payment'),
-        message: '${context.tr('confirm_points_payment_msg')} ($amount ${context.tr('points')})',
+        message:
+            '${context.tr('confirm_points_payment_msg')} ($amount ${context.tr('points')})',
       );
 
       if (confirm) {
         final success = await viewModel.payByPoints(widget.order.id, amount);
         if (success) {
-          await QSAlerts.showSuccess(context, context.tr('points_payment_success'));
+          await QSAlerts.showSuccess(
+            context,
+            viewModel.successMessage ?? context.tr('points_payment_success'),
+          );
           if (context.mounted) Navigator.pop(context);
         } else {
           await QSAlerts.showError(
             context,
             viewModel.errorMessage != null
                 ? (viewModel.errorMessage!.contains(' ')
-                    ? viewModel.errorMessage!
-                    : context.tr(viewModel.errorMessage!))
+                      ? viewModel.errorMessage!
+                      : context.tr(viewModel.errorMessage!))
                 : context.tr('points_payment_error'),
           );
         }
       }
     } else {
       // --- سداد بسند ---
-      
+      final bondNumber = _bondNumberController.text.trim();
+      if (bondNumber.isEmpty) {
+        QSAlerts.showWarning(context, context.tr('enterBondNumberError'));
+        return;
+      }
+      final isDigitsOnly = RegExp(r'^\d+$').hasMatch(bondNumber);
+      if (!isDigitsOnly) {
+        QSAlerts.showWarning(context, context.tr('bond_number_digits_only_error'));
+        return;
+      }
+
       final success = await viewModel.payByBond(
         widget.order.id,
         amount,
-        _bondNumberController.text,
+        bondNumber,
       );
       if (success) {
-        await QSAlerts.showSuccess(context, context.tr('bond_payment_success'));
+        await QSAlerts.showSuccess(
+          context,
+          viewModel.successMessage ?? context.tr('bond_payment_success'),
+        );
         if (context.mounted) Navigator.pop(context);
       } else {
         await QSAlerts.showError(
           context,
           viewModel.errorMessage != null
               ? (viewModel.errorMessage!.contains(' ')
-                  ? viewModel.errorMessage!
-                  : context.tr(viewModel.errorMessage!))
+                    ? viewModel.errorMessage!
+                    : context.tr(viewModel.errorMessage!))
               : context.tr('bond_payment_error'),
         );
       }

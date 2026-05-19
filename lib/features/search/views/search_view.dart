@@ -49,98 +49,102 @@ class _SearchViewState extends State<SearchView> {
   Widget build(BuildContext context) {
     final colors = context.qsColors;
     return Scaffold(
-        backgroundColor: colors.background,
-        appBar: AppBar(
-          title: Text(
-            context.tr('search_title'),
-            style: TextStyle(color: colors.text, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          actions: [
-            IconButton(
-              onPressed: () => _showFilterBottomSheet(context),
-              icon: Icon(Icons.tune_rounded, color: colors.primary),
-            ),
-          ],
+      backgroundColor: colors.background,
+      appBar: AppBar(
+        title: Text(
+          context.tr('search_title'),
+          style: TextStyle(color: colors.text, fontWeight: FontWeight.bold),
         ),
-        body: Column(
-          children: [
-            // 🔍 شريط البحث العلوي
-            _buildSearchInput(context),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          IconButton(
+            onPressed: () => _showFilterBottomSheet(context),
+            icon: Icon(Icons.tune_rounded, color: colors.primary),
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // 🔍 شريط البحث العلوي
+          _buildSearchInput(context),
 
-            // 📜 قائمة النتائج
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: () => context.read<SearchViewModel>().performSearch(),
-                color: colors.primary,
-                child: Consumer<SearchViewModel>(
-                  builder: (context, viewModel, child) {
-                    if (viewModel.isLoading) {
-                      return Center(
-                        child: CircularProgressIndicator(color: colors.primary),
-                      );
-                    }
+          // 📜 قائمة النتائج
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () => context.read<SearchViewModel>().performSearch(),
+              color: colors.primary,
+              child: Consumer<SearchViewModel>(
+                builder: (context, viewModel, child) {
+                  if (viewModel.isLoading) {
+                    return Center(
+                      child: CircularProgressIndicator(color: colors.primary),
+                    );
+                  }
 
-                    if (viewModel.errorMessage != null) {
-                      return ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        children: [
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.4,
-                            child: Center(
-                              child: Text(
-                                viewModel.errorMessage!,
-                                style: TextStyle(color: colors.error),
-                              ),
+                  if (viewModel.errorMessage != null) {
+                    return ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.4,
+                          child: Center(
+                            child: Text(
+                              viewModel.errorMessage!,
+                              style: TextStyle(color: colors.error),
                             ),
                           ),
-                        ],
-                      );
-                    }
+                        ),
+                      ],
+                    );
+                  }
 
-                    if (viewModel.results.isEmpty && viewModel.query.isNotEmpty) {
-                      return ListView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        children: [
-                          _buildEmptyState(context),
-                        ],
-                      );
-                    }
-
-                    return ListView.builder(
+                  if (viewModel.results.isEmpty && viewModel.query.isNotEmpty) {
+                    return ListView(
                       physics: const AlwaysScrollableScrollPhysics(),
-                      padding: const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 100),
-                      itemCount: viewModel.results.length,
-                      itemBuilder: (context, index) {
-                        final service = viewModel.results[index];
-                        return ServiceCard(
-                          service: service,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ChangeNotifierProvider(
-                                  create: (context) => ServiceDetailsViewModel(
-                                    context.read<HomeRepository>(),
-                                  ),
-                                  child:
-                                      ServiceDetailsView(initialService: service),
+                      children: [_buildEmptyState(context)],
+                    );
+                  }
+
+                  return ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.only(
+                      left: 20,
+                      right: 20,
+                      top: 20,
+                      bottom: 100,
+                    ),
+                    itemCount: viewModel.results.length,
+                    itemBuilder: (context, index) {
+                      final service = viewModel.results[index];
+                      return ServiceCard(
+                        service: service,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChangeNotifierProvider(
+                                create: (context) => ServiceDetailsViewModel(
+                                  context.read<HomeRepository>(),
+                                ),
+                                child: ServiceDetailsView(
+                                  initialService: service,
                                 ),
                               ),
-                            );
-                          },
-                        );
-                      },
-                    );
-                  },
-                ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
               ),
             ),
-          ],
-        ),
-      );
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildSearchInput(BuildContext context) {
@@ -194,7 +198,11 @@ class _SearchViewState extends State<SearchView> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.search_off_rounded, size: 80, color: colors.textSub.withValues(alpha: 0.3)),
+          Icon(
+            Icons.search_off_rounded,
+            size: 80,
+            color: colors.textSub.withValues(alpha: 0.3),
+          ),
           const SizedBox(height: 16),
           Text(
             context.tr('no_results'),
@@ -241,241 +249,276 @@ class _SearchViewState extends State<SearchView> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        context.tr('filters'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          context.tr('filters'),
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: colors.text,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            viewModel.resetFilters();
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            context.tr('reset_filters'),
+                            style: TextStyle(color: colors.primary),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+
+                    // القسم
+                    Text(
+                      context.tr('category'),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: colors.text,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<int>(
+                      dropdownColor: colors.background,
+                      style: TextStyle(color: colors.text),
+                      value: viewModel.selectedCategoryId,
+                      items: [
+                        DropdownMenuItem(
+                          value: null,
+                          child: Text(
+                            context.tr('seeAll'),
+                            style: TextStyle(color: colors.text),
+                          ),
+                        ),
+                        ...categories.map(
+                          (c) => DropdownMenuItem(
+                            value: c.id,
+                            child: Text(
+                              c.name,
+                              style: TextStyle(color: colors.text),
+                            ),
+                          ),
+                        ),
+                      ],
+                      onChanged: (val) => viewModel.setCategory(val),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: colors.card,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: colors.textSub.withValues(alpha: 0.1),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // نطاق السعر
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          context.tr('price_range'),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: colors.text,
+                          ),
+                        ),
+                        Text(
+                          '${viewModel.minPrice?.toInt() ?? 0} - ${(viewModel.maxPrice == null || viewModel.maxPrice == 100000) ? context.tr('no_max_limit') : viewModel.maxPrice?.toInt().toString()} ${context.tr('currency_sar')}',
+                          style: TextStyle(
+                            color: colors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    RangeSlider(
+                      values: RangeValues(
+                        viewModel.minPrice ?? 0,
+                        viewModel.maxPrice ?? 100000,
+                      ),
+                      min: 0,
+                      max: 100000,
+                      divisions: 200,
+                      activeColor: colors.primary,
+                      inactiveColor: colors.primary.withValues(alpha: 0.2),
+                      labels: RangeLabels(
+                        '${viewModel.minPrice?.toInt() ?? 0}',
+                        viewModel.maxPrice == 100000
+                            ? context.tr('no_max_limit')
+                            : '${viewModel.maxPrice?.toInt() ?? 100000}',
+                      ),
+                      onChanged: (RangeValues values) {
+                        setModalState(() {
+                          viewModel.setPriceRange(values.start, values.end);
+                        });
+                      },
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // ✅ فلتر الموثقين
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        context.tr('verifiedOnly'),
                         style: TextStyle(
-                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: colors.text,
                         ),
                       ),
-                      TextButton(
-                        onPressed: () {
-                          viewModel.resetFilters();
-                          Navigator.pop(context);
-                        },
-                        child: Text(
-                          context.tr('reset_filters'),
-                          style: TextStyle(color: colors.primary),
-                        ),
+                      subtitle: Text(
+                        context.tr('verifiedOnlyDesc'),
+                        style: TextStyle(fontSize: 12, color: colors.textSub),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-
-                  // القسم
-                  Text(
-                    context.tr('category'),
-                    style: TextStyle(fontWeight: FontWeight.bold, color: colors.text),
-                  ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<int>(
-                    dropdownColor: colors.background,
-                    style: TextStyle(color: colors.text),
-                    value: viewModel.selectedCategoryId,
-                    items: [
-                      DropdownMenuItem(
-                        value: null,
-                        child: Text(
-                          context.tr('seeAll'),
-                          style: TextStyle(color: colors.text),
-                        ),
-                      ),
-                      ...categories.map(
-                        (c) => DropdownMenuItem(
-                          value: c.id,
-                          child: Text(c.name, style: TextStyle(color: colors.text)),
-                        ),
-                      ),
-                    ],
-                    onChanged: (val) => viewModel.setCategory(val),
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: colors.card,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: colors.textSub.withValues(alpha: 0.1)),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // نطاق السعر
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        context.tr('price_range'),
-                        style: TextStyle(fontWeight: FontWeight.bold, color: colors.text),
-                      ),
-                      Text(
-                        '${viewModel.minPrice?.toInt() ?? 0} - ${(viewModel.maxPrice == null || viewModel.maxPrice == 100000) ? context.tr('no_max_limit') : viewModel.maxPrice?.toInt().toString()} ${context.tr('currency_sar')}',
-                        style: TextStyle(color: colors.primary, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  RangeSlider(
-                    values: RangeValues(
-                      viewModel.minPrice ?? 0,
-                      viewModel.maxPrice ?? 100000,
-                    ),
-                    min: 0,
-                    max: 100000,
-                    divisions: 200,
-                    activeColor: colors.primary,
-                    inactiveColor: colors.primary.withValues(alpha: 0.2),
-                    labels: RangeLabels(
-                      '${viewModel.minPrice?.toInt() ?? 0}',
-                      viewModel.maxPrice == 100000
-                          ? context.tr('no_max_limit')
-                          : '${viewModel.maxPrice?.toInt() ?? 100000}',
-                    ),
-                    onChanged: (RangeValues values) {
-                      setModalState(() {
-                        viewModel.setPriceRange(values.start, values.end);
-                      });
-                    },
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // ✅ فلتر الموثقين
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      context.tr('verifiedOnly'),
-                      style: TextStyle(fontWeight: FontWeight.bold, color: colors.text),
-                    ),
-                    subtitle: Text(
-                      context.tr('verifiedOnlyDesc'),
-                      style: TextStyle(fontSize: 12, color: colors.textSub),
-                    ),
-                    activeColor: colors.primary,
-                    value: viewModel.isVerifiedOnly,
-                    onChanged: (val) {
-                      setModalState(() {
-                        viewModel.setVerifiedOnly(val);
-                      });
-                    },
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // 📍 تفعيل/إلغاء البحث بالموقع
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      context.tr('searchByLocation'),
-                      style: TextStyle(fontWeight: FontWeight.bold, color: colors.text),
-                    ),
-                    subtitle: Text(
-                      context.tr('searchByLocationDesc'),
-                      style: TextStyle(fontSize: 12, color: colors.textSub),
-                    ),
-                    activeColor: colors.primary,
-                    value: viewModel.isLocationFilterEnabled,
-                    onChanged: (val) {
-                      setModalState(() {
-                        viewModel.setLocationFilterEnabled(val);
-                      });
-                    },
-                  ),
-
-                  // عرض زر اختيار الموقع فقط إذا كان الفلتر مفعلاً
-                  if (viewModel.isLocationFilterEnabled) ...[
-                    const SizedBox(height: 16),
-                    Text(
-                      context.tr('searchLocationTitle'),
-                      style: TextStyle(fontWeight: FontWeight.bold, color: colors.text),
-                    ),
-                    const SizedBox(height: 12),
-                    InkWell(
-                      onTap: () async {
-                        // فتح صفحة اختيار الموقع
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const PickLocationView(),
-                          ),
-                        );
-
-                        if (result != null && result is Map) {
-                          setModalState(() {
-                            final latLng = result['latLng'];
-                            final address = result['address'];
-                            viewModel.setPickedLocation(
-                              latLng.latitude,
-                              latLng.longitude,
-                              address,
-                            );
-                          });
-                        }
+                      activeColor: colors.primary,
+                      value: viewModel.isVerifiedOnly,
+                      onChanged: (val) {
+                        setModalState(() {
+                          viewModel.setVerifiedOnly(val);
+                        });
                       },
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: colors.card,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: viewModel.pickedLat != null 
-                                ? colors.primary 
-                                : colors.textSub.withValues(alpha: 0.1),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // 📍 تفعيل/إلغاء البحث بالموقع
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        context.tr('searchByLocation'),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: colors.text,
+                        ),
+                      ),
+                      subtitle: Text(
+                        context.tr('searchByLocationDesc'),
+                        style: TextStyle(fontSize: 12, color: colors.textSub),
+                      ),
+                      activeColor: colors.primary,
+                      value: viewModel.isLocationFilterEnabled,
+                      onChanged: (val) {
+                        setModalState(() {
+                          viewModel.setLocationFilterEnabled(val);
+                        });
+                      },
+                    ),
+
+                    // عرض زر اختيار الموقع فقط إذا كان الفلتر مفعلاً
+                    if (viewModel.isLocationFilterEnabled) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        context.tr('searchLocationTitle'),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: colors.text,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      InkWell(
+                        onTap: () async {
+                          // فتح صفحة اختيار الموقع
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const PickLocationView(),
+                            ),
+                          );
+
+                          if (result != null && result is Map) {
+                            setModalState(() {
+                              final latLng = result['latLng'];
+                              final address = result['address'];
+                              viewModel.setPickedLocation(
+                                latLng.latitude,
+                                latLng.longitude,
+                                address,
+                              );
+                            });
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: colors.card,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: viewModel.pickedLat != null
+                                  ? colors.primary
+                                  : colors.textSub.withValues(alpha: 0.1),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.map_rounded,
+                                color: viewModel.pickedLat != null
+                                    ? colors.primary
+                                    : colors.textSub,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  viewModel.pickedAddress ??
+                                      context.tr('pickOnMap'),
+                                  style: TextStyle(
+                                    color: viewModel.pickedLat != null
+                                        ? colors.text
+                                        : colors.textSub,
+                                    fontSize: 14,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              if (viewModel.pickedLat != null)
+                                Icon(
+                                  Icons.check_circle,
+                                  color: colors.primary,
+                                  size: 20,
+                                ),
+                            ],
                           ),
                         ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.map_rounded,
-                              color: viewModel.pickedLat != null ? colors.primary : colors.textSub,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                viewModel.pickedAddress ?? context.tr('pickOnMap'),
-                                style: TextStyle(
-                                  color: viewModel.pickedLat != null ? colors.text : colors.textSub,
-                                  fontSize: 14,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            if (viewModel.pickedLat != null)
-                              Icon(Icons.check_circle, color: colors.primary, size: 20),
-                          ],
+                      ),
+                    ],
+
+                    const SizedBox(height: 32),
+
+                    ElevatedButton(
+                      onPressed: () {
+                        viewModel.performSearch();
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colors.primary,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        context.tr('apply_filters'),
+                        style: TextStyle(
+                          color: colors.background,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
+                    const SizedBox(height: 16),
                   ],
-
-                  const SizedBox(height: 32),
-
-                  ElevatedButton(
-                    onPressed: () {
-                      viewModel.performSearch();
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colors.primary,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Text(
-                      context.tr('apply_filters'),
-                      style: TextStyle(color: colors.background, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
+                ),
               ),
-             ),
             );
           },
         );

@@ -14,7 +14,8 @@ class SubmitPointsPaymentView extends StatefulWidget {
   const SubmitPointsPaymentView({super.key, required this.package});
 
   @override
-  State<SubmitPointsPaymentView> createState() => _SubmitPointsPaymentViewState();
+  State<SubmitPointsPaymentView> createState() =>
+      _SubmitPointsPaymentViewState();
 }
 
 class _SubmitPointsPaymentViewState extends State<SubmitPointsPaymentView> {
@@ -37,8 +38,14 @@ class _SubmitPointsPaymentViewState extends State<SubmitPointsPaymentView> {
   }
 
   Future<void> _submit(PointsViewModel viewModel) async {
-    if (_bondNumberController.text.isEmpty) {
+    final bondNumber = _bondNumberController.text.trim();
+    if (bondNumber.isEmpty) {
       _showError(context.tr('enterBondNumberError'));
+      return;
+    }
+    final isDigitsOnly = RegExp(r'^\d+$').hasMatch(bondNumber);
+    if (!isDigitsOnly) {
+      _showError(context.tr('bond_number_digits_only_error'));
       return;
     }
     if (_bankNameController.text.isEmpty) {
@@ -60,7 +67,8 @@ class _SubmitPointsPaymentViewState extends State<SubmitPointsPaymentView> {
     if (success && mounted) {
       await QSAlerts.showSuccess(
         context,
-        context.tr('rechargeRequestSubmittedSuccess'),
+        viewModel.successMessage ??
+            context.tr('rechargeRequestSubmittedSuccess'),
       );
       if (mounted) {
         Navigator.pop(context);
@@ -69,8 +77,8 @@ class _SubmitPointsPaymentViewState extends State<SubmitPointsPaymentView> {
       _showError(
         viewModel.errorMessage != null
             ? (viewModel.errorMessage!.contains(' ')
-                ? viewModel.errorMessage!
-                : context.tr(viewModel.errorMessage!))
+                  ? viewModel.errorMessage!
+                  : context.tr(viewModel.errorMessage!))
             : context.tr('submitFailed'),
       );
     }
@@ -105,11 +113,20 @@ class _SubmitPointsPaymentViewState extends State<SubmitPointsPaymentView> {
             const SizedBox(height: 32),
             _buildLabel(context.tr('bondOrTransferNumber')),
             const SizedBox(height: 8),
-            _buildTextField(_bondNumberController, context.tr('enterBondNumberHint'), colors),
+            _buildTextField(
+              _bondNumberController,
+              context.tr('enterBondNumberHint'),
+              colors,
+              keyboardType: TextInputType.number,
+            ),
             const SizedBox(height: 24),
             _buildLabel(context.tr('senderBankName')),
             const SizedBox(height: 8),
-            _buildTextField(_bankNameController, context.tr('bankNameExample'), colors),
+            _buildTextField(
+              _bankNameController,
+              context.tr('bankNameExample'),
+              colors,
+            ),
             const SizedBox(height: 24),
             _buildLabel(context.tr('transferReceiptImage')),
             const SizedBox(height: 12),
@@ -118,17 +135,25 @@ class _SubmitPointsPaymentViewState extends State<SubmitPointsPaymentView> {
             SizedBox(
               height: 55,
               child: ElevatedButton(
-                onPressed: viewModel.isLoading ? null : () => _submit(viewModel),
+                onPressed: viewModel.isLoading
+                    ? null
+                    : () => _submit(viewModel),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colors.primary,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                   elevation: 0,
                 ),
                 child: viewModel.isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
                     : Text(
                         context.tr('sendRequest'),
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
               ),
             ),
@@ -145,9 +170,15 @@ class _SubmitPointsPaymentViewState extends State<SubmitPointsPaymentView> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hint, dynamic colors) {
+  Widget _buildTextField(
+    TextEditingController controller,
+    String hint,
+    dynamic colors, {
+    TextInputType keyboardType = TextInputType.text,
+  }) {
     return TextField(
       controller: controller,
+      keyboardType: keyboardType,
       decoration: InputDecoration(
         filled: true,
         fillColor: colors.card,
@@ -169,7 +200,10 @@ class _SubmitPointsPaymentViewState extends State<SubmitPointsPaymentView> {
         decoration: BoxDecoration(
           color: colors.card,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: colors.primary.withValues(alpha: 0.2), width: 2),
+          border: Border.all(
+            color: colors.primary.withValues(alpha: 0.2),
+            width: 2,
+          ),
         ),
         child: _selectedImage != null
             ? ClipRRect(
@@ -179,7 +213,11 @@ class _SubmitPointsPaymentViewState extends State<SubmitPointsPaymentView> {
             : Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.cloud_upload_outlined, color: colors.primary, size: 48),
+                  Icon(
+                    Icons.cloud_upload_outlined,
+                    color: colors.primary,
+                    size: 48,
+                  ),
                   const SizedBox(height: 12),
                   Text(context.tr('clickToUploadReceipt')),
                 ],
@@ -197,15 +235,25 @@ class _SubmitPointsPaymentViewState extends State<SubmitPointsPaymentView> {
       ),
       child: Column(
         children: [
-          Text(widget.package.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
           Text(
-            '${widget.package.price.toInt()} ${context.tr('currency_sar')}',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: colors.primary),
+            widget.package.name,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text(
-            context.tr('pointsGainPrompt', args: {'count': widget.package.points}),
+            '${widget.package.price.toInt()} ${context.tr('currency_sar')}',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: colors.primary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            context.tr(
+              'pointsGainPrompt',
+              args: {'count': widget.package.points},
+            ),
             style: const TextStyle(fontSize: 14),
           ),
         ],

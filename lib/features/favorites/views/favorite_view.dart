@@ -30,10 +30,7 @@ class FavoriteView extends StatelessWidget {
         centerTitle: true,
         title: Text(
           l10n.favorites,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
         ),
       ),
       body: userRole == 'guest'
@@ -50,8 +47,8 @@ class FavoriteView extends StatelessWidget {
                   final errorText = vm.errorMessage == 'errorLoadingFavorites'
                       ? l10n.errorLoadingFavorites
                       : (vm.errorMessage == 'errorUpdatingFavorites'
-                          ? l10n.errorUpdatingFavorites
-                          : vm.errorMessage!);
+                            ? l10n.errorUpdatingFavorites
+                            : vm.errorMessage!);
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -102,25 +99,24 @@ class FavoriteView extends StatelessWidget {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder:
-                                              (context) =>
-                                                  ChangeNotifierProvider(
-                                                    create:
-                                                        (context) =>
-                                                            ServiceDetailsViewModel(
-                                                              context.read<
-                                                                HomeRepository
-                                                              >(),
-                                                            ),
-                                                    child: ServiceDetailsView(
-                                                      initialService: service,
+                                          builder: (context) =>
+                                              ChangeNotifierProvider(
+                                                create: (context) =>
+                                                    ServiceDetailsViewModel(
+                                                      context
+                                                          .read<
+                                                            HomeRepository
+                                                          >(),
                                                     ),
-                                                  ),
+                                                child: ServiceDetailsView(
+                                                  initialService: service,
+                                                ),
+                                              ),
                                         ),
                                       );
                                     },
-                                    onFavoriteToggle:
-                                        () => vm.toggleFavorite(service),
+                                    onFavoriteToggle: () =>
+                                        vm.toggleFavorite(service),
                                   );
                                 },
                               ),
@@ -147,7 +143,11 @@ class FavoriteView extends StatelessWidget {
                 color: colors.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.favorite_border_rounded, size: 80, color: colors.primary),
+              child: Icon(
+                Icons.favorite_border_rounded,
+                size: 80,
+                color: colors.primary,
+              ),
             ),
             const SizedBox(height: 24),
             Text(
@@ -186,7 +186,10 @@ class FavoriteView extends StatelessWidget {
                 ),
                 child: Text(
                   l10n.login,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -201,7 +204,11 @@ class FavoriteView extends StatelessWidget {
   // =========================================================================
 
   /// 🔘 شريط الفلترة العلوي
-  Widget _buildCategoriesFilter(BuildContext context, FavoriteViewModel vm, dynamic colors) {
+  Widget _buildCategoriesFilter(
+    BuildContext context,
+    FavoriteViewModel vm,
+    dynamic colors,
+  ) {
     final l10n = AppLocalizations.of(context)!;
     return Container(
       height: 90,
@@ -215,17 +222,26 @@ class FavoriteView extends StatelessWidget {
           final category = vm.filterCategories[index];
           final isSelected = vm.selectedCategoryId == category.id;
 
-
           // تحويل المسار أو الاسم إلى أيقونة مناسبة
           IconData getIcon(String? iconPath, String name) {
             final normalized = (iconPath ?? name).toLowerCase();
-            if (normalized.contains('grid') || normalized.contains('الكل') || normalized == 'all' || name == vm.filterCategories.first.name) return Icons.grid_view_rounded;
-            if (normalized.contains('build') || normalized.contains('صيانة')) return Icons.build_outlined;
-            if (normalized.contains('clean') || normalized.contains('تنظيف')) return Icons.cleaning_services_outlined;
-            if (normalized.contains('ship') || normalized.contains('نقل')) return Icons.local_shipping_outlined;
-            if (normalized.contains('electric') || normalized.contains('كهربا')) return Icons.electrical_services_rounded;
-            if (normalized.contains('plumb') || normalized.contains('سباكة')) return Icons.plumbing_rounded;
-            if (normalized.contains('paint') || normalized.contains('دهان')) return Icons.format_paint_rounded;
+            if (normalized.contains('grid') ||
+                normalized.contains('الكل') ||
+                normalized == 'all' ||
+                name == vm.filterCategories.first.name)
+              return Icons.grid_view_rounded;
+            if (normalized.contains('build') || normalized.contains('صيانة'))
+              return Icons.build_outlined;
+            if (normalized.contains('clean') || normalized.contains('تنظيف'))
+              return Icons.cleaning_services_outlined;
+            if (normalized.contains('ship') || normalized.contains('نقل'))
+              return Icons.local_shipping_outlined;
+            if (normalized.contains('electric') || normalized.contains('كهربا'))
+              return Icons.electrical_services_rounded;
+            if (normalized.contains('plumb') || normalized.contains('سباكة'))
+              return Icons.plumbing_rounded;
+            if (normalized.contains('paint') || normalized.contains('دهان'))
+              return Icons.format_paint_rounded;
             return Icons.category_outlined;
           }
 
@@ -260,7 +276,9 @@ class FavoriteView extends StatelessWidget {
                   category.id == 0 ? l10n.all : category.name,
                   style: TextStyle(
                     fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                     color: isSelected ? colors.primary : colors.textSub,
                   ),
                 ),

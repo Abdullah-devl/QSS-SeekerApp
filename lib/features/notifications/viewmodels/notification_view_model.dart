@@ -12,7 +12,7 @@ class NotificationViewModel extends ChangeNotifier {
 
   NotificationViewModel(this._repository) {
     fetchNotifications();
-    
+
     // الاستماع للإشعارات القادمة في المقدمة لتحديث القائمة تلقائياً
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       fetchNotifications();
@@ -78,15 +78,19 @@ class NotificationViewModel extends ChangeNotifier {
 
   Future<void> markAllAsRead() async {
     await _repository.markAllAsRead();
-    _notifications = _notifications.map((n) => NotificationModel(
-      id: n.id,
-      title: n.title,
-      message: n.message,
-      type: n.type,
-      data: n.data,
-      isRead: true,
-      createdAt: n.createdAt,
-    )).toList();
+    _notifications = _notifications
+        .map(
+          (n) => NotificationModel(
+            id: n.id,
+            title: n.title,
+            message: n.message,
+            type: n.type,
+            data: n.data,
+            isRead: true,
+            createdAt: n.createdAt,
+          ),
+        )
+        .toList();
     notifyListeners();
   }
 }

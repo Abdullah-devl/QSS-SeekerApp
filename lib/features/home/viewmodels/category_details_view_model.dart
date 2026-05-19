@@ -65,22 +65,29 @@ class CategoryDetailsViewModel extends ChangeNotifier {
     try {
       // جلب تفاصيل القسم والإعلانات بالتوازي
       final role = await TokenStorage().getRole() ?? 'guest';
-      final userType = role == 'guest' ? 'all' : (role == 'provider' ? 'provider' : 'client');
+      final userType = role == 'guest'
+          ? 'all'
+          : (role == 'provider' ? 'provider' : 'client');
 
       final results = await Future.wait([
         _homeRepository.fetchCategoryDetails(categoryId),
-        _advertisementRepository.fetchAdvertisements(userType, categoryId: categoryId),
+        _advertisementRepository.fetchAdvertisements(
+          userType,
+          categoryId: categoryId,
+        ),
       ]);
 
       _data = results[0] as CategoryDetailsModel;
       _advertisements = results[1] as List<AdvertisementModel>;
 
       // 🎯 منطق الإعلان العشوائي (Section Ad)
-      final sectionAds = _advertisements.where((ad) => ad.type == 'section' || ad.type == 'banner').toList();
+      final sectionAds = _advertisements
+          .where((ad) => ad.type == 'section' || ad.type == 'banner')
+          .toList();
       if (sectionAds.isNotEmpty && _data.services.isNotEmpty) {
         // اختيار إعلان عشوائي
         _sectionAd = sectionAds[Random().nextInt(sectionAds.length)];
-        
+
         // اختيار موضع عشوائي بين أول 5 خدمات (0 إلى 4)
         final maxPos = _data.services.length > 5 ? 5 : _data.services.length;
         _adPosition = Random().nextInt(maxPos);
@@ -91,7 +98,6 @@ class CategoryDetailsViewModel extends ChangeNotifier {
 
       // 🛡️ جلب بيانات المزودين (الاسم + التوثيق) لكل خدمة
       await _enrichServicesWithProviderData(_data.services);
-
     } catch (e) {
       // ✅ التقاط الفشل الموحد وعرض رسالته العربية
       if (e is Failure) {

@@ -32,8 +32,9 @@ class ProfileViewModel extends ChangeNotifier {
   String? get address => _address; // ✅ تمت الإضافة
   List<ProfileReviewModel> get reviews => _reviews;
   bool get showHiddenReviews => _showHiddenReviews;
-  
-  List<String> get works => _profile?.previousWorks.map((w) => w.imageUrl).toList() ?? [];
+
+  List<String> get works =>
+      _profile?.previousWorks.map((w) => w.imageUrl).toList() ?? [];
 
   void toggleHiddenReviews() {
     _showHiddenReviews = !_showHiddenReviews;
@@ -58,7 +59,10 @@ class ProfileViewModel extends ChangeNotifier {
 
       // جلب العنوان النصي إذا وجدت إحداثيات
       if (_profile?.latitude != null && _profile?.longitude != null) {
-        await _updateAddressFromCoords(_profile!.latitude!, _profile!.longitude!);
+        await _updateAddressFromCoords(
+          _profile!.latitude!,
+          _profile!.longitude!,
+        );
       }
 
       developer.log('✅ ProfileViewModel: Profile loaded for ${_profile?.name}');

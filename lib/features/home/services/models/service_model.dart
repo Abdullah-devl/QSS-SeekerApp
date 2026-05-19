@@ -136,7 +136,8 @@ class ServiceModel {
   bool isVerified; // ✅ هل المزود موثق؟
   DateTime? verifiedUntil; // 📅 تاريخ انتهاء التوثيق
   List<ServiceModel> subServices;
-  final List<ServiceScheduleModel> schedules; // 📅 جدول المواعيد المتاح لهذه الخدمة
+  final List<ServiceScheduleModel>
+  schedules; // 📅 جدول المواعيد المتاح لهذه الخدمة
   final int reviewsCount; // 💬 عدد التقييمات
   final List<ReviewModel>? _reviews; // 💬 قائمة التقييمات الحقيقية الخاصة
 
@@ -146,11 +147,12 @@ class ServiceModel {
   /// إذا كان تاريخ التوثيق ساري (اليوم أو مستقبلاً) فالمزود موثق
   bool get isProviderVerified {
     if (verifiedUntil == null) return isVerified;
-    
+
     // مقارنة التاريخ (بدون الساعات) مع تاريخ اليوم
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    return verifiedUntil!.isAtSameMomentAs(today) || verifiedUntil!.isAfter(today);
+    return verifiedUntil!.isAtSameMomentAs(today) ||
+        verifiedUntil!.isAfter(today);
   }
 
   ServiceModel({
@@ -209,36 +211,44 @@ class ServiceModel {
     if (rawSchedules is List) {
       for (var scheduleJson in rawSchedules) {
         if (scheduleJson is Map<String, dynamic>) {
-          final fromTime = scheduleJson['from'] ?? scheduleJson['start_time'] ?? '00:00';
-          final toTime = scheduleJson['to'] ?? scheduleJson['end_time'] ?? '00:00';
-          final isActive = (scheduleJson['is_active'] == 1 || scheduleJson['is_active'] == true);
+          final fromTime =
+              scheduleJson['from'] ?? scheduleJson['start_time'] ?? '00:00';
+          final toTime =
+              scheduleJson['to'] ?? scheduleJson['end_time'] ?? '00:00';
+          final isActive =
+              (scheduleJson['is_active'] == 1 ||
+              scheduleJson['is_active'] == true);
           final label = scheduleJson['label']?.toString();
-          
+
           final rawDays = scheduleJson['days'];
           if (rawDays is List) {
             for (var dayJson in rawDays) {
               if (dayJson is Map<String, dynamic>) {
                 final dayName = dayJson['day']?.toString() ?? '';
-                parsedSchedules.add(ServiceScheduleModel(
-                  id: int.tryParse(dayJson['id']?.toString() ?? '') ?? 0,
-                  day: dayName,
-                  fromTime: fromTime,
-                  toTime: toTime,
-                  isActive: isActive,
-                  label: label,
-                ));
+                parsedSchedules.add(
+                  ServiceScheduleModel(
+                    id: int.tryParse(dayJson['id']?.toString() ?? '') ?? 0,
+                    day: dayName,
+                    fromTime: fromTime,
+                    toTime: toTime,
+                    isActive: isActive,
+                    label: label,
+                  ),
+                );
               }
             }
           } else {
             // Fallback if days list doesn't exist
-            parsedSchedules.add(ServiceScheduleModel(
-              id: int.tryParse(scheduleJson['id']?.toString() ?? '') ?? 0,
-              day: scheduleJson['day'] ?? scheduleJson['day_name'] ?? '',
-              fromTime: fromTime,
-              toTime: toTime,
-              isActive: isActive,
-              label: label,
-            ));
+            parsedSchedules.add(
+              ServiceScheduleModel(
+                id: int.tryParse(scheduleJson['id']?.toString() ?? '') ?? 0,
+                day: scheduleJson['day'] ?? scheduleJson['day_name'] ?? '',
+                fromTime: fromTime,
+                toTime: toTime,
+                isActive: isActive,
+                label: label,
+              ),
+            );
           }
         }
       }
@@ -276,10 +286,11 @@ class ServiceModel {
           json['is_favorite'] == 1, // قراءة حالة المفضلة
 
       price: double.tryParse(json['price'].toString()) ?? 0.0,
-      rating: double.tryParse((json['avg_rating'] ??
-              json['rating_avg'] ??
-              json['rating'])
-          .toString()) ??
+      rating:
+          double.tryParse(
+            (json['avg_rating'] ?? json['rating_avg'] ?? json['rating'])
+                .toString(),
+          ) ??
           0.0,
       imageUrl: finalImage,
       providerName:
@@ -298,9 +309,9 @@ class ServiceModel {
       distance: double.tryParse(json['distance']?.toString() ?? ''),
       isAvailableNow:
           json['is_available_now'] != false, // افتراضياً متاح إلا إذا ذكر العكس
-
       // 🛡️ استخراج بيانات التوثيق من كل الأماكن الممكنة
-      isVerified: json['is_verified'] == true ||
+      isVerified:
+          json['is_verified'] == true ||
           json['is_verified'] == 1 ||
           json['verification_provider'] == 1 ||
           json['verification_provider'] == true ||
@@ -309,7 +320,8 @@ class ServiceModel {
           json['user']?['verification_provider'] == 1 ||
           json['user']?['verification_provider'] == true,
       verifiedUntil: () {
-        final dateStr = (json['verified_until']?.toString() ??
+        final dateStr =
+            (json['verified_until']?.toString() ??
             json['provider_verified_until']?.toString() ??
             json['provider']?['provider_verified_until']?.toString() ??
             json['user']?['provider_verified_until']?.toString() ??
@@ -346,8 +358,14 @@ class ReviewModel {
   });
 
   factory ReviewModel.fromJson(Map<String, dynamic> json) {
-    final Map<String, dynamic> userJson = Map<String, dynamic>.from(json['user'] ?? {});
-    final rawUserImage = userJson['image_url'] ?? userJson['image_path'] ?? userJson['avatar'] ?? '';
+    final Map<String, dynamic> userJson = Map<String, dynamic>.from(
+      json['user'] ?? {},
+    );
+    final rawUserImage =
+        userJson['image_url'] ??
+        userJson['image_path'] ??
+        userJson['avatar'] ??
+        '';
     return ReviewModel(
       id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
       rating: int.tryParse(json['rating']?.toString() ?? '') ?? 0,

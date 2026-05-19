@@ -29,7 +29,7 @@ class PolicyViewModel extends ChangeNotifier {
 
     try {
       final data = await _settingsRepository.getPolicy(role);
-      
+
       final dynamic rawData = data['${role}_policy'] ?? data['policy'];
 
       if (rawData is Map<String, dynamic>) {
@@ -44,23 +44,26 @@ class PolicyViewModel extends ChangeNotifier {
           (k) => data[k] is Map && (data[k] as Map).containsKey('value'),
           orElse: () => '',
         );
-        
+
         if (nestedKey.isNotEmpty) {
           final nestedData = data[nestedKey] as Map<String, dynamic>;
-          _policyTitle = nestedData['display_name']?.toString() ?? 'سياسة الخصوصية';
+          _policyTitle =
+              nestedData['display_name']?.toString() ?? 'سياسة الخصوصية';
           _policyContent = nestedData['value']?.toString() ?? '';
         } else {
           // محاولة أخيرة: إذا كانت الـ data نفسها تحتوي على display_name أو value
           _policyTitle = data['display_name']?.toString() ?? 'سياسة الخصوصية';
-          _policyContent = data['value']?.toString() ?? (rawData?.toString() ?? '');
+          _policyContent =
+              data['value']?.toString() ?? (rawData?.toString() ?? '');
         }
       }
 
       // إذا ظل المحتوى فارغاً والـ data تحتوي على نص مباشر تحت المفتاح المطلوب
-      if ((_policyContent?.isEmpty ?? true) && data.containsKey('${role}_policy')) {
+      if ((_policyContent?.isEmpty ?? true) &&
+          data.containsKey('${role}_policy')) {
         _policyContent = data['${role}_policy'].toString();
       }
-      
+
       _isLoading = false;
       notifyListeners();
     } catch (e) {

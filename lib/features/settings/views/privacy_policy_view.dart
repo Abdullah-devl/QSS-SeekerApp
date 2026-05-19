@@ -28,10 +28,12 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
   Future<void> _checkInitialStatus() async {
     final tokenStorage = context.read<TokenStorage>();
     _isAlreadyAgreed = await tokenStorage.isPolicyAgreed();
-    
+
     if (mounted) {
       final role = context.read<HomeViewModel>().role;
-      final effectiveRole = (role == 'guest' || role == 'seeker') ? 'seeker' : 'provider';
+      final effectiveRole = (role == 'guest' || role == 'seeker')
+          ? 'seeker'
+          : 'provider';
       context.read<PolicyViewModel>().fetchPolicy(effectiveRole);
       setState(() {});
     }
@@ -39,7 +41,8 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
 
   /// إظهار رسالة التأكيد قبل الموافقة
   Future<void> _showConfirmDialog(PolicyViewModel vm, String role) async {
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
     final bool fromRegister = args?['fromRegister'] ?? false;
 
     final confirmed = await QSAlerts.showConfirm(
@@ -71,7 +74,9 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
         await QSAlerts.showError(
           context,
           vm.errorMessage != null
-              ? (vm.errorMessage!.contains(' ') ? vm.errorMessage! : context.tr(vm.errorMessage!))
+              ? (vm.errorMessage!.contains(' ')
+                    ? vm.errorMessage!
+                    : context.tr(vm.errorMessage!))
               : context.l10n.policySubmitError,
         );
       }
@@ -84,7 +89,9 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
     final vm = context.watch<PolicyViewModel>();
     final l10n = AppLocalizations.of(context)!;
     final role = context.read<HomeViewModel>().role;
-    final effectiveRole = (role == 'guest' || role == 'seeker') ? 'seeker' : 'provider';
+    final effectiveRole = (role == 'guest' || role == 'seeker')
+        ? 'seeker'
+        : 'provider';
 
     return Scaffold(
       backgroundColor: colors.background,
@@ -93,7 +100,11 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
         elevation: 0,
         title: Text(
           l10n.privacyPolicy,
-          style: TextStyle(color: colors.text, fontWeight: FontWeight.bold, fontFamily: 'Cairo'),
+          style: TextStyle(
+            color: colors.text,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Cairo',
+          ),
         ),
         centerTitle: true,
         leading: IconButton(
@@ -105,7 +116,12 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
     );
   }
 
-  Widget _buildBody(PolicyViewModel vm, dynamic colors, dynamic l10n, String role) {
+  Widget _buildBody(
+    PolicyViewModel vm,
+    dynamic colors,
+    dynamic l10n,
+    String role,
+  ) {
     if (vm.isLoading) {
       return Center(
         child: Column(
@@ -113,7 +129,10 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
           children: [
             CircularProgressIndicator(color: colors.primary),
             const SizedBox(height: 20),
-            Text(context.tr('loading_policy'), style: TextStyle(color: colors.textSub, fontFamily: 'Cairo')),
+            Text(
+              context.tr('loading_policy'),
+              style: TextStyle(color: colors.textSub, fontFamily: 'Cairo'),
+            ),
           ],
         ),
       );
@@ -131,13 +150,25 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
               Text(
                 vm.errorMessage!,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: colors.text, fontSize: 16, fontFamily: 'Cairo'),
+                style: TextStyle(
+                  color: colors.text,
+                  fontSize: 16,
+                  fontFamily: 'Cairo',
+                ),
               ),
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () => vm.fetchPolicy(role),
-                style: ElevatedButton.styleFrom(backgroundColor: colors.primary),
-                child: Text(context.tr('retry'), style: const TextStyle(color: Colors.white, fontFamily: 'Cairo')),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: colors.primary,
+                ),
+                child: Text(
+                  context.tr('retry'),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontFamily: 'Cairo',
+                  ),
+                ),
               ),
             ],
           ),
@@ -193,7 +224,11 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
               Center(
                 child: Text(
                   '${context.tr('last_update')}: ${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}',
-                  style: TextStyle(color: colors.textSub, fontSize: 12, fontFamily: 'Cairo'),
+                  style: TextStyle(
+                    color: colors.textSub,
+                    fontSize: 12,
+                    fontFamily: 'Cairo',
+                  ),
                 ),
               ),
               const SizedBox(height: 150),
@@ -201,7 +236,10 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
           ),
         ),
         // زر الموافقة يظهر فقط إذا لم يوافق المستخدم بعد أو كان قادماً من صفحة التسجيل
-        if (!_isAlreadyAgreed || (ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?)?['fromRegister'] == true)
+        if (!_isAlreadyAgreed ||
+            (ModalRoute.of(context)?.settings.arguments
+                    as Map<String, dynamic>?)?['fromRegister'] ==
+                true)
           Positioned(
             bottom: 30,
             left: 24,
@@ -213,7 +251,9 @@ class _PrivacyPolicyViewState extends State<PrivacyPolicyView> {
                 onPressed: () => _showConfirmDialog(vm, role),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: colors.success,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                   elevation: 5,
                 ),
                 child: Text(

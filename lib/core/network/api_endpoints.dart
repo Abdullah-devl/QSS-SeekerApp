@@ -6,8 +6,8 @@ class ApiEndpoints {
   /// 🌐 النطاق الأساسي (Domain) للسيرفر.
   /// يتم استخدامه كأساس لجميع الروابط الأخرى.
   // static String get domain => "http://10.0.2.2:8000";
-  // static String get domain => "http://192.168.137.59 :8000";
-  static String get domain => "https://qss-back-end.onrender.com";
+  static String get domain => "http://192.168.0.82:8000";
+  // static String get domain => "https://qss-back-end.onrender.com";
   // static String get domain => "http://192.168.43.245:8000";
   // static String get domain => "http://localhost:8000/api";
 

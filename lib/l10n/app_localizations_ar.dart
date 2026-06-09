@@ -9,10 +9,10 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get appTitle => 'تطبيق باحث';
+  String get appTitle => 'تطبيق QSS';
 
   @override
-  String get welcomeTitle => 'مرحباً بك في باحث';
+  String get welcomeTitle => 'مرحباً بك في QSS';
 
   @override
   String get login => 'تسجيل الدخول';
@@ -74,7 +74,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get welcomeBack => 'مرحباً بعودتك!';
 
   @override
-  String get loginToContinue => 'سجل الدخول للمتابعة في QuickServe';
+  String get loginToContinue => 'سجل الدخول للمتابعة في QSS';
 
   @override
   String get forgotPassword => 'نسيت كلمة المرور؟';
@@ -93,7 +93,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get registerSubtitle =>
-      'سجل الان في QuickServe وابدأ في استخدام خدماتنا المميزة';
+      'سجل الان في QSS وابدأ في استخدام خدماتنا المميزة';
 
   @override
   String get enterFullName => 'أدخل اسمك الكامل';
@@ -123,7 +123,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get favorites => 'المفضلة';
 
   @override
-  String get searchHint => '... ابحث عن سباك، كهربائي، تنظيف';
+  String get searchHint => 'ابحث عن خدمة...';
 
   @override
   String get specialOffer => 'عرض خاص';
@@ -141,7 +141,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get categories => 'التصنيفات';
 
   @override
-  String get seeAll => 'عرض الكل';
+  String get seeAll => 'الكل';
 
   @override
   String get mostPopular => 'الأكثر طلباً';
@@ -261,7 +261,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get joinTeamDesc =>
-      'انضم كمزود خدمة في تطبيق QuickServe وابدأ في تقديم خدماتك لآلاف العملاء.';
+      'انضم كمزود خدمة في تطبيق QSS وابدأ في تقديم خدماتك لآلاف العملاء.';
 
   @override
   String get sendProviderRequest => 'إرسال طلب لتكون مزود خدمة';
@@ -445,7 +445,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get total_price_label => 'السعر الإجمالي';
 
   @override
-  String get currency_sar => 'ر.ي';
+  String get currency_sar => 'ر.س';
 
   @override
   String get details => 'التفاصيل';
@@ -696,7 +696,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get search_title => 'البحث المتقدم';
 
   @override
-  String get filters => 'الفلاتر';
+  String get filters => 'تصفية النتائج';
 
   @override
   String get price_range => 'نطاق السعر';
@@ -708,19 +708,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get max_price => 'أقصى سعر';
 
   @override
-  String get category => 'القسم';
+  String get category => 'الفئة';
 
   @override
   String get apply_filters => 'تطبيق الفلاتر';
 
   @override
-  String get reset_filters => 'إعادة تعيين';
+  String get reset_filters => 'إعادة ضبط';
 
   @override
-  String get no_results => 'عذراً، لا توجد نتائج تطابق بحثك';
+  String get no_results => 'لا توجد نتائج';
 
   @override
-  String get no_results_desc => 'جرب استخدام كلمات بحث مختلفة أو تغيير الفلاتر';
+  String get no_results_desc => 'لم نتمكن من العثور على أي خدمات تطابق بحثك.';
 
   @override
   String get available_now => 'متاح الآن';
@@ -877,7 +877,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get save_changes => 'حفظ التغييرات';
 
   @override
-  String get no_max_limit => 'بدون حد أقصى';
+  String get no_max_limit => 'لا يوجد حد أقصى';
 
   @override
   String share_service_message(Object price, Object provider, Object title) {
@@ -963,7 +963,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get terms_intro_text =>
-      'أهلاً بك في تطبيق Seeker. تُعد هذه الشروط اتفاقية ملزمة بينك كمستخدم وبين إدارة التطبيق. باستخدامك للتطبيق، فإنك توافق على الالتزام بكافة البنود المذكورة.';
+      'أهلاً بك في تطبيق QSS. تُعد هذه الشروط اتفاقية ملزمة بينك كمستخدم وبين إدارة التطبيق. باستخدامك للتطبيق، فإنك توافق على الالتزام بكافة البنود المذكورة.';
 
   @override
   String get terms_quality_title => '2. معايير الجودة';
@@ -1224,17 +1224,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get typeNoShow => 'عدم حضور المزود';
 
   @override
-  String get searchByLocation => 'البحث بالموقع الجغرافي';
+  String get searchByLocation => 'البحث بالموقع';
 
   @override
-  String get searchByLocationDesc =>
-      'عرض النتائج القريبة منك أو تحديد موقع مخصص';
+  String get searchByLocationDesc => 'عرض الخدمات القريبة من موقع معين';
 
   @override
   String get searchLocationTitle => 'موقع البحث';
 
   @override
-  String get pickOnMap => 'تحديد الموقع من الخريطة (اختياري)';
+  String get pickOnMap => 'اختر من الخريطة';
 
   @override
   String get submitSystemComplaintTitle => 'تقديم شكوى نظام';
@@ -1632,10 +1631,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get accountOwnerNotRegistered => 'صاحب الحساب غير مسجل';
 
   @override
-  String get verifiedOnly => 'عرض الموثقين فقط';
+  String get verifiedOnly => 'الموثقين فقط';
 
   @override
-  String get verifiedOnlyDesc => 'عرض الخدمات التابعة لمزودين لديهم توثيق سارٍ';
+  String get verifiedOnlyDesc => 'عرض مزودي الخدمة الموثقين فقط';
 
   @override
   String get confirm_booking_title => 'تأكيد الحجز';
@@ -1667,4 +1666,29 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get exceed_order_amount_error =>
       'قيمة النقاط المدفوعة تتجاوز المبلغ المتبقي للطلب';
+
+  @override
+  String get privacy_policy => 'سياسة الخصوصية';
+
+  @override
+  String get image_load_error => 'خطأ في تحميل الصورة';
+
+  @override
+  String get bond_number => 'رقم السند';
+
+  @override
+  String get amount_paid => 'المبلغ المدفوع';
+
+  @override
+  String get main_service => 'الخدمة الرئيسية';
+
+  @override
+  String get confirm_cancel_title => 'تأكيد الإلغاء';
+
+  @override
+  String get confirm_cancel_message =>
+      'هل أنت متأكد من رغبتك في إلغاء هذا الطلب؟';
+
+  @override
+  String get order_cancelled_error => 'خطأ أثناء إلغاء الطلب';
 }

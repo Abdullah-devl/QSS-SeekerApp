@@ -522,6 +522,62 @@ extension LocalizationExt on BuildContext {
         return l.bond_payment_success;
       case 'bond_payment_error':
         return l.bond_payment_error;
+      case 'search_title':
+        return l.search_title;
+      case 'searchHint':
+        return l.searchHint;
+      case 'no_results':
+        return l.no_results;
+      case 'no_results_desc':
+        return l.no_results_desc;
+      case 'filters':
+        return l.filters;
+      case 'reset_filters':
+        return l.reset_filters;
+      case 'category':
+        return l.category;
+      case 'seeAll':
+        return l.seeAll;
+      case 'price_range':
+        return l.price_range;
+      case 'searchByLocation':
+        return l.searchByLocation;
+      case 'searchByLocationDesc':
+        return l.searchByLocationDesc;
+      case 'searchLocationTitle':
+        return l.searchLocationTitle;
+      case 'pickOnMap':
+        return l.pickOnMap;
+      case 'apply_filters':
+        return l.apply_filters;
+      case 'privacy_policy':
+        return l.privacy_policy;
+      case 'cancel':
+        return l.cancel;
+      case 'image_load_error':
+        return l.image_load_error;
+      case 'bond_number':
+        return l.bond_number;
+      case 'amount_paid':
+        return l.amount_paid;
+      case 'loginNowPrompt':
+        return l.loginNowPrompt;
+      case 'login':
+        return l.login;
+      case 'main_service':
+        return l.main_service;
+      case 'confirm_cancel_title':
+        return l.confirm_cancel_title;
+      case 'confirm_cancel_message':
+        return l.confirm_cancel_message;
+      case 'order_cancelled_success':
+        return l.order_cancelled_success;
+      case 'order_cancelled_error':
+        return l.order_cancelled_error;
+      case 'must_complete_payment':
+        return l.must_complete_payment;
+      case 'complete_order':
+        return l.complete_order;
       default:
         // إذا كان المفتاح غير موجود، نحاول استرجاع القيمة من AppLocalizations بشكل انعكاسي غير متوفر هنا
         // لذا سنعيد المفتاح نفسه كقيمة افتراضية

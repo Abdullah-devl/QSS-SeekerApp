@@ -101,13 +101,13 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Seeker App'**
+  /// **'QSS'**
   String get appTitle;
 
   /// No description provided for @welcomeTitle.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to Seeker'**
+  /// **'Welcome to QSS'**
   String get welcomeTitle;
 
   /// No description provided for @login.
@@ -227,7 +227,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginToContinue.
   ///
   /// In en, this message translates to:
-  /// **'Login to continue in QuickServe'**
+  /// **'Login to continue in QSS'**
   String get loginToContinue;
 
   /// No description provided for @forgotPassword.
@@ -263,7 +263,7 @@ abstract class AppLocalizations {
   /// No description provided for @registerSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Register now in QuickServe and start using our premium services'**
+  /// **'Register now in QSS and start using our premium services'**
   String get registerSubtitle;
 
   /// No description provided for @enterFullName.
@@ -323,7 +323,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchHint.
   ///
   /// In en, this message translates to:
-  /// **'... Search for plumber, electrician, cleaning'**
+  /// **'Search for a service...'**
   String get searchHint;
 
   /// No description provided for @specialOffer.
@@ -593,7 +593,7 @@ abstract class AppLocalizations {
   /// No description provided for @joinTeamDesc.
   ///
   /// In en, this message translates to:
-  /// **'Join as a service provider in QuickServe application and start offering your services to thousands of customers.'**
+  /// **'Join as a service provider in QSS application and start offering your services to thousands of customers.'**
   String get joinTeamDesc;
 
   /// No description provided for @sendProviderRequest.
@@ -1469,13 +1469,13 @@ abstract class AppLocalizations {
   /// No description provided for @no_results.
   ///
   /// In en, this message translates to:
-  /// **'Sorry, no results match your search'**
+  /// **'No results found'**
   String get no_results;
 
   /// No description provided for @no_results_desc.
   ///
   /// In en, this message translates to:
-  /// **'Try different keywords or change the filters'**
+  /// **'We couldn\'t find any services matching your search.'**
   String get no_results_desc;
 
   /// No description provided for @available_now.
@@ -1949,7 +1949,7 @@ abstract class AppLocalizations {
   /// No description provided for @terms_intro_text.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to Seeker. These terms are a binding agreement between you as a user and the app management. By using the app, you agree to comply with all mentioned terms.'**
+  /// **'Welcome to QSS. These terms are a binding agreement between you as a user and the app management. By using the app, you agree to comply with all mentioned terms.'**
   String get terms_intro_text;
 
   /// No description provided for @terms_quality_title.
@@ -2423,7 +2423,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchByLocationDesc.
   ///
   /// In en, this message translates to:
-  /// **'Show results near your current location or a specific location'**
+  /// **'Show services near a specific location'**
   String get searchByLocationDesc;
 
   /// No description provided for @searchLocationTitle.
@@ -2435,7 +2435,7 @@ abstract class AppLocalizations {
   /// No description provided for @pickOnMap.
   ///
   /// In en, this message translates to:
-  /// **'Select location on map (Optional)'**
+  /// **'Pick on map'**
   String get pickOnMap;
 
   /// No description provided for @submitSystemComplaintTitle.
@@ -3203,13 +3203,13 @@ abstract class AppLocalizations {
   /// No description provided for @verifiedOnly.
   ///
   /// In en, this message translates to:
-  /// **'Show Verified Only'**
+  /// **'Verified Only'**
   String get verifiedOnly;
 
   /// No description provided for @verifiedOnlyDesc.
   ///
   /// In en, this message translates to:
-  /// **'Show services of providers with active verification'**
+  /// **'Show only verified service providers'**
   String get verifiedOnlyDesc;
 
   /// No description provided for @confirm_booking_title.
@@ -3265,6 +3265,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Paid points value exceeds the remaining order amount'**
   String get exceed_order_amount_error;
+
+  /// No description provided for @privacy_policy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacy_policy;
+
+  /// No description provided for @image_load_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading image'**
+  String get image_load_error;
+
+  /// No description provided for @bond_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Bond Number'**
+  String get bond_number;
+
+  /// No description provided for @amount_paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount Paid'**
+  String get amount_paid;
+
+  /// No description provided for @main_service.
+  ///
+  /// In en, this message translates to:
+  /// **'Main Service'**
+  String get main_service;
+
+  /// No description provided for @confirm_cancel_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Cancellation'**
+  String get confirm_cancel_title;
+
+  /// No description provided for @confirm_cancel_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to cancel this order?'**
+  String get confirm_cancel_message;
+
+  /// No description provided for @order_cancelled_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error cancelling order'**
+  String get order_cancelled_error;
 }
 
 class _AppLocalizationsDelegate

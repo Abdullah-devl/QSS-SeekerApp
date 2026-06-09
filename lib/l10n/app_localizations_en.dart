@@ -9,10 +9,10 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Seeker App';
+  String get appTitle => 'QSS';
 
   @override
-  String get welcomeTitle => 'Welcome to Seeker';
+  String get welcomeTitle => 'Welcome to QSS';
 
   @override
   String get login => 'Login';
@@ -74,7 +74,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcomeBack => 'Welcome Back!';
 
   @override
-  String get loginToContinue => 'Login to continue in QuickServe';
+  String get loginToContinue => 'Login to continue in QSS';
 
   @override
   String get forgotPassword => 'Forgot Password?';
@@ -93,7 +93,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get registerSubtitle =>
-      'Register now in QuickServe and start using our premium services';
+      'Register now in QSS and start using our premium services';
 
   @override
   String get enterFullName => 'Enter your full name';
@@ -123,7 +123,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get favorites => 'Favorites';
 
   @override
-  String get searchHint => '... Search for plumber, electrician, cleaning';
+  String get searchHint => 'Search for a service...';
 
   @override
   String get specialOffer => 'Special Offer';
@@ -261,7 +261,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get joinTeamDesc =>
-      'Join as a service provider in QuickServe application and start offering your services to thousands of customers.';
+      'Join as a service provider in QSS application and start offering your services to thousands of customers.';
 
   @override
   String get sendProviderRequest => 'Send Provider Request';
@@ -723,10 +723,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reset_filters => 'Reset';
 
   @override
-  String get no_results => 'Sorry, no results match your search';
+  String get no_results => 'No results found';
 
   @override
-  String get no_results_desc => 'Try different keywords or change the filters';
+  String get no_results_desc =>
+      'We couldn\'t find any services matching your search.';
 
   @override
   String get available_now => 'Available Now';
@@ -972,7 +973,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get terms_intro_text =>
-      'Welcome to Seeker. These terms are a binding agreement between you as a user and the app management. By using the app, you agree to comply with all mentioned terms.';
+      'Welcome to QSS. These terms are a binding agreement between you as a user and the app management. By using the app, you agree to comply with all mentioned terms.';
 
   @override
   String get terms_quality_title => '2. Quality Standards';
@@ -1238,14 +1239,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchByLocation => 'Search by Location';
 
   @override
-  String get searchByLocationDesc =>
-      'Show results near your current location or a specific location';
+  String get searchByLocationDesc => 'Show services near a specific location';
 
   @override
   String get searchLocationTitle => 'Search Location';
 
   @override
-  String get pickOnMap => 'Select location on map (Optional)';
+  String get pickOnMap => 'Pick on map';
 
   @override
   String get submitSystemComplaintTitle => 'Submit a System Complaint';
@@ -1649,11 +1649,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountOwnerNotRegistered => 'Account owner not registered';
 
   @override
-  String get verifiedOnly => 'Show Verified Only';
+  String get verifiedOnly => 'Verified Only';
 
   @override
-  String get verifiedOnlyDesc =>
-      'Show services of providers with active verification';
+  String get verifiedOnlyDesc => 'Show only verified service providers';
 
   @override
   String get confirm_booking_title => 'Confirm Booking';
@@ -1685,4 +1684,29 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get exceed_order_amount_error =>
       'Paid points value exceeds the remaining order amount';
+
+  @override
+  String get privacy_policy => 'Privacy Policy';
+
+  @override
+  String get image_load_error => 'Error loading image';
+
+  @override
+  String get bond_number => 'Bond Number';
+
+  @override
+  String get amount_paid => 'Amount Paid';
+
+  @override
+  String get main_service => 'Main Service';
+
+  @override
+  String get confirm_cancel_title => 'Confirm Cancellation';
+
+  @override
+  String get confirm_cancel_message =>
+      'Are you sure you want to cancel this order?';
+
+  @override
+  String get order_cancelled_error => 'Error cancelling order';
 }

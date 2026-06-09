@@ -343,7 +343,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 20),
                   child: Text(
-                    'QuickServe v1.0.0',
+                    'QSS v1.0.0',
                     style: TextStyle(color: colors.textSub, fontSize: 12),
                   ),
                 ),

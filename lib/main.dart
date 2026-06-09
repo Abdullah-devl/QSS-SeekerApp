@@ -379,7 +379,7 @@ class _MyAppState extends State<MyApp> {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, _) {
         return MaterialApp(
-          title: 'QSS Pro',
+          title: 'QSS',
           debugShowCheckedModeBanner: false,
 
           // 🌍 إعدادات اللغة (Localization)

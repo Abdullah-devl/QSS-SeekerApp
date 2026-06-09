@@ -153,15 +153,23 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
     dynamic colors,
   ) {
     return SizedBox(
-      height: 100,
+      height: 110,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        reverse: true, // RTL support
         itemCount: categories.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        separatorBuilder: (_, __) => const SizedBox(width: 16),
         itemBuilder: (context, index) {
           final cat = categories[index];
-          return InkWell(
+          // ألوان خلفية مختلفة لكل عنصر لإضفاء حيوية
+          final categoryColors = [
+            colors.primary.withValues(alpha: 0.1),
+            colors.secondary.withValues(alpha: 0.1),
+            colors.success.withValues(alpha: 0.1),
+            colors.warning.withValues(alpha: 0.1),
+          ];
+          final bgColor = categoryColors[index % categoryColors.length];
+
+          return GestureDetector(
             onTap: () {
               Navigator.pushNamed(
                 context,
@@ -169,43 +177,79 @@ class _CategoryDetailsViewState extends State<CategoryDetailsView> {
                 arguments: cat,
               );
             },
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              width: 80,
-              decoration: BoxDecoration(
-                color: colors.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: colors.primary.withValues(alpha: 0.2),
+            child: Column(
+              children: [
+                Container(
+                  width: 70,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    color: bgColor,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: _buildCategoryImage(cat, colors),
+                  ),
                 ),
-              ),
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  cat.iconPath.isNotEmpty
-                      ? (cat.iconPath.startsWith('http')
-                            ? Image.network(cat.iconPath, width: 30, height: 30)
-                            : Image.asset(cat.iconPath, width: 30, height: 30))
-                      : Icon(Icons.category, color: colors.primary, size: 30),
-                  const SizedBox(height: 6),
-                  Text(
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: 70,
+                  child: Text(
                     cat.name,
                     textAlign: TextAlign.center,
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 12,
                       fontWeight: FontWeight.w500,
+                      fontSize: 12,
                       color: colors.text,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         },
       ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // 🖼️ معالجة صور التصنيفات
+  // ---------------------------------------------------------------------------
+  Widget _buildCategoryImage(CategoryModel cat, dynamic colors) {
+    if (cat.iconPath.isEmpty) {
+      return Icon(Icons.category, color: colors.primary, size: 30);
+    }
+    if (cat.iconPath.startsWith('assets/')) {
+      return Image.asset(
+        cat.iconPath,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) {
+          return Icon(Icons.category, color: colors.textSub);
+        },
+      );
+    }
+
+    return Image.network(
+      cat.iconPath,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return Container(
+          color: colors.background,
+          child: Icon(Icons.broken_image, color: colors.textSub),
+        );
+      },
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return const Center(
+          child: SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        );
+      },
     );
   }
 

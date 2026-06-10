@@ -19,6 +19,9 @@ import 'package:seeker/core/network/api_service.dart';
 import 'package:seeker/features/profile/viewmodels/profile_view_model.dart';
 import 'package:seeker/features/profile/repositories/profile_repository.dart';
 import 'package:seeker/features/profile/models/profile_model.dart';
+import 'package:seeker/core/storage/token_storage.dart';
+import 'package:seeker/features/profile/requests/custom/view/custom_request_view.dart';
+import 'package:seeker/features/profile/requests/custom/viewmodel/custom_request_view_model.dart';
 
 class ServiceDetailsView extends StatefulWidget {
   final ServiceModel initialService;
@@ -71,6 +74,8 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
                 _buildHeaderImage(service.imageUrl, colors),
                 _buildMainInfo(service, colors),
                 _buildProviderCard(service, vm.providerProfile, colors),
+                _buildCustomRequestButton(service, vm.providerProfile, colors),
+                const SizedBox(height: 8),
                 _buildDivider(colors),
                 _buildDescription(service.description, colors),
                 _buildLocation(vm.providerProfile, colors),
@@ -1121,6 +1126,72 @@ class _ServiceDetailsViewState extends State<ServiceDetailsView> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildCustomRequestButton(
+    ServiceModel service,
+    ProfileModel? providerProfile,
+    dynamic colors,
+  ) {
+    if (service.providerId == 0) return const SizedBox.shrink();
+
+    return FutureBuilder<Map<String, dynamic>>(
+      future: context.read<TokenStorage>().getUserData(),
+      builder: (context, snapshot) {
+        final currentUserId = snapshot.data?['id'];
+
+        // إذا كان هذا بروفايل المستخدم نفسه، لا تظهر زر الطلب المخصص
+        if (currentUserId == service.providerId) {
+          return const SizedBox.shrink();
+        }
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChangeNotifierProvider(
+                      create: (context) => CustomRequestViewModel(
+                        RequestRepository(context.read<ApiService>()),
+                        providerId: service.providerId,
+                      ),
+                      child: const CustomRequestView(),
+                    ),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colors.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                elevation: 0,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.description_outlined, color: Colors.white, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    context.tr('customRequest'),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 

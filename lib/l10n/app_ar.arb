@@ -298,7 +298,7 @@
   "service_location_title": "موقع تقديم الخدمة",
   "click_to_pick_location": "اضغط لتحديد موقعك على الخريطة",
   "additional_services": "الخدمات الإضافية",
-  "additional_notes": "ملاحظات إضافية",
+  "additional_notes": "وصف الطلب",
   "notes_hint": "اكتب هنا أي تفاصيل تريد لمقدم الخدمة معرفتها...",
   "final_total": "الإجمالي النهائي",
   "order_sent_success": "تم إرسال طلبك بنجاح! 🚀",

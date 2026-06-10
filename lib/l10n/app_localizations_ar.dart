@@ -925,7 +925,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get additional_services => 'الخدمات الإضافية';
 
   @override
-  String get additional_notes => 'ملاحظات إضافية';
+  String get additional_notes => 'وصف الطلب';
 
   @override
   String get notes_hint => 'اكتب هنا أي تفاصيل تريد لمقدم الخدمة معرفتها...';
